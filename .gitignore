@@ -34,3 +34,6 @@ __MACOSX/
 # Diğer gizli/gereksiz dosyalar
 eski_CLAUDE.md
 yeni_CLAUDE.md
+
+CLAUDE.md
+*.pdf
