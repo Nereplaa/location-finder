@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ethereal Wayfinder | Store Manager Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#d65569",
+                        "surface-tint": "#b4c5ff",
+                        "outline": "#909097",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-secondary-container": "#00311f",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#400010",
+                        "tertiary-container": "#38000d",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-surface": "#dae2fd",
+                        "surface-variant": "#2d3449",
+                        "primary-container": "#001442",
+                        "secondary-container": "#00a572",
+                        "tertiary-fixed": "#ffdadc",
+                        "on-secondary-fixed": "#002113",
+                        "on-tertiary": "#67001f",
+                        "background": "#0b1326",
+                        "primary": "#b4c5ff",
+                        "on-background": "#dae2fd",
+                        "on-secondary": "#003824",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#4edea3",
+                        "surface-container": "#171f33",
+                        "surface": "#0b1326",
+                        "on-primary-container": "#4278ff",
+                        "inverse-primary": "#0053db",
+                        "outline-variant": "#45464d",
+                        "surface-container-high": "#222a3d",
+                        "surface-container-low": "#131b2e",
+                        "surface-bright": "#31394d",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "secondary": "#4edea3",
+                        "on-primary": "#002a78",
+                        "tertiary": "#ffb2b9",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#891933",
+                        "surface-container-lowest": "#060e20",
+                        "on-surface-variant": "#c6c6cd",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-error": "#690005",
+                        "inverse-on-surface": "#283044",
+                        "inverse-surface": "#dae2fd",
+                        "primary-fixed": "#dbe1ff",
+                        "tertiary-fixed-dim": "#ffb2b9",
+                        "surface-dim": "#0b1326",
+                        "surface-container-highest": "#2d3449",
+                        "on-primary-fixed": "#00174b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0b1326;
+            color: #dae2fd;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(45, 52, 73, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .text-glow {
+            text-shadow: 0 0 15px rgba(180, 197, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<aside class="fixed left-0 top-0 bottom-0 z-40 h-screen w-72 flex flex-col bg-slate-900 font-inter text-sm font-medium">
+<div class="px-8 py-10">
+<h1 class="text-lg font-black text-blue-200 tracking-tight">Mall Operations</h1>
+<p class="text-slate-400 text-xs mt-1">Management Portal</p>
+</div>
+<nav class="flex-1 space-y-2 mt-4">
+<a class="bg-blue-600/20 text-blue-100 rounded-full mx-4 px-4 py-3 flex items-center gap-3 active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="text-slate-400 mx-4 px-4 py-3 flex items-center gap-3 hover:bg-slate-800 rounded-full transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+                Inventory
+            </a>
+<a class="text-slate-400 mx-4 px-4 py-3 flex items-center gap-3 hover:bg-slate-800 rounded-full transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                Team
+            </a>
+<a class="text-slate-400 mx-4 px-4 py-3 flex items-center gap-3 hover:bg-slate-800 rounded-full transition-all active:scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="px-6 py-6">
+<button class="w-full bg-error-container text-on-error-container py-3 rounded-full flex items-center justify-center gap-2 font-bold tracking-tight hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm" data-icon="warning">warning</span>
+                Emergency Alert
+            </button>
+</div>
+<div class="border-t border-slate-800/50 p-4">
+<div class="flex items-center gap-3 px-4 py-4 mb-4">
+<img alt="Admin User Profile" class="w-10 h-10 rounded-full object-cover" data-alt="professional male store manager portrait in a modern dark suit with minimalist background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-uzki5DfFFIaVklRWfnJOq4ytXd-b_kxIySuLLi7eDnTAujSTF_PeQ4TSvF0n3mRVXByXFUOTBz2FeObAKhO6Stu0pAnnFwYKduYc7IMCb7xDgzQPBUepBT1Cvljd4_fnSyMx0fiAjq3WC7fb_4XAoG82HPMxLy-RNNJ8MqG9eT-wOwsHLToN5rw6tu9zfrBPsuL4PrZvYDPdTskb3GVu-h9busHQxVIxg2arql5VviWB_IeUjcy_2gCVumUxaqsLz0lxbpIjryw"/>
+<div>
+<p class="text-white font-semibold">Admin User</p>
+<p class="text-slate-500 text-xs">Mall Supervisor</p>
+</div>
+</div>
+<a class="text-slate-400 mx-4 px-4 py-3 flex items-center gap-3 hover:bg-slate-800 rounded-full transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Sign Out
+            </a>
+</div>
+</aside>
+<main class="ml-72 flex-1 p-10 space-y-10">
+<header class="flex justify-between items-end">
+<div>
+<h2 class="font-headline text-4xl font-extrabold tracking-tighter text-on-surface">Store Overview</h2>
+<p class="text-on-surface-variant font-label text-sm mt-2 uppercase tracking-widest">Real-time Digital Concierge Metrics</p>
+</div>
+<div class="flex gap-4">
+<div class="glass-panel px-6 py-3 rounded-full flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="calendar_today">calendar_today</span>
+<span class="text-sm font-medium">October 24, 2024</span>
+</div>
+</div>
+</header>
+<section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl" data-icon="inventory">inventory</span>
+</div>
+<p class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Total Products</p>
+<h3 class="text-4xl font-headline font-bold mt-2">12,482</h3>
+<div class="flex items-center gap-2 mt-4 text-secondary text-sm">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+<span>4.2% from last month</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl" data-icon="report_problem">report_problem</span>
+</div>
+<p class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Critical Stock</p>
+<h3 class="text-4xl font-headline font-bold mt-2 text-tertiary">14</h3>
+<div class="flex items-center gap-2 mt-4 text-tertiary text-sm">
+<span class="material-symbols-outlined text-sm" data-icon="warning">warning</span>
+<span>Requires immediate action</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl" data-icon="visibility">visibility</span>
+</div>
+<p class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Most Viewed</p>
+<h3 class="text-4xl font-headline font-bold mt-2">Lux Chronos</h3>
+<div class="flex items-center gap-2 mt-4 text-on-primary-container text-sm">
+<span class="material-symbols-outlined text-sm" data-icon="search">search</span>
+<span>842 searches today</span>
+</div>
+</div>
+</section>
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 bg-surface-container-low rounded-xl p-8 flex flex-col gap-6">
+<div class="flex justify-between items-center">
+<div>
+<h4 class="font-headline text-xl font-bold">Visitor &amp; Search Trends</h4>
+<p class="text-on-surface-variant text-sm">Traffic density via wayfinding kiosks</p>
+</div>
+<div class="flex gap-2">
+<button class="bg-surface-container-highest px-4 py-2 rounded-full text-xs font-medium">Daily</button>
+<button class="bg-surface-container-high px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant">Weekly</button>
+</div>
+</div>
+<div class="relative h-64 w-full flex items-end justify-between px-4 pb-8 border-b border-outline-variant/10">
+<div class="absolute inset-0 flex flex-col justify-between opacity-5">
+<div class="border-t border-white w-full"></div>
+<div class="border-t border-white w-full"></div>
+<div class="border-t border-white w-full"></div>
+<div class="border-t border-white w-full"></div>
+</div>
+<div class="w-8 bg-primary/20 hover:bg-primary/40 transition-colors rounded-t-lg h-[40%]"></div>
+<div class="w-8 bg-primary/20 hover:bg-primary/40 transition-colors rounded-t-lg h-[65%]"></div>
+<div class="w-8 bg-primary/20 hover:bg-primary/40 transition-colors rounded-t-lg h-[55%]"></div>
+<div class="w-8 bg-primary/20 hover:bg-primary/40 transition-colors rounded-t-lg h-[85%]"></div>
+<div class="w-8 bg-primary/60 hover:bg-primary/80 transition-colors rounded-t-lg h-[95%] relative">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 glass-panel px-2 py-1 rounded text-[10px] whitespace-nowrap">Peak: 2.4k</div>
+</div>
+<div class="w-8 bg-primary/20 hover:bg-primary/40 transition-colors rounded-t-lg h-[75%]"></div>
+<div class="w-8 bg-primary/20 hover:bg-primary/40 transition-colors rounded-t-lg h-[60%]"></div>
+<div class="w-8 bg-primary/20 hover:bg-primary/40 transition-colors rounded-t-lg h-[50%]"></div>
+<div class="w-8 bg-primary/20 hover:bg-primary/40 transition-colors rounded-t-lg h-[45%]"></div>
+<div class="w-8 bg-primary/20 hover:bg-primary/40 transition-colors rounded-t-lg h-[55%]"></div>
+</div>
+<div class="flex justify-between px-4 text-[10px] text-on-surface-variant font-label uppercase tracking-widest">
+<span>08:00</span><span>10:00</span><span>12:00</span><span>14:00</span><span>16:00</span><span>18:00</span><span>20:00</span><span>22:00</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl flex flex-col">
+<div class="p-8 pb-4">
+<h4 class="font-headline text-xl font-bold">Critical Stock Alerts</h4>
+<p class="text-on-surface-variant text-sm mt-1">Action required for inventory</p>
+</div>
+<div class="flex-1 overflow-y-auto px-4 pb-8 space-y-4">
+<div class="bg-surface-container-high p-4 rounded-lg flex items-center gap-4 group hover:bg-surface-container-highest transition-colors">
+<div class="w-2 h-12 bg-tertiary rounded-full"></div>
+<div class="flex-1">
+<p class="font-bold text-sm">Vellum Leather Tote</p>
+<p class="text-xs text-on-surface-variant">SKU: VL-9920 • <span class="text-tertiary">2 remaining</span></p>
+</div>
+<button class="bg-primary/10 hover:bg-primary text-primary hover:text-on-primary p-2 rounded-full transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="shopping_cart_checkout">shopping_cart_checkout</span>
+</button>
+</div>
+<div class="bg-surface-container-high p-4 rounded-lg flex items-center gap-4 group hover:bg-surface-container-highest transition-colors">
+<div class="w-2 h-12 bg-tertiary rounded-full"></div>
+<div class="flex-1">
+<p class="font-bold text-sm">Arctic Mist Fragrance</p>
+<p class="text-xs text-on-surface-variant">SKU: AM-4411 • <span class="text-tertiary">0 remaining</span></p>
+</div>
+<button class="bg-primary/10 hover:bg-primary text-primary hover:text-on-primary p-2 rounded-full transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="shopping_cart_checkout">shopping_cart_checkout</span>
+</button>
+</div>
+<div class="bg-surface-container-high p-4 rounded-lg flex items-center gap-4 group hover:bg-surface-container-highest transition-colors">
+<div class="w-2 h-12 bg-tertiary-fixed-dim/30 rounded-full"></div>
+<div class="flex-1">
+<p class="font-bold text-sm">Titanium Smart Watch</p>
+<p class="text-xs text-on-surface-variant">SKU: TW-0012 • <span class="text-tertiary">5 remaining</span></p>
+</div>
+<button class="bg-primary/10 hover:bg-primary text-primary hover:text-on-primary p-2 rounded-full transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="shopping_cart_checkout">shopping_cart_checkout</span>
+</button>
+</div>
+</div>
+<div class="p-4 bg-surface-container/30 rounded-b-xl">
+<button class="w-full py-2 text-xs font-bold text-primary uppercase tracking-widest hover:underline">View All Alerts</button>
+</div>
+</div>
+</section>
+<section class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<div class="md:col-span-1 flex flex-col gap-8">
+<div class="bg-surface-container-lowest rounded-xl p-8 flex flex-col gap-4">
+<h5 class="font-label text-xs uppercase tracking-widest text-on-surface-variant">Quick Shortcuts</h5>
+<button class="flex items-center gap-3 p-3 bg-surface-container-high rounded-lg hover:bg-primary hover:text-primary-container transition-all">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="text-sm font-medium">Add Product</span>
+</button>
+<button class="flex items-center gap-3 p-3 bg-surface-container-high rounded-lg hover:bg-primary hover:text-primary-container transition-all">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="text-sm font-medium">Export Report</span>
+</button>
+<button class="flex items-center gap-3 p-3 bg-surface-container-high rounded-lg hover:bg-primary hover:text-primary-container transition-all">
+<span class="material-symbols-outlined" data-icon="print">print</span>
+<span class="text-sm font-medium">Label Print</span>
+</button>
+</div>
+</div>
+<div class="md:col-span-3 bg-surface-container-low rounded-xl overflow-hidden">
+<div class="p-8 border-b border-outline-variant/10 flex justify-between items-center">
+<h5 class="font-headline text-xl font-bold">Recent Store Activity</h5>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="more_horiz">more_horiz</span>
+</div>
+<table class="w-full text-left font-label text-sm">
+<thead>
+<tr class="text-on-surface-variant uppercase tracking-widest text-[10px]">
+<th class="px-8 py-4">Event</th>
+<th class="px-8 py-4">Personnel</th>
+<th class="px-8 py-4">Time</th>
+<th class="px-8 py-4 text-right">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-8 py-5 border-t border-outline-variant/5">Stock Adjustment: Electronics</td>
+<td class="px-8 py-5 border-t border-outline-variant/5">Julian Thorne</td>
+<td class="px-8 py-5 border-t border-outline-variant/5">12:44 PM</td>
+<td class="px-8 py-5 border-t border-outline-variant/5 text-right"><span class="px-3 py-1 bg-secondary-container/20 text-secondary rounded-full text-xs">Completed</span></td>
+</tr>
+<tr class="bg-surface-container-lowest/30 hover:bg-surface-container-lowest transition-colors">
+<td class="px-8 py-5 border-t border-outline-variant/5">New Brand Onboarding: Aether</td>
+<td class="px-8 py-5 border-t border-outline-variant/5">System Admin</td>
+<td class="px-8 py-5 border-t border-outline-variant/5">11:30 AM</td>
+<td class="px-8 py-5 border-t border-outline-variant/5 text-right"><span class="px-3 py-1 bg-primary/20 text-primary rounded-full text-xs">Processing</span></td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-8 py-5 border-t border-outline-variant/5">Security Gate Diagnostic</td>
+<td class="px-8 py-5 border-t border-outline-variant/5">Tech Support</td>
+<td class="px-8 py-5 border-t border-outline-variant/5">09:15 AM</td>
+<td class="px-8 py-5 border-t border-outline-variant/5 text-right"><span class="px-3 py-1 bg-secondary-container/20 text-secondary rounded-full text-xs">Completed</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<footer class="w-full py-12 border-t border-slate-800/30 bg-slate-950 flex flex-col items-center gap-6 px-12 fixed bottom-0 left-72 right-0 -z-10 opacity-0 pointer-events-none">
+<p class="font-inter text-xs uppercase tracking-widest text-slate-400">© 2024 Ethereal Wayfinder. Luxury Concierge Systems.</p>
+<div class="flex gap-8">
+<a class="text-slate-500 hover:text-white transition-colors text-xs uppercase tracking-widest" href="#">Privacy Policy</a>
+<a class="text-slate-500 hover:text-white transition-colors text-xs uppercase tracking-widest" href="#">Operating Hours</a>
+<a class="text-slate-500 hover:text-white transition-colors text-xs uppercase tracking-widest" href="#">Contact Support</a>
+</div>
+</footer>
+</body></html>

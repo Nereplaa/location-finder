@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{#
+    notification_modal.html
+    Bağımsız sayfa olarak da kullanılabilir, ancak genellikle
+    product_detail.html içindeki modal yeterlidir.
+    Bu şablon tam ekran bildirim formu içindir.
+    BR-1.2: Kayıtsız kullanıcıda "Bildir" butonu disabled/kilitli.
+#}
+
+{% block title %}Stok Bildirimi — AVM Rehber{% endblock %}
+{% block body_class %}bildirim-sayfasi{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width:520px;">
+
+    <div class="card">
+        <div class="card-header bg-warning py-3">
+            <h1 class="h5 mb-0 fw-bold">
+                <i class="bi bi-bell-fill me-2"></i>Stok Gelince Haber Ver
+            </h1>
+        </div>
+        <div class="card-body p-4">
+
+            {% if urun %}
+            <p class="text-muted mb-4">
+                <strong class="text-dark">{{ urun.urun_adi }}</strong> ürünü tekrar stoka girdiğinde
+                size haber vereceğiz.
+            </p>
+            {% endif %}
+
+            {% if current_user.is_authenticated %}
+            <!-- Kayıtlı kullanıcı — form aktif -->
+            <form action="{{ url_for('customer.create_notification') }}" method="POST"
+                  class="needs-validation" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="urun_id" value="{{ urun.id if urun else '' }}">
+
+                <div class="mb-3">
+                    <label for="eposta" class="form-label">E-posta Adresi <span class="text-danger">*</span></label>
+                    <input type="email"
+                           class="form-control"
+                           id="eposta"
+                           name="eposta"
+                           value="{{ current_user.eposta }}"
+                           required
+                           placeholder="ornek@eposta.com">
+                    <div class="invalid-feedback">
+                        Lütfen geçerli bir e-posta adresi girin.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="telefon" class="form-label">
+                        Telefon <span class="text-muted small">(isteğe bağlı)</span>
+                    </label>
+                    <input type="tel"
+                           class="form-control"
+                           id="telefon"
+                           name="telefon"
+                           placeholder="05XX XXX XX XX"
+                           pattern="[0-9\s\-\+\(\)]{10,15}">
+                    <div class="invalid-feedback">
+                        Lütfen geçerli bir telefon numarası girin.
+                    </div>
+                </div>
+
+                <div class="alert alert-info py-2 small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Aynı ürün için 24 saat içinde yalnızca bir bildirim talebi oluşturabilirsiniz. (BR-3.3)
+                </div>
+
+                <div class="d-grid mt-3">
+                    <button type="submit" class="btn btn-warning fw-bold">
+                        <i class="bi bi-bell me-2"></i>Bildirim Talebi Oluştur
+                    </button>
+                </div>
+
+            </form>
+
+            {% else %}
+            <!-- BR-1.2: Kayıtsız ziyaretçi — form kilitli -->
+            <div class="alert alert-warning mb-4">
+                <i class="bi bi-lock-fill me-2"></i>
+                Bildirim talebi oluşturmak için <strong>giriş yapmanız</strong> gerekmektedir.
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">E-posta Adresi</label>
+                <input type="email" class="form-control" disabled placeholder="Giriş yapılmadı"
+                       aria-label="Giriş yapılmadığı için bu alan devre dışı">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Telefon</label>
+                <input type="tel" class="form-control" disabled placeholder="Giriş yapılmadı"
+                       aria-label="Giriş yapılmadığı için bu alan devre dışı">
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <!-- disabled buton (BR-1.2) -->
+                <button class="btn btn-warning fw-bold btn-bildirim-disabled"
+                        disabled
+                        aria-disabled="true"
+                        title="Giriş yapmanız gerekiyor">
+                    <i class="bi bi-lock me-2"></i>Bildirim Talebi Oluştur (Kilitli)
+                </button>
+                <a href="{{ url_for('auth.login') }}?next={{ request.url | urlencode }}"
+                   class="btn btn-primary fw-semibold">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+                </a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-person-plus me-2"></i>Kayıt Ol
+                </a>
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        <div class="card-footer text-center py-3">
+            {% if urun %}
+            <a href="{{ url_for('customer.product_detail', urun_id=urun.id) }}"
+               class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Ürüne Dön
+            </a>
+            {% else %}
+            <a href="{{ url_for('customer.products') }}"
+               class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Ürünlere Dön
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

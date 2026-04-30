@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+{% block title %}Mağaza Dashboard — AVM Rehber{% endblock %}
+{% block body_class %}bg-background text-on-background min-h-screen flex{% endblock %}
+
+{% block content %}
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 bottom-0 z-40 h-screen w-72 flex flex-col bg-slate-900 font-label text-sm font-medium">
+  <div class="px-8 py-10">
+    <h1 class="text-lg font-black text-blue-200 tracking-tight">Mağaza Paneli</h1>
+    {% if magaza %}
+    <p class="text-slate-400 text-xs mt-1">{{ magaza.magaza_adi }}</p>
+    {% else %}
+    <p class="text-slate-400 text-xs mt-1">Yönetim Portalı</p>
+    {% endif %}
+  </div>
+  <nav class="flex-1 space-y-2 mt-4">
+    <a class="bg-blue-600/20 text-blue-100 rounded-full mx-4 px-4 py-3 flex items-center gap-3" href="{{ url_for('manager.dashboard') }}">
+      <span class="material-symbols-outlined">dashboard</span>Dashboard
+    </a>
+    <a class="text-slate-400 mx-4 px-4 py-3 flex items-center gap-3 hover:bg-slate-800 rounded-full transition-all" href="{{ url_for('manager.products') }}">
+      <span class="material-symbols-outlined">inventory_2</span>Ürün &amp; Stok
+    </a>
+    <a class="text-slate-400 mx-4 px-4 py-3 flex items-center gap-3 hover:bg-slate-800 rounded-full transition-all" href="{{ url_for('manager.campaigns') }}">
+      <span class="material-symbols-outlined">local_offer</span>Kampanyalar
+    </a>
+  </nav>
+  <div class="border-t border-slate-800/50 p-4">
+    <div class="flex items-center gap-3 px-4 py-4 mb-2">
+      <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+        <span class="material-symbols-outlined">person</span>
+      </div>
+      <div>
+        <p class="text-white font-semibold text-sm">{{ current_user.ad }} {{ current_user.soyad }}</p>
+        <p class="text-slate-500 text-xs">{{ current_user.eposta }}</p>
+      </div>
+    </div>
+    <a class="text-slate-400 mx-4 px-4 py-3 flex items-center gap-3 hover:bg-slate-800 rounded-full transition-all no-underline" href="{{ url_for('auth.logout') }}">
+      <span class="material-symbols-outlined">logout</span>Çıkış Yap
+    </a>
+  </div>
+</aside>
+
+<!-- Ana İçerik -->
+<main class="ml-72 flex-1 p-10 space-y-10">
+  <header class="flex justify-between items-end">
+    <div>
+      <h2 class="font-headline text-4xl font-extrabold tracking-tighter text-on-surface">Mağaza Genel Bakış</h2>
+      <p class="text-on-surface-variant font-label text-sm mt-2 uppercase tracking-widest">
+        {% if magaza %}{{ magaza.magaza_adi }} · {% endif %}Gerçek Zamanlı Veriler
+      </p>
+    </div>
+    <div class="flex gap-4">
+      <a href="{{ url_for('manager.products') }}" class="bg-primary text-on-primary px-6 py-3 rounded-full font-bold flex items-center gap-2 hover:brightness-110 transition-all no-underline text-sm">
+        <span class="material-symbols-outlined text-sm">add_circle</span>Ürün Ekle
+      </a>
+    </div>
+  </header>
+
+  <!-- İstatistik Kartlar (FR-2.4) -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden group">
+      <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+        <span class="material-symbols-outlined text-6xl">inventory</span>
+      </div>
+      <p class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Toplam Ürün</p>
+      <h3 class="text-4xl font-headline font-bold mt-2">{{ toplam_urun | default(0) }}</h3>
+      <div class="flex items-center gap-2 mt-4 text-secondary text-sm">
+        <span class="material-symbols-outlined text-sm">trending_up</span>
+        <span>Bu mağazadaki ürünler</span>
+      </div>
+    </div>
+    <div class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden group">
+      <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+        <span class="material-symbols-outlined text-6xl">report_problem</span>
+      </div>
+      <p class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Kritik Stok</p>
+      <h3 class="text-4xl font-headline font-bold mt-2 text-tertiary">{{ kritik_stok_sayisi | default(0) }}</h3>
+      <div class="flex items-center gap-2 mt-4 text-tertiary text-sm">
+        <span class="material-symbols-outlined text-sm">warning</span>
+        <span>Acil müdahale gerekli</span>
+      </div>
+    </div>
+    <div class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden group">
+      <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+        <span class="material-symbols-outlined text-6xl">local_offer</span>
+      </div>
+      <p class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Aktif Kampanya</p>
+      <h3 class="text-4xl font-headline font-bold mt-2">{{ aktif_kampanya_sayisi | default(0) }}</h3>
+      <div class="flex items-center gap-2 mt-4 text-on-primary-container text-sm">
+        <span class="material-symbols-outlined text-sm">sell</span>
+        <a href="{{ url_for('manager.campaigns') }}" class="hover:underline no-underline text-on-primary-container">Kampanyaları Yönet</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Kritik Stok Uyarıları -->
+    <div class="bg-surface-container-low rounded-xl flex flex-col">
+      <div class="p-8 pb-4">
+        <h4 class="font-headline text-xl font-bold">Kritik Stok Uyarıları</h4>
+        <p class="text-on-surface-variant text-sm mt-1">Stok seviyesi düşük ürünler</p>
+      </div>
+      <div class="flex-1 overflow-y-auto px-4 pb-4 space-y-3">
+        {% if kritik_stoklar %}
+          {% for stok in kritik_stoklar[:5] %}
+          <div class="bg-surface-container-high p-4 rounded-lg flex items-center gap-4 group hover:bg-surface-container-highest transition-colors">
+            <div class="w-2 h-12 {% if stok.stok_adedi == 0 %}bg-error{% else %}bg-tertiary{% endif %} rounded-full flex-shrink-0"></div>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-sm truncate">{{ stok.urun.urun_adi }}</p>
+              <p class="text-xs text-on-surface-variant">
+                {% if stok.stok_adedi == 0 %}
+                <span class="text-error">Tükendi</span>
+                {% else %}
+                <span class="text-tertiary">{{ stok.stok_adedi }} adet kaldı</span>
+                {% endif %}
+                · Min: {{ stok.min_stok_seviyesi }}
+              </p>
+            </div>
+            <button onclick="openStockModal({{ stok.urun.id }}, '{{ stok.urun.urun_adi | e }}', {{ stok.stok_adedi }})"
+                    class="bg-primary/10 hover:bg-primary text-primary hover:text-on-primary p-2 rounded-full transition-all flex-shrink-0">
+              <span class="material-symbols-outlined text-sm">edit</span>
+            </button>
+          </div>
+          {% endfor %}
+        {% else %}
+        <div class="text-center py-8 text-on-surface-variant">
+          <span class="material-symbols-outlined text-4xl mb-2 block text-secondary">check_circle</span>
+          <p class="text-sm">Tüm stoklar normal</p>
+        </div>
+        {% endif %}
+      </div>
+      <div class="p-4 bg-surface-container/30 rounded-b-xl">
+        <a href="{{ url_for('manager.products') }}" class="block w-full py-2 text-xs font-bold text-primary uppercase tracking-widest text-center hover:underline no-underline">
+          Tüm Ürünleri Gör
+        </a>
+      </div>
+    </div>
+
+    <!-- Son Aktiviteler -->
+    <div class="lg:col-span-2 bg-surface-container-low rounded-xl overflow-hidden">
+      <div class="p-8 border-b border-outline-variant/10 flex justify-between items-center">
+        <h5 class="font-headline text-xl font-bold">Son Stok Güncellemeleri</h5>
+        <span class="material-symbols-outlined text-on-surface-variant cursor-pointer">more_horiz</span>
+      </div>
+      <table class="w-full text-left font-label text-sm">
+        <thead>
+          <tr class="text-on-surface-variant uppercase tracking-widest text-[10px]">
+            <th class="px-8 py-4">Ürün</th>
+            <th class="px-8 py-4">Stok</th>
+            <th class="px-8 py-4">Tür</th>
+            <th class="px-8 py-4 text-right">Tarih</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if tum_stoklar %}
+            {% for stok in (tum_stoklar | sort(attribute='son_guncelleme_tarihi', reverse=True))[:5] %}
+            <tr class="hover:bg-surface-container-lowest transition-colors">
+              <td class="px-8 py-5 border-t border-outline-variant/5 font-semibold">{{ stok.urun.urun_adi }}</td>
+              <td class="px-8 py-5 border-t border-outline-variant/5">
+                {% if stok.stok_adedi == 0 %}
+                <span class="px-3 py-1 bg-error-container/20 text-error rounded-full text-xs">Tükendi</span>
+                {% elif stok.stok_adedi <= stok.min_stok_seviyesi %}
+                <span class="px-3 py-1 bg-tertiary/20 text-tertiary rounded-full text-xs">{{ stok.stok_adedi }}</span>
+                {% else %}
+                <span class="px-3 py-1 bg-secondary-container/20 text-secondary rounded-full text-xs">{{ stok.stok_adedi }}</span>
+                {% endif %}
+              </td>
+              <td class="px-8 py-5 border-t border-outline-variant/5">
+                {% if stok.guncelleme_turu == 'Manuel' %}
+                <span class="px-3 py-1 bg-primary/20 text-primary rounded-full text-xs">Manuel</span>
+                {% else %}
+                <span class="px-3 py-1 bg-secondary/20 text-secondary rounded-full text-xs">Otomatik</span>
+                {% endif %}
+              </td>
+              <td class="px-8 py-5 border-t border-outline-variant/5 text-right text-on-surface-variant text-xs">
+                {{ stok.son_guncelleme_tarihi.strftime('%d.%m.%Y %H:%M') if stok.son_guncelleme_tarihi else '—' }}
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+          <tr>
+            <td colspan="4" class="px-8 py-12 text-center text-on-surface-variant">Henüz stok hareketi yok.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Chart.js Stok Durumu Grafiği (FR-2.4) -->
+  {% if tum_stoklar %}
+  <section class="bg-surface-container-low rounded-xl overflow-hidden">
+    <div class="p-8 pb-4 border-b border-outline-variant/10">
+      <h5 class="font-headline text-xl font-bold">Stok Durumu Özeti</h5>
+      <p class="text-on-surface-variant text-sm mt-1">Mağazadaki ürünlerin stok seviyeleri</p>
+    </div>
+    <div class="p-8">
+      <canvas id="stokChart" height="120"></canvas>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Hızlı Kısayollar -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <button onclick="document.getElementById('addProductModal').classList.remove('hidden')"
+            class="flex items-center gap-3 p-4 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all text-left">
+      <span class="material-symbols-outlined text-primary">add_circle</span>
+      <span class="text-sm font-medium">Ürün Ekle</span>
+    </button>
+    <a href="{{ url_for('manager.campaigns') }}" class="flex items-center gap-3 p-4 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all no-underline">
+      <span class="material-symbols-outlined text-secondary">local_offer</span>
+      <span class="text-sm font-medium text-on-surface">Kampanya Oluştur</span>
+    </a>
+    <a href="{{ url_for('manager.products') }}" class="flex items-center gap-3 p-4 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all no-underline">
+      <span class="material-symbols-outlined text-on-primary-container">inventory_2</span>
+      <span class="text-sm font-medium text-on-surface">Tüm Stokları Gör</span>
+    </a>
+  </section>
+</main>
+
+<!-- Stok Güncelle Modal -->
+<div id="stockUpdateModal" class="hidden fixed inset-0 z-[60] items-center justify-center p-4 bg-background/80 backdrop-blur-md" style="display:none;">
+  <div class="bg-surface-container-high w-full max-w-md rounded-xl p-8 shadow-2xl">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-xl font-headline font-bold text-blue-200">Stok Güncelle</h3>
+      <button onclick="closeStockModal()" class="text-slate-400 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <p class="text-sm text-on-surface-variant mb-1">Ürün:</p>
+    <p class="font-bold text-on-surface mb-4" id="modal-urun-adi"></p>
+    <form id="stockUpdateForm" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="mb-4">
+        <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Mevcut Stok</label>
+        <input type="number" id="modal-mevcut-stok" class="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3 text-sm text-on-surface-variant" disabled/>
+      </div>
+      <div class="mb-6">
+        <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Yeni Stok Adedi *</label>
+        <input type="number" name="stok_adedi" id="modal-yeni-stok" min="0" required
+               class="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3 text-sm text-white focus:ring-2 ring-primary/50"/>
+      </div>
+      <div class="flex gap-3">
+        <button type="button" onclick="closeStockModal()" class="flex-1 py-3 bg-surface-container-high rounded-full text-on-surface-variant font-medium text-sm">İptal</button>
+        <button type="submit" class="flex-1 py-3 bg-primary text-on-primary rounded-full font-bold text-sm hover:brightness-110 transition-all">Güncelle</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Ürün Ekle Modal -->
+<div id="addProductModal" class="hidden fixed inset-0 z-[60] items-center justify-center p-4 bg-background/80 backdrop-blur-md" style="display:none;">
+  <div class="bg-surface-container-high w-full max-w-lg rounded-xl p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-xl font-headline font-bold text-blue-200">Yeni Ürün Ekle</h3>
+      <button onclick="document.getElementById('addProductModal').style.display='none'" class="text-slate-400 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <form action="{{ url_for('manager.products') }}" method="POST" class="space-y-4">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div>
+        <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Ürün Adı *</label>
+        <input type="text" name="urun_adi" required class="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3 text-sm text-white focus:ring-2 ring-primary/50 placeholder:text-slate-600" placeholder="Ürün adını girin"/>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Marka *</label>
+          <select name="marka_id" required class="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3 text-sm text-white focus:ring-2 ring-primary/50">
+            <option value="">Seçin...</option>
+            {% for marka in markalar | default([]) %}
+            <option value="{{ marka.id }}">{{ marka.marka_adi }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Kategori *</label>
+          <select name="kategori_id" required class="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3 text-sm text-white focus:ring-2 ring-primary/50">
+            <option value="">Seçin...</option>
+            {% for kat in kategoriler | default([]) %}
+            <option value="{{ kat.id }}">{{ kat.kategori_adi }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Fiyat (₺) *</label>
+          <input type="number" name="baz_fiyat" required min="0" step="0.01" class="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3 text-sm text-white focus:ring-2 ring-primary/50" placeholder="0.00"/>
+        </div>
+        <div>
+          <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Başlangıç Stok</label>
+          <input type="number" name="stok_adedi" value="0" min="0" class="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3 text-sm text-white focus:ring-2 ring-primary/50"/>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Görsel URL</label>
+        <input type="url" name="gorsel_url" class="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3 text-sm text-white focus:ring-2 ring-primary/50 placeholder:text-slate-600" placeholder="https://..."/>
+      </div>
+      <div>
+        <label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Açıklama</label>
+        <textarea name="aciklama" rows="2" class="w-full bg-surface-container-lowest border-none rounded-lg px-4 py-3 text-sm text-white focus:ring-2 ring-primary/50 placeholder:text-slate-600" placeholder="İsteğe bağlı"></textarea>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="button" onclick="document.getElementById('addProductModal').style.display='none'" class="flex-1 py-3 bg-surface-container-high rounded-full text-on-surface-variant font-medium text-sm">İptal</button>
+        <button type="submit" class="flex-1 py-3 bg-primary text-on-primary rounded-full font-bold text-sm hover:brightness-110 transition-all">Kaydet</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function openStockModal(urunId, urunAdi, mevcutStok) {
+  document.getElementById('modal-urun-adi').textContent = urunAdi;
+  document.getElementById('modal-mevcut-stok').value = mevcutStok;
+  document.getElementById('modal-yeni-stok').value = mevcutStok;
+  document.getElementById('stockUpdateForm').action = '/manager/products/' + urunId + '/stock';
+  document.getElementById('stockUpdateModal').style.display = 'flex';
+}
+function closeStockModal() {
+  document.getElementById('stockUpdateModal').style.display = 'none';
+}
+document.getElementById('stockUpdateModal').addEventListener('click', function(e) {
+  if (e.target === this) closeStockModal();
+});
+document.getElementById('addProductModal').addEventListener('click', function(e) {
+  if (e.target === this) this.style.display = 'none';
+});
+</script>
+
+{% if tum_stoklar %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  const stoklar = [
+    {% for s in tum_stoklar[:12] %}
+    { ad: {{ s.urun.urun_adi | tojson }}, adet: {{ s.stok_adedi }}, min: {{ s.min_stok_seviyesi }} },
+    {% endfor %}
+  ];
+  const labels = stoklar.map(s => s.ad.length > 14 ? s.ad.slice(0,14)+'…' : s.ad);
+  const adetler = stoklar.map(s => s.adet);
+  const renkler = stoklar.map(s =>
+    s.adet === 0 ? '#ffb4ab' : s.adet <= s.min ? '#ffb2b9' : '#4edea3'
+  );
+
+  new Chart(document.getElementById('stokChart'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Stok Adedi',
+        data: adetler,
+        backgroundColor: renkler,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#c6c6cd', font: { size: 11 } }, grid: { display: false } },
+        y: { beginAtZero: true, ticks: { color: '#c6c6cd', stepSize: 1 }, grid: { color: 'rgba(200,200,200,0.07)' } }
+      }
+    }
+  });
+})();
+</script>
+{% endif %}
+{% endblock %}

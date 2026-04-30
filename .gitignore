@@ -1,0 +1,36 @@
+# Environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Database
+instance/
+*.sqlite3
+*.db
+
+# Environment variables
+.env
+.env.local
+
+# IDEs / AI / OS
+.claude/
+.vscode/
+.idea/
+.gemini/
+__MACOSX/
+.DS_Store
+
+# Logs
+*.log
+
+# Diğer gizli/gereksiz dosyalar
+eski_CLAUDE.md
+yeni_CLAUDE.md

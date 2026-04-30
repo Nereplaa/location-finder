@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Giriş Yap — AVM Rehber{% endblock %}
+{% block body_class %}bg-background text-on-background min-h-screen flex items-center justify-center p-4{% endblock %}
+
+{% block content %}
+
+<!-- Arka plan süsleme -->
+<div class="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+  <div class="absolute -top-40 -left-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+  <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-secondary/5 rounded-full blur-3xl"></div>
+</div>
+
+<div class="relative w-full max-w-md">
+
+  <!-- Logo / Marka -->
+  <div class="text-center mb-8">
+    <a href="{{ url_for('customer.index') }}" class="inline-flex flex-col items-center gap-3 no-underline group">
+      <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+        <span class="material-symbols-outlined text-primary" style="font-size:2rem;">store</span>
+      </div>
+      <span class="text-3xl font-extrabold tracking-tight text-on-surface font-headline text-glow">AVM Rehber</span>
+    </a>
+    <p class="text-on-surface-variant text-sm mt-2">Hesabınıza giriş yapın</p>
+  </div>
+
+  <!-- Kart -->
+  <div class="glass-panel rounded-2xl p-8 shadow-2xl border border-outline-variant/30">
+    <form method="POST" action="{{ url_for('auth.login') }}" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <!-- E-posta -->
+      <div class="mb-5">
+        <label for="eposta" class="flex items-center gap-1.5 text-sm font-medium text-on-surface-variant mb-2">
+          <span class="material-symbols-outlined" style="font-size:1rem;">mail</span>
+          E-posta
+        </label>
+        <input type="email"
+               id="eposta"
+               name="eposta"
+               placeholder="ornek@email.com"
+               required
+               autofocus
+               autocomplete="email"
+               class="w-full bg-surface-container-high/60 border border-outline-variant/50 focus:border-primary rounded-xl px-4 py-3 text-on-surface placeholder:text-on-surface-variant/40 text-sm outline-none transition-colors">
+      </div>
+
+      <!-- Şifre -->
+      <div class="mb-7">
+        <label for="sifre" class="flex items-center gap-1.5 text-sm font-medium text-on-surface-variant mb-2">
+          <span class="material-symbols-outlined" style="font-size:1rem;">lock</span>
+          Şifre
+        </label>
+        <input type="password"
+               id="sifre"
+               name="sifre"
+               placeholder="Şifrenizi girin"
+               required
+               autocomplete="current-password"
+               class="w-full bg-surface-container-high/60 border border-outline-variant/50 focus:border-primary rounded-xl px-4 py-3 text-on-surface placeholder:text-on-surface-variant/40 text-sm outline-none transition-colors">
+      </div>
+
+      <!-- Giriş Butonu -->
+      <button type="submit"
+              class="w-full bg-gradient-to-r from-primary to-on-primary-container text-on-primary font-bold py-3 rounded-xl hover:brightness-110 active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined" style="font-size:1.1rem;">login</span>
+        Giriş Yap
+      </button>
+    </form>
+
+    <!-- Kayıt Linki -->
+    <p class="text-center text-sm text-on-surface-variant mt-6">
+      Hesabınız yok mu?
+      <a href="{{ url_for('auth.register') }}" class="text-primary font-semibold hover:underline ml-1">Kayıt Ol</a>
+    </p>
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ethereal Wayfinder | Product Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#d65569",
+                        "surface-tint": "#b4c5ff",
+                        "outline": "#909097",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-secondary-container": "#00311f",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#400010",
+                        "tertiary-container": "#38000d",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-surface": "#dae2fd",
+                        "surface-variant": "#2d3449",
+                        "primary-container": "#001442",
+                        "secondary-container": "#00a572",
+                        "tertiary-fixed": "#ffdadc",
+                        "on-secondary-fixed": "#002113",
+                        "on-tertiary": "#67001f",
+                        "background": "#0b1326",
+                        "primary": "#b4c5ff",
+                        "on-background": "#dae2fd",
+                        "on-secondary": "#003824",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#4edea3",
+                        "surface-container": "#171f33",
+                        "surface": "#0b1326",
+                        "on-primary-container": "#4278ff",
+                        "inverse-primary": "#0053db",
+                        "outline-variant": "#45464d",
+                        "surface-container-high": "#222a3d",
+                        "surface-container-low": "#131b2e",
+                        "surface-bright": "#31394d",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "secondary": "#4edea3",
+                        "on-primary": "#002a78",
+                        "tertiary": "#ffb2b9",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#891933",
+                        "surface-container-lowest": "#060e20",
+                        "on-surface-variant": "#c6c6cd",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-error": "#690005",
+                        "inverse-on-surface": "#283044",
+                        "inverse-surface": "#dae2fd",
+                        "primary-fixed": "#dbe1ff",
+                        "tertiary-fixed-dim": "#ffb2b9",
+                        "surface-dim": "#0b1326",
+                        "surface-container-highest": "#2d3449",
+                        "on-primary-fixed": "#00174b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-effect {
+            background: rgba(45, 52, 73, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .text-glow {
+            text-shadow: 0 0 15px rgba(180, 197, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 w-full z-50 bg-slate-950/60 backdrop-blur-xl flex justify-between items-center px-8 h-20 w-full shadow-[0px_24px_48px_rgba(0,0,0,0.4)]">
+<div class="text-2xl font-bold tracking-tighter text-blue-200 font-headline">Ethereal Wayfinder</div>
+<div class="hidden md:flex items-center gap-8 font-inter text-sm font-medium">
+<a class="text-slate-400 hover:text-blue-200 transition-colors duration-300" href="#">Directory</a>
+<a class="text-slate-400 hover:text-blue-200 transition-colors duration-300" href="#">Deals</a>
+<a class="text-slate-400 hover:text-blue-200 transition-colors duration-300" href="#">Events</a>
+<a class="text-slate-400 hover:text-blue-200 transition-colors duration-300" href="#">Help</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-blue-200 hover:scale-110 transition-transform"><span class="material-symbols-outlined">notifications</span></button>
+<button class="p-2 text-blue-200 hover:scale-110 transition-transform"><span class="material-symbols-outlined">location_on</span></button>
+</div>
+</nav>
+<!-- Side Navigation (Suppressed for focused product view as per policy, but structure maintained for layout if needed) -->
+<!-- Suppressed: Task-focused sub-page -->
+<main class="pt-28 pb-20 px-6 md:px-12 max-w-7xl mx-auto">
+<!-- Breadcrumbs -->
+<nav class="mb-12 flex items-center gap-2 text-xs uppercase tracking-widest text-on-surface-variant font-label">
+<span class="hover:text-primary cursor-pointer">Directory</span>
+<span class="material-symbols-outlined text-[10px]">chevron_right</span>
+<span class="hover:text-primary cursor-pointer">High Tech &amp; Electronics</span>
+<span class="material-symbols-outlined text-[10px]">chevron_right</span>
+<span class="text-primary font-bold">Lumina Horizon Display</span>
+</nav>
+<div class="flex flex-col lg:flex-row gap-16">
+<!-- Left: Product Gallery -->
+<div class="w-full lg:w-3/5 space-y-6">
+<div class="relative group aspect-[4/5] rounded-xl overflow-hidden bg-surface-container-low">
+<img alt="Product Image" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Modern sleek holographic display device floating in a minimalist dark studio with blue ambient neon lighting and smoke effects" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBILjmE4-cwnNngGjf3e2FDXIZEXY4ofZHl-G8cySlzQBDC4WEgIySqF-MIgLttsyx3DdxgA86Ie84xATrdUogS9SunBUE8DDmSzFlTEqV0aYPgMQTNWai5JUuRsmKT_yJMVYX9T8cTm0CfSv-Lssg0qws2DSYrP233bsZFN4xgpAkQHl2D-_ZyLrI0J0AKnisaHJjHH9xxo6y9h9yse4KPyXSHfGLBXam2x_OvceAm6RfQbSMGH9CGWaNFVdfe3gLmb5E-yJ1HXvA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent"></div>
+<div class="absolute bottom-8 left-8">
+<span class="bg-secondary-container/20 text-secondary border border-secondary/20 px-4 py-1 rounded-full text-xs font-semibold backdrop-blur-md">Premium Tier</span>
+</div>
+</div>
+<!-- Thumbnails Bento -->
+<div class="grid grid-cols-4 gap-4">
+<div class="aspect-square rounded-lg overflow-hidden bg-surface-container-low cursor-pointer hover:ring-2 ring-primary transition-all">
+<img alt="Detail 1" class="w-full h-full object-cover" data-alt="Close up of a brushed aluminum tablet surface with sharp focus on the edge detailing and glass texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2mr9xcKBwS8P1V6eVpiCF73Mm6oSW0xUm5ekmTOtKMiqxW4WWb24STwvTK1MKjYK8bOyVWccVuEhMtSo9xkA70F1-g6aKosIyuydtNnNaXotqSL_F-lDnP3vvIY4IqsOc33R3zIGYjRWnjY6gSCGmaIHlIIyTOciUUDraxvVH5GK05UGDBeMoFcoQln5sTtKRCfGvx9hG_FbyZnc7o9Qap54u-lvcF2JUt2tFhA6mS0DOiK1aQQX11CeBSdnnZSSOrlXS4Ac_ERo"/>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden bg-surface-container-low cursor-pointer hover:ring-2 ring-primary transition-all">
+<img alt="Detail 2" class="w-full h-full object-cover" data-alt="Macro view of advanced computer microchips glowing with electric blue circuit paths in a dark tech environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBefVd6nunw2CzWNNfUfTlgQxwrL1qKwne281yzlXhvgfSP1wMoY48Qna8Qb_JI6ePN_XxaGvSkSaJR8QNpc5X7NllBAXm3LtuRwVxxSsC3Ia3WPwuBWzhZ9nQlpBpheCM0FZ6rxWi-1KvFKGq0jLIhMQzDgst4mVCOjwLuWb-gmpaE37rlKywnHciE1FzeFiCcMkMmpqCMcaXEcA5V3tVsZKQ9J3L5aVAFIxLt2WJroebBFkEAYy-hyHUFgA1DhNKqXAL2c-WG7I"/>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden bg-surface-container-low cursor-pointer hover:ring-2 ring-primary transition-all">
+<img alt="Detail 3" class="w-full h-full object-cover" data-alt="Laptop screen showing high-end graphic design software in a dark modern home office with moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBekcWgdTN1N9bGCplkCEkbcdJhSrr0IpenJazMvQ9z09UsIX-DpXbuLjWhnYoRL_dKc5K99Z3cDWvDrlj7pt96HHkdfMLbst14dd21sP3MPpcLp31Ca9OqyuwhltW8YVJ077t5KBTftP0Xt_ypu2B1-TrDwF10hd3ndCIIMu8mu8dAzDZ_cC16WtBeAtmdJEic5hoVJlXE6vmxH3AZ5EwWskQl2YO7obBmPKAj1OgFqvR1kgBIVK_InVUmdTWIM6W6aj-X_chkifE"/>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden bg-surface-container-low flex items-center justify-center relative group cursor-pointer">
+<img alt="More" class="w-full h-full object-cover opacity-30" data-alt="Stylized digital representation of a global network with connecting nodes and light data streams on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcRn4rTP4TPBt7X2InxtlJrWRJefitHZJ9feczOSqLLzEbNuaFjjtMpjBhGhBNMyD96iKZbH7nfMDGqYKfjtRI6-uis9bLpd2GEeVJlBs5qjnYWqVNNa6V4oglfPkMjB_SfkrtWCEFDfxf8iTeOSKWWaK998EIxk-wBRhFvJPO2khpHgz5A2kdGVX1teX5aq9d9AcuiB58XDYXCGVIu-_Fl3ofTxNS_dAvt10scH_tUkFO7ImNoVN7Crn8k_gkqzUwBMF3pfZ9wzg"/>
+<span class="absolute text-primary font-bold">+5 More</span>
+</div>
+</div>
+</div>
+<!-- Right: Details -->
+<div class="w-full lg:w-2/5 flex flex-col">
+<header class="mb-8">
+<div class="flex items-center gap-2 mb-4">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="text-on-surface-variant text-sm font-label uppercase tracking-widest">In Stock</span>
+</div>
+<h1 class="text-5xl font-extrabold font-headline text-blue-200 tracking-tighter mb-2 text-glow leading-tight">Lumina Horizon Ultra</h1>
+<p class="text-primary text-2xl font-bold tracking-tight">₺18.450,00</p>
+</header>
+<div class="space-y-8">
+<!-- Location Card -->
+<div class="bg-surface-container-low p-6 rounded-lg relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-16 translate-x-16 blur-3xl"></div>
+<div class="flex items-start justify-between relative z-10">
+<div>
+<p class="text-on-surface-variant text-xs uppercase tracking-widest font-label mb-2">Store Location</p>
+<p class="text-xl font-bold font-headline text-blue-100">Mağaza: Kat 2, No: 45</p>
+<p class="text-sm text-slate-400 mt-1">Ethereal Tech Hub Section</p>
+</div>
+<div class="bg-surface-container-high p-3 rounded-full text-primary">
+<span class="material-symbols-outlined">storefront</span>
+</div>
+</div>
+<button class="mt-6 w-full py-4 bg-gradient-to-r from-primary to-on-primary-container rounded-full text-on-primary font-bold flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform shadow-[0_10px_20px_rgba(66,120,255,0.3)]">
+<span class="material-symbols-outlined">map</span>
+                            Yol Tarifi Göster
+                        </button>
+</div>
+<!-- Features Bento -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-4 rounded-lg">
+<span class="material-symbols-outlined text-primary-fixed-dim mb-3">bolt</span>
+<h4 class="text-sm font-bold text-blue-100">Neural Sync</h4>
+<p class="text-xs text-on-surface-variant mt-1">Instant connection via bio-links</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg">
+<span class="material-symbols-outlined text-primary-fixed-dim mb-3">auto_awesome</span>
+<h4 class="text-sm font-bold text-blue-100">OLED+ Pro</h4>
+<p class="text-xs text-on-surface-variant mt-1">8K Infinite contrast ratio</p>
+</div>
+</div>
+<!-- Description -->
+<div>
+<h4 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-3">Product Overview</h4>
+<p class="text-on-surface-variant leading-relaxed font-body text-sm">
+                            The Lumina Horizon Ultra redefines spatial interaction. Featuring the proprietary Ethereal Core, it provides seamless latency-free navigation through complex data sets. Designed for the discerning digital architect.
+                        </p>
+</div>
+<!-- Stock Notification Trigger -->
+<div class="mt-auto pt-8 border-t border-outline-variant/20">
+<button class="text-sm font-medium text-primary hover:text-white transition-colors flex items-center gap-2 group" onclick="document.getElementById('stockModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-sm">mail</span>
+                            Stokta Olmayan Ürünler için Form
+                            <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Store Map Preview (Asymmetric Layout) -->
+<section class="mt-24">
+<h3 class="text-3xl font-headline font-extrabold text-blue-200 mb-8 tracking-tight">Interactive Mall Map</h3>
+<div class="relative h-[400px] w-full rounded-xl bg-surface-container-lowest overflow-hidden">
+<div class="absolute inset-0 opacity-40 mix-blend-overlay">
+<img alt="Mall Floor Plan" class="w-full h-full object-cover" data-alt="Blueprint style architectural floor plan of a luxury shopping mall with neon blue highlighted pathways and icons" data-location="Singapore" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDppHXnkXP2r5ZetCjBWsbOmbP6uqWXp9rvmnbMlBr-uoPDXwgZk1_p0DbVD5dVB_NI3D1sHHkV21OBYWkCAm2ChiB7yJoSVTHILMxl8DzlFqSqtkXwQOQNZUwwDvB5YhhG43xxrCIWXBJnPdeCXeadqniNRwaXLfjyGDeAuqeJ_q7vnBxgHfkjQ6_qKWhEmiNORHakOMfSfIst9KxpYzrhNZRCzAOFtNx3dBzA-G2-zBYs7PudxAm77ru6dkDZHyqYiZiPA7qLUwU"/>
+</div>
+<!-- Neon Path Simulation -->
+<svg class="absolute inset-0 w-full h-full" viewbox="0 0 1000 400">
+<path class="drop-shadow-[0_0_8px_#4278ff]" d="M 100 350 L 300 350 L 300 150 L 600 150 L 600 80" fill="none" stroke="#b4c5ff" stroke-linecap="round" stroke-width="4"></path>
+<circle class="animate-pulse shadow-[0_0_12px_#4edea3]" cx="600" cy="80" fill="#4edea3" r="8"></circle>
+</svg>
+<div class="absolute top-8 left-8 glass-effect p-6 rounded-lg max-w-xs">
+<p class="text-xs font-label uppercase tracking-tighter text-primary mb-2">Active Navigation</p>
+<p class="text-lg font-bold text-white mb-1">Kat 2, No: 45</p>
+<p class="text-xs text-on-surface-variant">Estimated Walk: 3 Minutes from Central Atrium</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Stock Modal -->
+<div class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-background/80 backdrop-blur-md" id="stockModal">
+<div class="bg-surface-container-high w-full max-w-md rounded-xl p-8 shadow-[0px_24px_48px_rgba(0,0,0,0.6)] relative animate-in zoom-in duration-300">
+<button class="absolute top-4 right-4 text-slate-400 hover:text-white" onclick="document.getElementById('stockModal').classList.add('hidden')">
+<span class="material-symbols-outlined">close</span>
+</button>
+<h2 class="text-2xl font-headline font-extrabold text-blue-200 mb-2">Stok Takip Formu</h2>
+<p class="text-sm text-on-surface-variant mb-6">Ürün tekrar stoklara girdiğinde sizi anında bilgilendirelim.</p>
+<form class="space-y-6">
+<div>
+<label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Full Name</label>
+<input class="w-full bg-surface-container-lowest border-none rounded-full px-6 py-3 text-sm focus:ring-2 ring-primary/50 text-white placeholder:text-slate-600" placeholder="John Doe" type="text"/>
+</div>
+<div>
+<label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">Email or Phone</label>
+<input class="w-full bg-surface-container-lowest border-none rounded-full px-6 py-3 text-sm focus:ring-2 ring-primary/50 text-white placeholder:text-slate-600" placeholder="john@example.com or +90..." type="text"/>
+</div>
+<button class="w-full py-4 bg-primary text-on-primary font-bold rounded-full hover:bg-surface-tint transition-colors uppercase tracking-widest text-xs" type="button">Beni Bilgilendir</button>
+</form>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-slate-950 w-full py-12 border-t border-slate-800/30 flex flex-col items-center gap-6 px-12">
+<div class="flex gap-8 text-slate-500 font-inter text-xs uppercase tracking-widest">
+<a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" href="#">Operating Hours</a>
+<a class="hover:text-white transition-colors" href="#">Contact Support</a>
+</div>
+<p class="text-slate-400 font-inter text-xs uppercase tracking-widest">© 2024 Ethereal Wayfinder. Luxury Concierge Systems.</p>
+</footer>
+</body></html>

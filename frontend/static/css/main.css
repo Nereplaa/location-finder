@@ -1,0 +1,729 @@
+/* ============================================================
+   AVM Akıllı Ürün Bulma Sistemi — Ana Stil Dosyası
+   NFR-3.1: Kiosk (yatay/landscape) + Mobil (dikey/portrait)
+   NFR-3.3: Yüksek kontrast stok/konum renkleri
+   ============================================================ */
+
+/* ── Root Değişkenler ── */
+:root {
+    --avm-primary:       #0d6efd;
+    --avm-secondary:     #6c757d;
+    --avm-success:       #198754;
+    --avm-danger:        #dc3545;
+    --avm-warning:       #ffc107;
+    --avm-info:          #0dcaf0;
+    --avm-dark:          #212529;
+    --avm-light:         #f8f9fa;
+    --avm-sidebar-bg:    #1e2a3a;
+    --avm-sidebar-text:  #adb5bd;
+    --avm-sidebar-hover: rgba(255,255,255,0.1);
+    --avm-card-shadow:   0 2px 8px rgba(0,0,0,0.10);
+    --avm-navbar-height: 56px;
+    --avm-sidebar-width: 240px;
+    --stok-var:          #198754;  /* Yüksek kontrast yeşil */
+    --stok-yok:          #dc3545;  /* Yüksek kontrast kırmızı */
+    --stok-kritik:       #fd7e14;  /* Turuncu — kritik stok */
+    --konum-badge-bg:    #0d6efd;
+    --konum-badge-text:  #ffffff;
+}
+
+/* ── Global Reset / Temel ── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    color: var(--avm-dark);
+    background-color: #f0f2f5;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ── Navbar ── */
+#main-navbar {
+    min-height: var(--avm-navbar-height);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    z-index: 1030;
+}
+
+/* ── Flash Mesajları ── */
+.flash-container .alert {
+    border-radius: 0;
+    border-left: 4px solid transparent;
+}
+.flash-container .alert-danger  { border-left-color: var(--avm-danger); }
+.flash-container .alert-success  { border-left-color: var(--avm-success); }
+.flash-container .alert-warning  { border-left-color: var(--avm-warning); }
+.flash-container .alert-info     { border-left-color: var(--avm-info); }
+
+/* ── Sayfa Sarmalayıcı ── */
+.page-wrapper {
+    flex: 1 0 auto;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+    background-color: var(--avm-sidebar-bg);
+    min-height: calc(100vh - var(--avm-navbar-height) - 56px);
+    padding: 0;
+    position: sticky;
+    top: var(--avm-navbar-height);
+    height: calc(100vh - var(--avm-navbar-height));
+    overflow-y: auto;
+}
+
+.sidebar .sidebar-header {
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar .sidebar-header h6 {
+    color: var(--avm-sidebar-text);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0;
+}
+
+.sidebar .nav-link {
+    color: var(--avm-sidebar-text);
+    padding: 0.65rem 1.25rem;
+    border-radius: 0;
+    font-size: 0.9rem;
+    transition: background 0.15s, color 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link:focus {
+    background-color: var(--avm-sidebar-hover);
+    color: #fff;
+}
+
+.sidebar .nav-link.active {
+    background-color: var(--avm-primary);
+    color: #fff;
+}
+
+.sidebar .nav-link i {
+    width: 1.2em;
+    text-align: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+/* ── Ana İçerik ── */
+.main-content {
+    background-color: #f0f2f5;
+}
+
+.content-inner {
+    max-width: 100%;
+}
+
+/* ── Footer ── */
+.footer {
+    flex-shrink: 0;
+}
+
+/* ── Kartlar ── */
+.card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: var(--avm-card-shadow);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 2px solid #e9ecef;
+    font-weight: 600;
+}
+
+/* ── Stok Durumu Renkleri (NFR-3.3 yüksek kontrast) ── */
+.stok-var {
+    color: var(--stok-var);
+    font-weight: 700;
+}
+
+.stok-yok {
+    color: var(--stok-yok);
+    font-weight: 700;
+}
+
+.stok-kritik {
+    color: var(--stok-kritik);
+    font-weight: 700;
+}
+
+.badge-stok-var {
+    background-color: var(--stok-var) !important;
+    color: #fff;
+    font-size: 0.78rem;
+    padding: 0.35em 0.7em;
+}
+
+.badge-stok-yok {
+    background-color: var(--stok-yok) !important;
+    color: #fff;
+    font-size: 0.78rem;
+    padding: 0.35em 0.7em;
+}
+
+.badge-stok-kritik {
+    background-color: var(--stok-kritik) !important;
+    color: #fff;
+    font-size: 0.78rem;
+    padding: 0.35em 0.7em;
+}
+
+/* ── Mağaza Konum Badge (yüksek kontrast) ── */
+.badge-konum {
+    background-color: var(--konum-badge-bg);
+    color: var(--konum-badge-text);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.4em 0.75em;
+    border-radius: 0.5rem;
+}
+
+.badge-kat {
+    background-color: var(--avm-dark);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.4em 0.75em;
+    border-radius: 0.5rem;
+}
+
+/* ── Kritik Stok Uyarı Satırı ── */
+.tablo-satir-kritik {
+    background-color: #fff3cd !important;
+}
+
+.tablo-satir-tukendi {
+    background-color: #f8d7da !important;
+}
+
+/* ── Ürün Kartı ── */
+.urun-kart {
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+}
+
+.urun-kart:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.urun-kart .urun-gorsel {
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.urun-kart .urun-gorsel-placeholder {
+    height: 200px;
+    background: linear-gradient(135deg, #e9ecef, #dee2e6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem 0.75rem 0 0;
+    color: #adb5bd;
+    font-size: 3rem;
+}
+
+.urun-kart .fiyat {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--avm-primary);
+}
+
+.urun-kart .fiyat-indirimli {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--stok-yok);
+}
+
+.urun-kart .fiyat-orijinal {
+    font-size: 0.85rem;
+    color: var(--avm-secondary);
+    text-decoration: line-through;
+}
+
+/* ── Arama Çubuğu ── */
+.arama-wrapper {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.arama-wrapper .form-control {
+    font-size: 1.1rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 2rem 0 0 2rem;
+    border: 2px solid #dee2e6;
+}
+
+.arama-wrapper .form-control:focus {
+    border-color: var(--avm-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.15);
+}
+
+.arama-wrapper .btn-ara {
+    border-radius: 0 2rem 2rem 0;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* ── Kategori İkonları ── */
+.kategori-ikon-kart {
+    width: 90px;
+    height: 90px;
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: var(--avm-card-shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-decoration: none;
+    color: var(--avm-dark);
+    border: 2px solid transparent;
+}
+
+.kategori-ikon-kart:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.13);
+    border-color: var(--avm-primary);
+    color: var(--avm-primary);
+}
+
+.kategori-ikon-kart i {
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+}
+
+.kategori-ikon-kart span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.1;
+}
+
+/* ── Filtre Paneli ── */
+.filtre-panel .card-header {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+}
+
+.filtre-panel .form-check-label {
+    font-size: 0.875rem;
+}
+
+/* ── Dashboard İstatistik Kartları ── */
+.stat-kart {
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    color: #fff;
+    box-shadow: var(--avm-card-shadow);
+}
+
+.stat-kart .stat-deger {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stat-kart .stat-etiket {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-top: 0.3rem;
+}
+
+.stat-kart .stat-ikon {
+    font-size: 2.2rem;
+    opacity: 0.7;
+}
+
+.stat-kart-mavi   { background: linear-gradient(135deg, #0d6efd, #0a58ca); }
+.stat-kart-yesil  { background: linear-gradient(135deg, #198754, #146c43); }
+.stat-kart-kirmizi{ background: linear-gradient(135deg, #dc3545, #b02a37); }
+.stat-kart-turuncu{ background: linear-gradient(135deg, #fd7e14, #dc6d04); }
+
+/* ── Tablo ── */
+.tablo-avm {
+    font-size: 0.9rem;
+}
+
+.tablo-avm thead th {
+    background-color: #e9ecef;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.tablo-avm tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* ── Form Grupları ── */
+.form-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #495057;
+    margin-bottom: 0.3rem;
+}
+
+.form-control,
+.form-select {
+    font-size: 0.9rem;
+    border-color: #ced4da;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--avm-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.15);
+}
+
+/* ── Güncelleme Türü İkonları ── */
+.guncelleme-manuel i { color: var(--avm-warning); }
+.guncelleme-otomatik i { color: var(--avm-info); }
+
+/* ── Disabled Buton (BR-1.2 — kayıtsız kullanıcı) ── */
+.btn-bildirim-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ── Yol Tarifi Butonu ── */
+.btn-yol-tarifi {
+    background: linear-gradient(135deg, var(--avm-primary), #0a58ca);
+    color: #fff;
+    font-weight: 600;
+    border-radius: 2rem;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    box-shadow: 0 3px 10px rgba(13,110,253,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-yol-tarifi:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(13,110,253,0.4);
+    color: #fff;
+}
+
+/* ── İndirim Rozeti ── */
+.indirim-rozet {
+    background: var(--stok-yok);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.3em 0.7em;
+    border-radius: 0.5rem;
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 1;
+}
+
+/* ── Isı Haritası (Admin) ── */
+.isi-haritasi-hucre {
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    transition: opacity 0.2s;
+    cursor: default;
+}
+
+.isi-haritasi-hucre:hover {
+    opacity: 0.8;
+}
+
+/* ── Kategori Ağacı ── */
+.kategori-agac .kategori-ust {
+    font-weight: 700;
+    font-size: 0.95rem;
+    background: #e9ecef;
+    padding: 0.5rem 1rem;
+    border-radius: 0.4rem;
+    margin-bottom: 0.25rem;
+}
+
+.kategori-agac .kategori-alt {
+    font-size: 0.875rem;
+    padding: 0.35rem 1rem 0.35rem 2rem;
+    border-left: 3px solid #dee2e6;
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* ============================================================
+   RESPONSIVE — NFR-3.1
+   Kiosk: Landscape (min-width: 1024px, orientation: landscape)
+   Mobil: Portrait  (max-width: 767px)
+   ============================================================ */
+
+/* Kiosk / Büyük Ekran (1024px+, landscape) */
+@media (min-width: 1024px) and (orientation: landscape) {
+
+    .sidebar {
+        width: var(--avm-sidebar-width);
+        min-width: var(--avm-sidebar-width);
+    }
+
+    /* Kiosk'ta büyük dokunma hedefleri (parmak dokunuşu) */
+    .btn {
+        min-height: 44px;
+        font-size: 1rem;
+    }
+
+    .nav-link,
+    .sidebar .nav-link {
+        min-height: 44px;
+    }
+
+    /* Arama çubuğu kiosklarda daha büyük */
+    .arama-wrapper .form-control {
+        font-size: 1.3rem;
+        padding: 0.9rem 1.5rem;
+    }
+
+    .arama-wrapper .btn-ara {
+        padding: 0.9rem 2rem;
+        font-size: 1.1rem;
+    }
+
+    /* Ürün kartları kiosklarda daha büyük */
+    .urun-kart .urun-gorsel {
+        height: 260px;
+    }
+
+    .urun-kart .urun-gorsel-placeholder {
+        height: 260px;
+    }
+
+    /* Kategori ikonları kiosklarda büyütülür */
+    .kategori-ikon-kart {
+        width: 110px;
+        height: 110px;
+    }
+
+    .kategori-ikon-kart i {
+        font-size: 2.4rem;
+    }
+
+    .kategori-ikon-kart span {
+        font-size: 0.8rem;
+    }
+
+    /* Stok/Konum badge'leri kiosk'ta daha büyük */
+    .badge-stok-var,
+    .badge-stok-yok,
+    .badge-stok-kritik,
+    .badge-konum,
+    .badge-kat {
+        font-size: 0.95rem;
+        padding: 0.5em 1em;
+    }
+}
+
+/* Tablet (768px – 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .sidebar {
+        min-height: auto;
+        position: relative;
+    }
+
+    .kategori-ikon-kart {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* Mobil Portrait (max 767px) */
+@media (max-width: 767px) {
+
+    .sidebar {
+        position: static;
+        min-height: auto;
+        height: auto;
+        overflow: visible;
+    }
+
+    /* Sidebar alttan aşağı kayar (collapse) */
+    .sidebar .nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 0.5rem;
+        gap: 0.25rem;
+        background: var(--avm-sidebar-bg);
+    }
+
+    .sidebar .nav-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        border-radius: 0.4rem;
+    }
+
+    /* Mobil'de küçük kategori ikonları */
+    .kategori-ikon-kart {
+        width: 72px;
+        height: 72px;
+    }
+
+    .kategori-ikon-kart i {
+        font-size: 1.5rem;
+    }
+
+    .kategori-ikon-kart span {
+        font-size: 0.65rem;
+    }
+
+    /* Mobil'de filtre paneli collapse içine al */
+    .filtre-panel-mobile-toggle {
+        display: block;
+    }
+
+    /* Tam genişlik mobil arama */
+    .arama-wrapper {
+        max-width: 100%;
+        padding: 0 0.5rem;
+    }
+
+    /* Tablo yatay kaydırma */
+    .tablo-avm-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Stat kartları küçük */
+    .stat-kart .stat-deger {
+        font-size: 1.5rem;
+    }
+
+    /* Ürün kartları tam genişlik */
+    .urun-kart .urun-gorsel {
+        height: 170px;
+    }
+
+    .urun-kart .urun-gorsel-placeholder {
+        height: 170px;
+        font-size: 2.5rem;
+    }
+
+    /* Dashboard tablo scroll */
+    .dashboard-tablo-wrapper {
+        overflow-x: auto;
+    }
+}
+
+/* Çok küçük ekranlar (< 360px) */
+@media (max-width: 359px) {
+    html {
+        font-size: 13px;
+    }
+
+    .btn-yol-tarifi {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* ── Yardımcı: Kiosk dışında filtre toggle butonunu gizle ── */
+.filtre-panel-mobile-toggle {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .filtre-panel-mobile-toggle {
+        display: block;
+    }
+}
+
+/* ── Auth Sayfa Layout (.auth-sayfa) ── */
+.auth-sayfa .page-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - var(--avm-navbar-height) - 56px);
+}
+
+.auth-sayfa .page-wrapper > main {
+    width: 100%;
+    max-width: 480px;
+    padding: 2rem 1rem;
+}
+
+@media (max-width: 767px) {
+    .auth-sayfa .page-wrapper > main {
+        max-width: 100%;
+        padding: 1.5rem 0.75rem;
+    }
+}
+
+/* ── Smooth Geçişler ── */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Yükleniyor Spinner ── */
+.spinner-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.7);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Hata/Boş Durum Placeholder ── */
+.bos-durum {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #adb5bd;
+}
+
+.bos-durum i {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.bos-durum p {
+    font-size: 1rem;
+    margin: 0;
+}

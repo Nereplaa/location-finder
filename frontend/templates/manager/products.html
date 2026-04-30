@@ -1,0 +1,375 @@
+{% extends "base_manager.html" %}
+
+{% block title %}Ürün &amp; Stok Yönetimi — AVM Rehber{% endblock %}
+{% block body_class %}manager-urunler{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-header">
+    <h6><i class="bi bi-shop-window me-1"></i>Mağaza Paneli</h6>
+</div>
+<ul class="nav flex-column pt-2">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manager.dashboard') }}">
+            <i class="bi bi-speedometer2"></i>Dashboard
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('manager.products') }}">
+            <i class="bi bi-box-seam"></i>Ürün &amp; Stok
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manager.campaigns') }}">
+            <i class="bi bi-tag"></i>Kampanya Oluştur
+        </a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+
+<!-- Başlık -->
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <h1 class="h4 fw-bold mb-0">
+        <i class="bi bi-box-seam me-2 text-primary"></i>Ürün &amp; Stok Yönetimi
+    </h1>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#urunEkleModal">
+        <i class="bi bi-plus-circle me-1"></i>Yeni Ürün Ekle
+    </button>
+</div>
+
+<!-- Arama & Filtre Satırı -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="GET" action="{{ url_for('manager.products') }}" class="row g-2 align-items-end">
+            <div class="col-12 col-md-5">
+                <input type="text" class="form-control form-control-sm"
+                       name="q" placeholder="Ürün adı ile ara..."
+                       value="{{ request.args.get('q', '') }}">
+            </div>
+            <div class="col-6 col-md-3">
+                <select class="form-select form-select-sm" name="stok_filtre">
+                    <option value="">Tüm Stoklar</option>
+                    <option value="kritik" {% if request.args.get('stok_filtre') == 'kritik' %}selected{% endif %}>
+                        Kritik Stok
+                    </option>
+                    <option value="tukendi" {% if request.args.get('stok_filtre') == 'tukendi' %}selected{% endif %}>
+                        Tükendi
+                    </option>
+                    <option value="normal" {% if request.args.get('stok_filtre') == 'normal' %}selected{% endif %}>
+                        Normal
+                    </option>
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="bi bi-search me-1"></i>Filtrele
+                </button>
+            </div>
+            <div class="col-12 col-md-2">
+                <a href="{{ url_for('manager.products') }}" class="btn btn-outline-secondary btn-sm w-100">
+                    <i class="bi bi-x-circle me-1"></i>Temizle
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Ürün Tablosu (FR-2.1, FR-2.2, NFR-3.2) -->
+<div class="card">
+    <div class="card-body p-0">
+        <div class="tablo-avm-wrapper">
+            <table class="table table-sm tablo-avm mb-0">
+                <thead>
+                    <tr>
+                        <th>Ürün Adı</th>
+                        <th>Marka</th>
+                        <th>Kategori</th>
+                        <th>Fiyat</th>
+                        <th>Stok</th>
+                        <th>Güncelleme Türü</th>
+                        <th>Son Güncelleme</th>
+                        <th style="width:160px;">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if urunler %}
+                    {% for urun in urunler %}
+                    {% set stok = urun.stok %}
+                    <tr class="{% if stok and stok.stok_adedi == 0 %}tablo-satir-tukendi{% elif stok and stok.stok_adedi <= stok.min_stok_seviyesi %}tablo-satir-kritik{% endif %}">
+                        <td>
+                            <a href="{{ url_for('customer.product_detail', urun_id=urun.id) }}"
+                               class="fw-semibold text-decoration-none text-dark"
+                               target="_blank">
+                                {{ urun.urun_adi }}
+                            </a>
+                            {% if not urun.aktif_mi %}
+                            <span class="badge bg-secondary ms-1">Pasif</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted small">{{ urun.marka.marka_adi if urun.marka else '—' }}</td>
+                        <td class="text-muted small">{{ urun.kategori.kategori_adi if urun.kategori else '—' }}</td>
+                        <td class="fw-semibold">{{ "%.2f" | format(urun.baz_fiyat) }} ₺</td>
+                        <td>
+                            {% if stok %}
+                                {% if stok.stok_adedi == 0 %}
+                                <span class="badge-stok-yok rounded">
+                                    <i class="bi bi-x-circle-fill me-1"></i>Tükendi
+                                </span>
+                                {% elif stok.stok_adedi <= stok.min_stok_seviyesi %}
+                                <span class="badge-stok-kritik rounded">
+                                    <i class="bi bi-exclamation-circle-fill me-1"></i>{{ stok.stok_adedi }}
+                                </span>
+                                {% else %}
+                                <span class="badge-stok-var rounded">
+                                    <i class="bi bi-check-circle-fill me-1"></i>{{ stok.stok_adedi }}
+                                </span>
+                                {% endif %}
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if stok %}
+                                {% if stok.guncelleme_turu == 'Manuel' %}
+                                <span class="guncelleme-manuel" title="Manuel güncelleme">
+                                    <i class="bi bi-hand-index-fill"></i>
+                                </span>
+                                <span class="small text-muted">Manuel</span>
+                                {% else %}
+                                <span class="guncelleme-otomatik" title="POS otomatik sync">
+                                    <i class="bi bi-robot"></i>
+                                </span>
+                                <span class="small text-muted">Otomatik</span>
+                                {% endif %}
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted small">
+                            {{ stok.son_guncelleme_tarihi.strftime('%d.%m.%Y %H:%M') if stok and stok.son_guncelleme_tarihi else '—' }}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <!-- Hızlı Stok Güncelle (FR-2.2) -->
+                                <button type="button"
+                                        class="btn btn-outline-warning"
+                                        title="Hızlı Stok Güncelle"
+                                        onclick="hizliStokGuncelle({{ urun.id }}, '{{ urun.urun_adi | e }}', {{ stok.stok_adedi if stok else 0 }})">
+                                    <i class="bi bi-boxes"></i>
+                                </button>
+
+                                <!-- Düzenle -->
+                                <button type="button"
+                                        class="btn btn-outline-primary"
+                                        title="Ürünü Düzenle"
+                                        onclick="urunDuzenle({{ urun.id }})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+
+                                <!-- Stok Sıfırla (NFR-3.2 onay ZORUNLU) -->
+                                <button type="button"
+                                        class="btn btn-outline-danger"
+                                        title="Stoğu Sıfırla"
+                                        data-onay="true"
+                                        data-onay-mesaj="{{ urun.urun_adi }} ürününün stoğunu sıfırlamak istediğinizden emin misiniz? Bu işlem geri alınamaz."
+                                        data-onay-hedef="{{ url_for('manager.reset_stock', urun_id=urun.id) }}"
+                                        data-onay-method="POST"
+                                        data-onay-baslik="Stoğu Sıfırla">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+
+                                <!-- Ürün Sil (NFR-3.2 onay ZORUNLU) -->
+                                <button type="button"
+                                        class="btn btn-danger"
+                                        title="Ürünü Sil"
+                                        data-onay="true"
+                                        data-onay-mesaj="{{ urun.urun_adi }} ürününü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+                                        data-onay-hedef="{{ url_for('manager.deactivate_product', urun_id=urun.id) }}"
+                                        data-onay-method="POST"
+                                        data-onay-baslik="Ürünü Sil">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">
+                            <i class="bi bi-box-seam d-block fs-2 mb-2"></i>
+                            Henüz ürün eklenmemiş.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ── Ürün Ekle Modal (FR-2.1) ── -->
+<div class="modal fade" id="urunEkleModal" tabindex="-1"
+     aria-labelledby="urunEkleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="urunEkleModalLabel">
+                    <i class="bi bi-plus-circle me-2 text-primary"></i>Yeni Ürün Ekle
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <form action="{{ url_for('manager.products') }}" method="POST"
+                  enctype="multipart/form-data" class="needs-validation" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label for="urun_adi" class="form-label">Ürün Adı <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="urun_adi"
+                                   name="urun_adi" required maxlength="200"
+                                   placeholder="Ürün adını girin">
+                            <div class="invalid-feedback">Ürün adı zorunludur.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="baz_fiyat" class="form-label">Fiyat (₺) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="baz_fiyat"
+                                   name="baz_fiyat" required min="0" step="0.01"
+                                   placeholder="0.00">
+                            <div class="invalid-feedback">Geçerli bir fiyat girin.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="marka_id" class="form-label">Marka <span class="text-danger">*</span></label>
+                            <select class="form-select" id="marka_id" name="marka_id" required>
+                                <option value="">Marka seçin...</option>
+                                {% for marka in markalar | default([]) %}
+                                <option value="{{ marka.id }}">{{ marka.marka_adi }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Lütfen bir marka seçin.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="kategori_id" class="form-label">Kategori <span class="text-danger">*</span></label>
+                            <select class="form-select" id="kategori_id" name="kategori_id" required>
+                                <option value="">Kategori seçin...</option>
+                                {% for kategori in kategoriler | default([]) %}
+                                <option value="{{ kategori.id }}">{{ kategori.kategori_adi }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Lütfen bir kategori seçin.</div>
+                        </div>
+                        <div class="col-12">
+                            <label for="aciklama" class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="aciklama"
+                                      name="aciklama" rows="3"
+                                      placeholder="Ürün açıklaması (isteğe bağlı)"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="gorsel_url" class="form-label">Görsel URL</label>
+                            <input type="url" class="form-control" id="gorsel_url"
+                                   name="gorsel_url" placeholder="https://...">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="stok_adedi" class="form-label">Başlangıç Stok</label>
+                            <input type="number" class="form-control" id="stok_adedi"
+                                   name="stok_adedi" min="0" value="0">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="min_stok" class="form-label">Min. Stok</label>
+                            <input type="number" class="form-control" id="min_stok"
+                                   name="min_stok_seviyesi" min="0" value="5">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Vazgeç
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i>Ürünü Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ── Hızlı Stok Güncelle Modal (FR-2.2 + NFR-3.2 onay pop-up) ── -->
+<div class="modal fade" id="hizliStokModal" tabindex="-1"
+     aria-labelledby="hizliStokModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="hizliStokModalLabel">
+                    <i class="bi bi-boxes me-2 text-warning"></i>Hızlı Stok Güncelle
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <form id="hizli-stok-form" method="POST" class="needs-validation" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <p class="text-muted mb-3">
+                        <strong id="hizli-stok-urun-adi"></strong> ürünü için yeni stok adedini girin.
+                    </p>
+                    <div class="mb-3">
+                        <label for="hizli-stok-mevcut" class="form-label">Mevcut Stok</label>
+                        <input type="number" class="form-control" id="hizli-stok-mevcut" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="hizli-stok-yeni" class="form-label">
+                            Yeni Stok Adedi <span class="text-danger">*</span>
+                        </label>
+                        <input type="number" class="form-control" id="hizli-stok-yeni"
+                               name="stok_adedi" required min="0" step="1">
+                        <div class="invalid-feedback">Stok adedi 0 veya daha büyük olmalıdır.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-warning"
+                            id="hizli-stok-kaydet-btn">
+                        <i class="bi bi-check-circle me-1"></i>Güncelle
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function urunDuzenle(urunId) {
+    window.location.href = '/manager/products/' + urunId + '/edit';
+}
+
+/* NFR-3.2: Stok güncelleme formu gönderilmeden önce onay pop-up göster */
+document.addEventListener('DOMContentLoaded', function() {
+    var stokForm = document.getElementById('hizli-stok-form');
+    if (stokForm) {
+        stokForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var urunAdi = document.getElementById('hizli-stok-urun-adi').textContent;
+            var yeniStok = document.getElementById('hizli-stok-yeni').value;
+            var mevcutStok = document.getElementById('hizli-stok-mevcut').value;
+
+            if (parseInt(yeniStok) < 0) return;
+
+            /* Hızlı stok modalını gizle */
+            var hizliModal = bootstrap.Modal.getInstance(document.getElementById('hizliStokModal'));
+            if (hizliModal) hizliModal.hide();
+
+            /* Onay pop-up göster (main.js onayPopup fonksiyonu) */
+            onayPopup(
+                urunAdi + ' ürününün stoğunu ' + mevcutStok + ' adetten ' + yeniStok + ' adede güncellemek istediğinizden emin misiniz?',
+                function() { stokForm.submit(); },
+                'Stok Güncelleme Onayı'
+            );
+        });
+    }
+});
+</script>
+{% endblock %}

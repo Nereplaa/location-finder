@@ -1,0 +1,275 @@
+{% extends "base_manager.html" %}
+
+{% block title %}Kampanya Oluştur — AVM Rehber{% endblock %}
+{% block body_class %}manager-kampanya{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar-header">
+    <h6><i class="bi bi-shop-window me-1"></i>Mağaza Paneli</h6>
+</div>
+<ul class="nav flex-column pt-2">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manager.dashboard') }}">
+            <i class="bi bi-speedometer2"></i>Dashboard
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manager.products') }}">
+            <i class="bi bi-box-seam"></i>Ürün &amp; Stok
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('manager.campaigns') }}">
+            <i class="bi bi-tag"></i>Kampanya Oluştur
+        </a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+
+        <div class="card">
+            <div class="card-header">
+                <h1 class="h5 mb-0 fw-bold">
+                    <i class="bi bi-tag-fill me-2 text-primary"></i>Kampanya Oluştur
+                </h1>
+            </div>
+            <div class="card-body p-4">
+
+                <form action="{{ url_for('manager.campaigns') }}" method="POST"
+                      class="needs-validation" novalidate id="kampanya-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <!-- Ürün Seçimi (FR-2.3) -->
+                    <div class="mb-4">
+                        <label for="urun_id" class="form-label">
+                            Ürün Seçin <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="urun_id" name="urun_id"
+                                required onchange="urunBilgisiGoster(this)">
+                            <option value="">Kampanya uygulanacak ürünü seçin...</option>
+                            {% for urun in urunler | default([]) %}
+                            <option value="{{ urun.id }}"
+                                    data-fiyat="{{ urun.baz_fiyat }}"
+                                    data-stok="{{ urun.stok_adedi | default(0) }}">
+                                {{ urun.urun_adi }}
+                                {% if urun.marka %} — {{ urun.marka.marka_adi }}{% endif %}
+                                ({{ "%.2f" | format(urun.baz_fiyat) }} ₺)
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="invalid-feedback">Lütfen bir ürün seçin.</div>
+
+                        <!-- Seçili ürün bilgisi -->
+                        <div id="urun-on-izleme" class="mt-2 d-none">
+                            <div class="alert alert-light border py-2 small">
+                                <i class="bi bi-info-circle me-1 text-primary"></i>
+                                Mevcut fiyat: <strong id="urun-mevcut-fiyat">—</strong>
+                                <span class="mx-2">|</span>
+                                İndirimli fiyat: <strong id="urun-indirimli-fiyat" class="text-danger">—</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- İndirim Oranı -->
+                    <div class="mb-4">
+                        <label for="indirim_orani" class="form-label">
+                            İndirim Oranı (%) <span class="text-danger">*</span>
+                        </label>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-8 col-md-6">
+                                <input type="range"
+                                       class="form-range"
+                                       id="indirim_range"
+                                       min="1" max="90" step="1" value="10"
+                                       oninput="indirimiGuncelle(this.value)">
+                            </div>
+                            <div class="col-4 col-md-2">
+                                <div class="input-group">
+                                    <input type="number"
+                                           class="form-control"
+                                           id="indirim_orani"
+                                           name="indirim_orani"
+                                           min="1" max="90" step="0.01"
+                                           value="10"
+                                           required
+                                           oninput="indirimSliderGuncelle(this.value)">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="invalid-feedback">İndirim oranı 1 ile 90 arasında olmalıdır.</div>
+                        <div class="form-text">Maksimum %90 indirim uygulanabilir.</div>
+                    </div>
+
+                    <!-- Tarih Aralığı Takvim (BR-3.1) -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-12 col-md-6">
+                            <label for="baslangic_tarihi" class="form-label">
+                                Başlangıç Tarihi <span class="text-danger">*</span>
+                            </label>
+                            <input type="datetime-local"
+                                   class="form-control"
+                                   id="baslangic_tarihi"
+                                   name="baslangic_tarihi"
+                                   required
+                                   min="{{ now.strftime('%Y-%m-%dT%H:%M') if now else '' }}"
+                                   onchange="tarihDogrula()">
+                            <div class="invalid-feedback">Başlangıç tarihi zorunludur.</div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="bitis_tarihi" class="form-label">
+                                Bitiş Tarihi <span class="text-danger">*</span>
+                            </label>
+                            <input type="datetime-local"
+                                   class="form-control"
+                                   id="bitis_tarihi"
+                                   name="bitis_tarihi"
+                                   required
+                                   onchange="tarihDogrula()">
+                            <div class="invalid-feedback" id="bitis-tarihi-feedback">
+                                Bitiş tarihi zorunludur.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BR-3.1 Uyarı -->
+                    <div id="tarih-uyari" class="alert alert-danger py-2 small d-none" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Bitiş tarihi, başlangıç tarihinden sonra olmalıdır.
+                    </div>
+
+                    <!-- Mevcut Kampanyalar -->
+                    {% if kampanyalar %}
+                    <div class="mb-4">
+                        <h2 class="h6 fw-bold text-muted mb-2">
+                            <i class="bi bi-list-ul me-1"></i>Mevcut Kampanyalar
+                        </h2>
+                        <div class="table-responsive">
+                            <table class="table table-sm tablo-avm">
+                                <thead>
+                                    <tr>
+                                        <th>Ürün</th>
+                                        <th>İndirim</th>
+                                        <th>Başlangıç</th>
+                                        <th>Bitiş</th>
+                                        <th>Durum</th>
+                                        <th>İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for k in kampanyalar %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ k.urun.urun_adi }}</td>
+                                        <td>
+                                            <span class="badge bg-danger">%{{ k.indirim_orani | int }}</span>
+                                        </td>
+                                        <td class="small text-muted">{{ k.baslangic_tarihi.strftime('%d.%m.%Y') }}</td>
+                                        <td class="small text-muted">{{ k.bitis_tarihi.strftime('%d.%m.%Y') }}</td>
+                                        <td>
+                                            {% if k.aktif_mi %}
+                                            <span class="badge bg-success">Aktif</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">Pasif</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <!-- NFR-3.2: Kampanya silme onay ZORUNLU -->
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    data-onay="true"
+                                                    data-onay-mesaj="{{ k.urun.urun_adi }} ürününün kampanyasını silmek istediğinizden emin misiniz?"
+                                                    data-onay-hedef="{{ url_for('manager.delete_campaign', kampanya_id=k.id) }}"
+                                                    data-onay-method="POST">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Form Butonları -->
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a href="{{ url_for('manager.dashboard') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-1"></i>İptal
+                        </a>
+                        <button type="submit" class="btn btn-primary fw-semibold"
+                                id="kampanya-kaydet-btn">
+                            <i class="bi bi-check-circle me-1"></i>Kampanya Oluştur
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function indirimiGuncelle(deger) {
+    document.getElementById('indirim_orani').value = deger;
+    onIzlemeGuncelle();
+}
+
+function indirimSliderGuncelle(deger) {
+    var v = Math.min(90, Math.max(1, parseInt(deger) || 1));
+    document.getElementById('indirim_range').value = v;
+    onIzlemeGuncelle();
+}
+
+function urunBilgisiGoster(select) {
+    var secilenOpt = select.options[select.selectedIndex];
+    var fiyat = parseFloat(secilenOpt.dataset.fiyat);
+    var onIzleme = document.getElementById('urun-on-izleme');
+
+    if (select.value && !isNaN(fiyat)) {
+        onIzleme.classList.remove('d-none');
+        document.getElementById('urun-mevcut-fiyat').textContent = fiyat.toLocaleString('tr-TR', {minimumFractionDigits:2}) + ' ₺';
+        onIzlemeGuncelle();
+    } else {
+        onIzleme.classList.add('d-none');
+    }
+}
+
+function onIzlemeGuncelle() {
+    var select = document.getElementById('urun_id');
+    if (!select.value) return;
+    var secilenOpt = select.options[select.selectedIndex];
+    var fiyat = parseFloat(secilenOpt.dataset.fiyat);
+    var oran  = parseFloat(document.getElementById('indirim_orani').value) || 0;
+    if (!isNaN(fiyat) && oran > 0) {
+        var indirimli = fiyat * (1 - oran / 100);
+        document.getElementById('urun-indirimli-fiyat').textContent =
+            indirimli.toLocaleString('tr-TR', {minimumFractionDigits:2}) + ' ₺';
+    }
+}
+
+function tarihDogrula() {
+    var baslangic = document.getElementById('baslangic_tarihi').value;
+    var bitis     = document.getElementById('bitis_tarihi').value;
+    var uyari     = document.getElementById('tarih-uyari');
+    var btn       = document.getElementById('kampanya-kaydet-btn');
+
+    if (baslangic && bitis) {
+        if (new Date(bitis) <= new Date(baslangic)) {
+            uyari.classList.remove('d-none');
+            btn.disabled = true;
+        } else {
+            uyari.classList.add('d-none');
+            btn.disabled = false;
+        }
+    }
+}
+</script>
+{% endblock %}

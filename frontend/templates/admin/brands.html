@@ -1,0 +1,145 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Marka Yönetimi — AVM Rehber{% endblock %}
+{% block body_class %}admin-markalar{% endblock %}
+
+{% block sidebar %}
+<ul class="nav flex-column pt-2">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+            <i class="bi bi-bar-chart-line"></i>Dashboard
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.stores') }}">
+            <i class="bi bi-building"></i>Mağazalar
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.users') }}">
+            <i class="bi bi-people"></i>Kullanıcılar
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.categories') }}">
+            <i class="bi bi-diagram-3"></i>Kategoriler
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('admin.brands') }}">
+            <i class="bi bi-tag"></i>Markalar
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.reports') }}">
+            <i class="bi bi-file-earmark-bar-graph"></i>Raporlar
+        </a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+
+<!-- Başlık -->
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <h1 class="h4 fw-bold mb-0">
+        <i class="bi bi-tag me-2 text-primary"></i>Marka Yönetimi
+    </h1>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#markaEkleModal">
+        <i class="bi bi-plus-circle me-1"></i>Yeni Marka Ekle
+    </button>
+</div>
+
+<!-- Marka Listesi -->
+<div class="card">
+    <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-tag text-primary"></i>
+        <span>Kayıtlı Markalar</span>
+        <span class="badge bg-secondary ms-auto">{{ markalar | length }}</span>
+    </div>
+    <div class="card-body p-0">
+        {% if markalar %}
+        <div class="tablo-avm-wrapper">
+            <table class="table table-hover tablo-avm mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Marka Adı</th>
+                        <th>Durum</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for marka in markalar %}
+                    <tr class="{% if not marka.aktif_mi %}table-secondary text-muted{% endif %}">
+                        <td class="text-muted small">{{ marka.id }}</td>
+                        <td class="fw-semibold">{{ marka.marka_adi }}</td>
+                        <td>
+                            {% if marka.aktif_mi %}
+                            <span class="badge bg-success">Aktif</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Pasif</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if marka.aktif_mi %}
+                            <button class="btn btn-sm btn-outline-danger"
+                                    data-onay="true"
+                                    data-onay-mesaj="{{ marka.marka_adi }} markasını pasif yapmak istediğinizden emin misiniz?"
+                                    data-onay-hedef="{{ url_for('admin.deactivate_brand', marka_id=marka.id) }}"
+                                    data-onay-method="POST">
+                                <i class="bi bi-pause-circle"></i> Pasife Al
+                            </button>
+                            {% else %}
+                            <form action="{{ url_for('admin.activate_brand', marka_id=marka.id) }}" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-play-circle"></i> Aktifleştir
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="bos-durum">
+            <i class="bi bi-tag"></i>
+            <p>Henüz marka eklenmemiş.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Marka Ekle Modal -->
+<div class="modal fade" id="markaEkleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-tag me-2 text-primary"></i>Yeni Marka Ekle
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('admin.brands') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="marka_adi">Marka Adı <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="marka_adi" name="marka_adi"
+                               placeholder="Örn: LC Waikiki, Zara, H&M" required maxlength="120">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Marka Ekle
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

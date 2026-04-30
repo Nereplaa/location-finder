@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#d65569",
+                    "surface-tint": "#b4c5ff",
+                    "outline": "#909097",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-secondary-container": "#00311f",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#400010",
+                    "tertiary-container": "#38000d",
+                    "secondary-fixed": "#6ffbbe",
+                    "on-surface": "#dae2fd",
+                    "surface-variant": "#2d3449",
+                    "primary-container": "#001442",
+                    "secondary-container": "#00a572",
+                    "tertiary-fixed": "#ffdadc",
+                    "on-secondary-fixed": "#002113",
+                    "on-tertiary": "#67001f",
+                    "background": "#0b1326",
+                    "primary": "#b4c5ff",
+                    "on-background": "#dae2fd",
+                    "on-secondary": "#003824",
+                    "error-container": "#93000a",
+                    "secondary-fixed-dim": "#4edea3",
+                    "surface-container": "#171f33",
+                    "surface": "#0b1326",
+                    "on-primary-container": "#4278ff",
+                    "inverse-primary": "#0053db",
+                    "outline-variant": "#45464d",
+                    "surface-container-high": "#222a3d",
+                    "surface-container-low": "#131b2e",
+                    "surface-bright": "#31394d",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "secondary": "#4edea3",
+                    "on-primary": "#002a78",
+                    "tertiary": "#ffb2b9",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#891933",
+                    "surface-container-lowest": "#060e20",
+                    "on-surface-variant": "#c6c6cd",
+                    "on-secondary-fixed-variant": "#005236",
+                    "on-error": "#690005",
+                    "inverse-on-surface": "#283044",
+                    "inverse-surface": "#dae2fd",
+                    "primary-fixed": "#dbe1ff",
+                    "tertiary-fixed-dim": "#ffb2b9",
+                    "surface-dim": "#0b1326",
+                    "surface-container-highest": "#2d3449",
+                    "on-primary-fixed": "#00174b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        .glass-panel {
+            background: rgba(45, 52, 73, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .text-glow {
+            text-shadow: 0 0 20px rgba(180, 197, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen selection:bg-primary/30">
+<!-- Top Navigation Anchor -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-20 w-full bg-slate-950/60 backdrop-blur-xl shadow-[0px_24px_48px_rgba(0,0,0,0.4)]">
+<div class="text-2xl font-bold tracking-tighter text-blue-200 font-manrope tracking-tight">
+            Ethereal Wayfinder
+        </div>
+<div class="hidden md:flex items-center gap-10">
+<a class="text-blue-400 border-b-2 border-blue-400 pb-1 font-inter text-sm font-medium transition-colors duration-300" href="#">Directory</a>
+<a class="text-slate-400 hover:text-blue-200 font-inter text-sm font-medium transition-colors duration-300" href="#">Deals</a>
+<a class="text-slate-400 hover:text-blue-200 font-inter text-sm font-medium transition-colors duration-300" href="#">Events</a>
+<a class="text-slate-400 hover:text-blue-200 font-inter text-sm font-medium transition-colors duration-300" href="#">Help</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-blue-200 hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-blue-200 hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-32 pb-20 px-8 max-w-[1600px] mx-auto">
+<!-- Hero Search Section -->
+<section class="relative mb-24 flex flex-col items-center text-center">
+<div class="absolute -top-40 -z-10 w-full h-[600px] opacity-20 pointer-events-none">
+<img class="w-full h-full object-cover rounded-full blur-3xl" data-alt="Ultra-modern luxury mall interior with vast glass ceiling, polished floors, and cinematic ambient lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZjwwtHttSt3RZWOKKnO46esAo2D2zuPH5lNq7YE2kWdog4joGBhDNGtMpynH2ZI4jwNhZc5zk3YxRUs2VWnkBNco79gQ6S5V1eB55NDy7NpDFPUy-JBhd5YolBVSRSFH2qni8LVhN4zC-J5q0zHb4wrypezIpoVK_f8GLZdsC2WfbcFntfmf69OJzowUwND5vZT_558RhUllZqIV06bDMflQXKkLOft6FcvNKwwsJklhtxjbp8OceNoeIa1GSB0V93d-JkOQvtCs"/>
+</div>
+<h1 class="text-6xl font-extrabold tracking-tighter mb-4 text-glow bg-gradient-to-r from-primary to-on-primary-container bg-clip-text text-transparent py-2">
+                Discover the Extraordinary
+            </h1>
+<p class="text-on-surface-variant max-w-2xl text-lg mb-12 font-medium">
+                Sizin için seçilen lüks mağazalar, en yeni trendler ve seçkin lezzet durakları parmaklarınızın ucunda.
+            </p>
+<!-- Premium Search Bar -->
+<div class="w-full max-w-3xl relative group">
+<div class="absolute inset-0 bg-primary/10 blur-xl rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
+<div class="relative glass-panel rounded-full flex items-center px-8 py-6 shadow-2xl transition-all duration-300 scale-100 group-focus-within:scale-[1.02]">
+<span class="material-symbols-outlined text-primary text-3xl mr-4" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-xl w-full text-on-surface placeholder:text-slate-500 font-medium" placeholder="Ürün veya mağaza ara..." type="text"/>
+<button class="bg-gradient-to-r from-primary to-on-primary-container text-on-primary px-8 py-3 rounded-full font-bold tracking-tight hover:brightness-110 transition-all shadow-lg">
+                        ARA
+                    </button>
+</div>
+</div>
+</section>
+<!-- Category Grid -->
+<section class="mb-24">
+<div class="flex justify-between items-end mb-10">
+<h2 class="text-3xl font-bold tracking-tight">Keşfetmeye Başlayın</h2>
+<span class="text-primary font-label text-sm uppercase tracking-widest cursor-pointer hover:underline">Tüm Kategoriler</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+<!-- Moda -->
+<div class="group cursor-pointer bg-surface-container-low rounded-xl p-8 flex flex-col items-center justify-center gap-4 transition-all hover:bg-surface-container-high hover:-translate-y-2">
+<div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all duration-500">
+<span class="material-symbols-outlined text-4xl" data-icon="checkroom">checkroom</span>
+</div>
+<span class="font-bold text-lg">Moda</span>
+</div>
+<!-- Teknoloji -->
+<div class="group cursor-pointer bg-surface-container-low rounded-xl p-8 flex flex-col items-center justify-center gap-4 transition-all hover:bg-surface-container-high hover:-translate-y-2">
+<div class="w-20 h-20 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-on-secondary transition-all duration-500">
+<span class="material-symbols-outlined text-4xl" data-icon="devices">devices</span>
+</div>
+<span class="font-bold text-lg">Teknoloji</span>
+</div>
+<!-- Kozmetik -->
+<div class="group cursor-pointer bg-surface-container-low rounded-xl p-8 flex flex-col items-center justify-center gap-4 transition-all hover:bg-surface-container-high hover:-translate-y-2">
+<div class="w-20 h-20 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary group-hover:bg-tertiary group-hover:text-on-tertiary transition-all duration-500">
+<span class="material-symbols-outlined text-4xl" data-icon="self_care">self_care</span>
+</div>
+<span class="font-bold text-lg">Kozmetik</span>
+</div>
+<!-- Yemek -->
+<div class="group cursor-pointer bg-surface-container-low rounded-xl p-8 flex flex-col items-center justify-center gap-4 transition-all hover:bg-surface-container-high hover:-translate-y-2">
+<div class="w-20 h-20 rounded-full bg-on-tertiary-container/10 flex items-center justify-center text-on-tertiary-container group-hover:bg-on-tertiary-container group-hover:text-white transition-all duration-500">
+<span class="material-symbols-outlined text-4xl" data-icon="restaurant">restaurant</span>
+</div>
+<span class="font-bold text-lg">Yemek</span>
+</div>
+</div>
+</section>
+<!-- Featured Stores: Günün Mağazaları -->
+<section>
+<div class="flex justify-between items-end mb-10">
+<div>
+<h2 class="text-3xl font-bold tracking-tight mb-2">Günün Mağazaları</h2>
+<p class="text-on-surface-variant font-medium">Size özel seçilmiş ayrıcalıklı deneyimler</p>
+</div>
+<div class="flex gap-2">
+<button class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Store Card 1 -->
+<div class="group relative aspect-[4/5] rounded-xl overflow-hidden bg-surface-container-low cursor-pointer">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Interior of a luxury fashion boutique with minimalist wood displays and warm ambient track lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAD6wg6t5BcwXg0GKcxai0-QG1NpZyX2NHhfP4_HjxU89eZcCmbQ6VsnJABlzA7n56DSj_QFQawmlTpLFGnT8m8NIVmTwv9DS83qJ2mB366fGsC6s102sHH9_PJwoTahehvqGPcVpjb1PsH1mscXAm2vU-2IlX2JNKx70NVjouDUNxWGdGgh2oDfxZBPsUrhRtAii4PwFkLhhBImi89T3RqMjNhhEl8kgnLdQVYem8M-YbaaIpRLBDrkiIcqosmlYu30_rStUvnsOU"/>
+<div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full p-8">
+<div class="flex items-center gap-2 mb-3">
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+<span class="text-secondary font-bold text-sm tracking-widest uppercase">AÇIK</span>
+</div>
+<h3 class="text-3xl font-bold text-white mb-2">Lumina Luxe</h3>
+<p class="text-slate-300 text-sm mb-6 line-clamp-2">Yeni sezon haute couture koleksiyonu ile zarafeti yeniden tanımlayın.</p>
+<div class="flex justify-between items-center">
+<span class="glass-panel px-4 py-2 rounded-full text-xs font-bold text-blue-200">KAT 2 · NO 42</span>
+<span class="material-symbols-outlined text-white" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Store Card 2 -->
+<div class="group relative aspect-[4/5] rounded-xl overflow-hidden bg-surface-container-low cursor-pointer">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Sleek high-tech electronics store with neon blue lighting accents and minimalist product pedestals" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRG5BdNtreddg1T2ay2jOeJRfXeW2Hx_WJhXP3eF9ht2nL3RqA1to6UVdAcUyQ8EfNFiop-vbx7rzwS9McNnS8Ro-XVUgQcCAoLnEMs6Y2F2uTUIS1797CSnDNa0XpAIhadE7mPUlBLdFBzfmoOtRUgGKpPkEeruWYuLYFXoTv_1mBlny3MnRxQjVUxaLSyepseF1ROIOc_CP28bhpdIPamXQfphnd2X791Zpw39ozPcosBl9C0Oienn_lZGQIvR-vIeQvS3MmkYY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full p-8">
+<div class="flex items-center gap-2 mb-3">
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+<span class="text-secondary font-bold text-sm tracking-widest uppercase">AÇIK</span>
+</div>
+<h3 class="text-3xl font-bold text-white mb-2">Nexus Tech</h3>
+<p class="text-slate-300 text-sm mb-6 line-clamp-2">Yarının teknolojisini bugünden deneyimleyin. En yeni cihazlar burada.</p>
+<div class="flex justify-between items-center">
+<span class="glass-panel px-4 py-2 rounded-full text-xs font-bold text-blue-200">KAT 1 · NO 15</span>
+<span class="material-symbols-outlined text-white" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Store Card 3 -->
+<div class="group relative aspect-[4/5] rounded-xl overflow-hidden bg-surface-container-low cursor-pointer">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Upscale modern cocktail bar and lounge with gold fixtures and dark mood lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJzSfnwcjy6sYDMlmSUbY1rizuuMQYq-NIhTwIStUqAx18NwfZ46x-6NjyYLaVFyqXNJgbyiN5W-aGhNEDjtxZsF0Nzlc4ssDYgDCPjcfEtcVw3PBzspqVUwj8MdV6Z-CoX-SmO6NuXp3GIhz5CLOOzfX6wggIYSyaMaAMMcveOjGgvIF7FyaOZLCW4PgDmuc0osa3Yz6oyl5NMUyB4UDJWqHnOLRgCUQrbxNXgZmh7e5BXpgD6VsTN-g1ZZdwzouk9M4ALvS5fpA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full p-8">
+<div class="flex items-center gap-2 mb-3">
+<span class="w-3 h-3 rounded-full bg-tertiary"></span>
+<span class="text-tertiary font-bold text-sm tracking-widest uppercase">DOLU</span>
+</div>
+<h3 class="text-3xl font-bold text-white mb-2">Noir Gastronomy</h3>
+<p class="text-slate-300 text-sm mb-6 line-clamp-2">Dünya mutfağının en seçkin örnekleri ile gurme bir yolculuğa çıkın.</p>
+<div class="flex justify-between items-center">
+<span class="glass-panel px-4 py-2 rounded-full text-xs font-bold text-blue-200">KAT 3 · NO 88</span>
+<span class="material-symbols-outlined text-white" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Anchor -->
+<footer class="w-full py-12 border-t border-slate-800/30 bg-slate-950 flex flex-col items-center gap-6 px-12">
+<div class="flex gap-8">
+<a class="text-slate-500 hover:text-white transition-colors font-inter text-xs uppercase tracking-widest" href="#">Privacy Policy</a>
+<a class="text-slate-500 hover:text-white transition-colors font-inter text-xs uppercase tracking-widest" href="#">Operating Hours</a>
+<a class="text-slate-500 hover:text-white transition-colors font-inter text-xs uppercase tracking-widest" href="#">Contact Support</a>
+</div>
+<p class="text-slate-400 font-inter text-xs uppercase tracking-widest">
+            © 2024 Ethereal Wayfinder. Luxury Concierge Systems.
+        </p>
+</footer>
+<!-- Floating Map Quick Access (Kiosk Specific) -->
+<div class="fixed bottom-10 right-10 z-50">
+<button class="flex items-center gap-3 bg-primary text-on-primary px-8 py-5 rounded-full shadow-[0px_24px_48px_rgba(0,0,0,0.4)] hover:scale-105 transition-transform">
+<span class="material-symbols-outlined font-variation-settings: 'FILL' 1;" data-icon="map" style="font-variation-settings: 'FILL' 1;">map</span>
+<span class="font-extrabold tracking-tight">HARİTAYI AÇ</span>
+</button>
+</div>
+</body></html>

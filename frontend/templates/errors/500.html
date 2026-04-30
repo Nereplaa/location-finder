@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Sunucu Hatası — AVM Rehber{% endblock %}
+{% block content %}
+<div class="min-h-screen flex items-center justify-center p-8">
+  <div class="text-center max-w-md">
+    <div class="text-8xl font-headline font-black text-tertiary/30 mb-4">500</div>
+    <h1 class="text-2xl font-headline font-bold text-on-surface mb-2">Sunucu Hatası</h1>
+    <p class="text-on-surface-variant mb-8">Beklenmedik bir hata oluştu. Lütfen daha sonra tekrar deneyin. Sorun devam ederse sistem yöneticisiyle iletişime geçin.</p>
+    <div class="flex gap-4 justify-center">
+      <a href="/" class="bg-primary text-on-primary px-6 py-3 rounded-full font-bold text-sm hover:brightness-110 transition-all no-underline">
+        Ana Sayfaya Dön
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,261 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Raporlar — AVM Rehber{% endblock %}
+{% block body_class %}admin-raporlar{% endblock %}
+
+{% block sidebar %}
+<ul class="nav flex-column pt-2">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+            <i class="bi bi-bar-chart-line"></i>Dashboard
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.stores') }}">
+            <i class="bi bi-building"></i>Mağazalar
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.users') }}">
+            <i class="bi bi-people"></i>Kullanıcılar
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.categories') }}">
+            <i class="bi bi-diagram-3"></i>Kategoriler
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.brands') }}">
+            <i class="bi bi-tag"></i>Markalar
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('admin.reports') }}">
+            <i class="bi bi-file-earmark-bar-graph"></i>Raporlar
+        </a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+
+<!-- Sayfa Basligi -->
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h4 fw-bold mb-0">
+            <i class="bi bi-file-earmark-bar-graph me-2 text-primary"></i>Sistem Raporlari
+        </h1>
+        <small class="text-muted">AVM geneli ozet istatistikler ve raporlar</small>
+    </div>
+</div>
+
+<!-- Ozet Istatistik Kartlari -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4">
+        <div class="stat-kart stat-kart-mavi d-flex justify-content-between align-items-start">
+            <div>
+                <div class="stat-deger">{{ magaza_sayisi | default(0) }}</div>
+                <div class="stat-etiket">Toplam Magaza</div>
+            </div>
+            <i class="bi bi-building stat-ikon"></i>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="stat-kart stat-kart-yesil d-flex justify-content-between align-items-start">
+            <div>
+                <div class="stat-deger">{{ kullanici_sayisi | default(0) }}</div>
+                <div class="stat-etiket">Kayitli Kullanici</div>
+            </div>
+            <i class="bi bi-people stat-ikon"></i>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="stat-kart stat-kart-kirmizi d-flex justify-content-between align-items-start">
+            <div>
+                <div class="stat-deger">{{ dusuk_stoklar | length if dusuk_stoklar else 0 }}</div>
+                <div class="stat-etiket">Dusuk Stok Uyarisi</div>
+            </div>
+            <i class="bi bi-exclamation-triangle stat-ikon"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Dusuk Stok Uyarilari Tablosu -->
+<div class="card mb-4">
+    <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+        <span class="fw-bold">Dusuk Stok Uyarilari</span>
+        {% if dusuk_stoklar %}
+        <span class="badge bg-warning text-dark ms-auto">{{ dusuk_stoklar | length }}</span>
+        {% endif %}
+    </div>
+    <div class="card-body p-0">
+        {% if dusuk_stoklar %}
+        <div class="tablo-avm-wrapper">
+            <table class="table table-sm tablo-avm mb-0">
+                <thead>
+                    <tr>
+                        <th>Urun</th>
+                        <th>Magaza</th>
+                        <th>Mevcut Stok</th>
+                        <th>Min. Seviye</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stok in dusuk_stoklar %}
+                    <tr class="{{ 'tablo-satir-tukendi' if stok.stok_adedi == 0 else 'tablo-satir-kritik' }}">
+                        <td class="fw-semibold">
+                            {{ stok.urun.urun_adi if stok.urun else '—' }}
+                        </td>
+                        <td>
+                            {{ stok.magaza.magaza_adi if stok.magaza else '—' }}
+                        </td>
+                        <td>
+                            <span class="{{ 'stok-yok' if stok.stok_adedi == 0 else 'stok-kritik' }}">
+                                {{ stok.stok_adedi }}
+                            </span>
+                        </td>
+                        <td class="text-muted">{{ stok.min_stok_seviyesi }}</td>
+                        <td>
+                            {% if stok.stok_adedi == 0 %}
+                            <span class="badge badge-stok-yok">Tukendi</span>
+                            {% else %}
+                            <span class="badge badge-stok-kritik">Kritik</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="bos-durum py-3">
+            <i class="bi bi-check-circle text-success"></i>
+            <p class="text-success fw-semibold">Tum stok seviyeleri normal.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Magaza Bazli Ozet -->
+<div class="card mb-4">
+    <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-building text-primary"></i>
+        <span class="fw-bold">Magaza Bazli Ozet</span>
+    </div>
+    <div class="card-body p-0">
+        {% if magaza_ozet %}
+        <div class="tablo-avm-wrapper">
+            <table class="table table-sm tablo-avm mb-0">
+                <thead>
+                    <tr>
+                        <th>Magaza</th>
+                        <th>Kat</th>
+                        <th>Konum</th>
+                        <th>Urun Sayisi</th>
+                        <th>Aktif Kampanya</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in magaza_ozet %}
+                    <tr>
+                        <td class="fw-semibold">{{ m.magaza_adi }}</td>
+                        <td><span class="badge-kat">{{ m.kat }}. Kat</span></td>
+                        <td><span class="badge-konum">{{ m.konum_kodu }}</span></td>
+                        <td>{{ m.urun_sayisi | default(0) }}</td>
+                        <td>{{ m.kampanya_sayisi | default(0) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="bos-durum py-3">
+            <i class="bi bi-building"></i>
+            <p>Magaza verisi bulunmamaktadir.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Chart.js Grafikler (FR-3.3) -->
+{% if chart_labels %}
+<div class="row g-4 mb-4">
+    <div class="col-md-7">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-bar-chart text-primary"></i>
+                <span class="fw-bold">Mağaza Bazlı Ürün Dağılımı</span>
+            </div>
+            <div class="card-body">
+                <canvas id="urunDagilimChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="bi bi-pie-chart text-success"></i>
+                <span class="fw-bold">Kampanya Oranları</span>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="kampanyaChart" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+{% if chart_labels %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  const labels = {{ chart_labels | tojson }};
+  const urunData = {{ chart_urun | tojson }};
+  const kampanyaData = {{ chart_kampanya | tojson }};
+
+  const colors = ['#0d6efd','#198754','#ffc107','#dc3545','#0dcaf0','#6f42c1'];
+
+  new Chart(document.getElementById('urunDagilimChart'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Ürün Sayısı',
+        data: urunData,
+        backgroundColor: colors,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+  });
+
+  new Chart(document.getElementById('kampanyaChart'), {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Aktif Kampanya',
+        data: kampanyaData.map(v => v || 0),
+        backgroundColor: colors,
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
+})();
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,221 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Admin Dashboard — AVM Rehber{% endblock %}
+{% block body_class %}admin-dashboard{% endblock %}
+
+{% block sidebar %}
+<ul class="nav flex-column pt-2">
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('admin.dashboard') }}">
+            <i class="bi bi-bar-chart-line"></i>Dashboard
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.stores') }}">
+            <i class="bi bi-building"></i>Mağazalar
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.users') }}">
+            <i class="bi bi-people"></i>Kullanıcılar
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.categories') }}">
+            <i class="bi bi-diagram-3"></i>Kategoriler
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.brands') }}">
+            <i class="bi bi-tag"></i>Markalar
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.reports') }}">
+            <i class="bi bi-file-earmark-bar-graph"></i>Raporlar
+        </a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+
+<!-- Sayfa Başlığı -->
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h4 fw-bold mb-0">
+            <i class="bi bi-bar-chart-line me-2 text-primary"></i>Sistem Genel Bakış
+        </h1>
+        <small class="text-muted">Tüm AVM ekosistemi özeti</small>
+    </div>
+    <a href="{{ url_for('admin.reports') }}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-file-earmark-bar-graph me-1"></i>Detaylı Raporlar
+    </a>
+</div>
+
+<!-- ── Özet Kartlar (FR-3.3) ── -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-kart stat-kart-mavi d-flex justify-content-between align-items-start">
+            <div>
+                <div class="stat-deger">{{ aktif_magaza_sayisi | default(0) }}</div>
+                <div class="stat-etiket">Aktif Mağaza</div>
+            </div>
+            <i class="bi bi-building stat-ikon"></i>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-kart stat-kart-yesil d-flex justify-content-between align-items-start">
+            <div>
+                <div class="stat-deger">{{ toplam_kullanici | default(0) }}</div>
+                <div class="stat-etiket">Kayıtlı Kullanıcı</div>
+            </div>
+            <i class="bi bi-people stat-ikon"></i>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-kart stat-kart-turuncu d-flex justify-content-between align-items-start">
+            <div>
+                <div class="stat-deger">{{ bugun_arama | default(0) }}</div>
+                <div class="stat-etiket">Bugün Arama</div>
+            </div>
+            <i class="bi bi-search stat-ikon"></i>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-kart stat-kart-kirmizi d-flex justify-content-between align-items-start">
+            <div>
+                <div class="stat-deger">{{ basarisiz_sync_sayisi | default(0) }}</div>
+                <div class="stat-etiket">Başarısız Sync</div>
+            </div>
+            <i class="bi bi-exclamation-triangle stat-ikon"></i>
+        </div>
+    </div>
+</div>
+
+<!-- ── Arama Yoğunluğu Isı Haritası (FR-3.3) ── -->
+<div class="card mb-4">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <span>
+            <i class="bi bi-grid-3x3 me-2 text-primary"></i>Saatlik Arama Yoğunluğu (Son 7 Gün)
+        </span>
+        <small class="text-muted">Renk yoğunluğu = arama sayısı</small>
+    </div>
+    <div class="card-body p-3">
+        {% if isi_haritasi_verisi %}
+        <div id="isi-haritasi-container">
+            <div class="row g-1 mb-1 text-center">
+                <!-- Saat başlıkları -->
+                <div class="col-1"></div>
+                {% for saat in range(0, 24, 2) %}
+                <div class="col text-muted" style="font-size:0.65rem;">{{ "%02d" | format(saat) }}</div>
+                {% endfor %}
+            </div>
+            {% for gun in isi_haritasi_verisi %}
+            <div class="row g-1 align-items-center mb-1">
+                <div class="col-1 text-muted text-end pe-1" style="font-size:0.7rem;">
+                    {{ gun.gun_kisa }}
+                </div>
+                {% for saat_veri in gun.saatler %}
+                {% set yogunluk = [saat_veri.sayi / (isi_maks | default(1)) * 100, 100] | min %}
+                <div class="col p-0">
+                    <div class="isi-haritasi-hucre"
+                         style="background-color: rgba(13,110,253,{{ yogunluk / 100 }});"
+                         title="{{ gun.gun_tam }}, {{ saat_veri.saat }}:00 — {{ saat_veri.sayi }} arama">
+                        {% if saat_veri.sayi > 0 %}{{ saat_veri.sayi }}{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bos-durum py-3">
+            <i class="bi bi-grid-3x3"></i>
+            <p>Henüz arama verisi bulunmamaktadır.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ── Başarısız Sync Logları (FR-4.4) ── -->
+<div class="card mb-4">
+    <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+        <span class="fw-bold">Başarısız POS Sync Logları</span>
+        {% if sync_loglar %}
+        <span class="badge bg-danger ms-auto">{{ sync_loglar | length }}</span>
+        {% endif %}
+    </div>
+    <div class="card-body p-0">
+        {% if sync_loglar %}
+        <div class="tablo-avm-wrapper">
+            <table class="table table-sm tablo-avm mb-0">
+                <thead>
+                    <tr>
+                        <th>Tarih/Saat</th>
+                        <th>Mağaza</th>
+                        <th>Hata Türü</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in sync_loglar[:20] %}
+                    <tr>
+                        <td class="text-muted small">
+                            {{ log.tarih.strftime('%d.%m.%Y %H:%M') if log.tarih else '—' }}
+                        </td>
+                        <td class="fw-semibold">{{ log.magaza_adi | default('—') }}</td>
+                        <td>
+                            <span class="badge bg-danger">{{ log.hata_turu | default('Bilinmeyen Hata') }}</span>
+                        </td>
+                        <td>
+                            {% if log.cozuldu_mu %}
+                            <span class="badge bg-success">Çözüldü</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">Bekliyor</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="bos-durum py-3">
+            <i class="bi bi-check-circle text-success"></i>
+            <p class="text-success fw-semibold">Tüm sistemler normal çalışıyor.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ── Hızlı Erişim Kartları ── -->
+<div class="row g-3">
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('admin.stores') }}" class="card text-decoration-none text-dark urun-kart p-3 text-center">
+            <i class="bi bi-building text-primary fs-2 mb-2"></i>
+            <div class="fw-semibold small">Mağaza Yönetimi</div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('admin.users') }}" class="card text-decoration-none text-dark urun-kart p-3 text-center">
+            <i class="bi bi-people text-success fs-2 mb-2"></i>
+            <div class="fw-semibold small">Kullanıcı Yönetimi</div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('admin.categories') }}" class="card text-decoration-none text-dark urun-kart p-3 text-center">
+            <i class="bi bi-diagram-3 text-warning fs-2 mb-2"></i>
+            <div class="fw-semibold small">Kategori Yönetimi</div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('admin.reports') }}" class="card text-decoration-none text-dark urun-kart p-3 text-center">
+            <i class="bi bi-file-earmark-bar-graph text-info fs-2 mb-2"></i>
+            <div class="fw-semibold small">Raporlar</div>
+        </a>
+    </div>
+</div>
+
+{% endblock %}

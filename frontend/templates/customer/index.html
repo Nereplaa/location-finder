@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}AVM Rehber — Ana Sayfa{% endblock %}
+
+{% block content %}
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-20 bg-slate-950/60 backdrop-blur-xl shadow-[0px_24px_48px_rgba(0,0,0,0.4)]">
+  <a href="{{ url_for('customer.index') }}" class="text-2xl font-bold tracking-tighter text-blue-200 font-headline">AVM Rehber</a>
+  <div class="hidden md:flex items-center gap-10">
+    <a class="text-blue-400 border-b-2 border-blue-400 pb-1 font-label text-sm font-medium" href="{{ url_for('customer.index') }}">Ana Sayfa</a>
+    <a class="text-slate-400 hover:text-blue-200 font-label text-sm font-medium transition-colors" href="{{ url_for('customer.products') }}">Ürünler</a>
+    <a class="text-slate-400 hover:text-blue-200 font-label text-sm font-medium transition-colors" href="{{ url_for('customer.campaigns') }}">Kampanyalar</a>
+  </div>
+  <div class="flex items-center gap-4">
+    {% if current_user.is_authenticated %}
+    <a href="{% if current_user.rol_id == 2 %}{{ url_for('manager.dashboard') }}{% elif current_user.rol_id == 3 %}{{ url_for('admin.dashboard') }}{% else %}{{ url_for('customer.index') }}{% endif %}"
+       class="flex items-center gap-2 text-blue-200 hover:text-white text-sm font-medium transition-colors">
+      <span class="material-symbols-outlined">person</span>
+      <span class="hidden md:inline">{{ current_user.ad }}</span>
+    </a>
+    <a href="{{ url_for('auth.logout') }}" class="text-slate-400 hover:text-blue-200 transition-colors">
+      <span class="material-symbols-outlined">logout</span>
+    </a>
+    {% else %}
+    <a href="{{ url_for('auth.login') }}" class="text-slate-400 hover:text-blue-200 font-label text-sm font-medium transition-colors">Giriş Yap</a>
+    <a href="{{ url_for('auth.register') }}" class="hidden sm:block bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 rounded-full font-label text-sm font-medium transition-colors">Kayıt Ol</a>
+    {% endif %}
+    <button class="md:hidden text-slate-400 hover:text-blue-200 transition-colors" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" aria-label="Menü">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+  </div>
+</nav>
+<div id="mobile-menu" class="hidden fixed top-20 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/30 md:hidden">
+  <nav class="flex flex-col px-8 py-4 gap-4 font-label text-sm">
+    <a class="text-blue-400 no-underline py-2 border-b border-slate-800/30" href="{{ url_for('customer.index') }}">Ana Sayfa</a>
+    <a class="text-slate-400 hover:text-blue-200 transition-colors no-underline py-2" href="{{ url_for('customer.products') }}">Ürünler</a>
+    <a class="text-slate-400 hover:text-blue-200 transition-colors no-underline py-2" href="{{ url_for('customer.campaigns') }}">Kampanyalar</a>
+  </nav>
+</div>
+
+<main class="pt-32 pb-20 px-8 max-w-[1600px] mx-auto">
+  <!-- Hero Arama -->
+  <section class="relative mb-24 flex flex-col items-center text-center">
+    <h1 class="text-6xl font-extrabold tracking-tighter mb-4 text-glow bg-gradient-to-r from-primary to-on-primary-container bg-clip-text text-transparent py-2">
+      Ürününüzü Anında Bulun
+    </h1>
+    <p class="text-on-surface-variant max-w-2xl text-lg mb-12 font-medium">
+      AVM içindeki tüm mağazalarda stok durumu, kat bilgisi ve güncel fiyat bilgisine anında ulaşın.
+    </p>
+    <div class="w-full max-w-3xl relative group">
+      <div class="absolute inset-0 bg-primary/10 blur-xl rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
+      <form action="{{ url_for('customer.products') }}" method="GET" class="relative glass-panel rounded-full flex items-center px-8 py-6 shadow-2xl transition-all duration-300 scale-100 group-focus-within:scale-[1.02]">
+        <span class="material-symbols-outlined text-primary text-3xl mr-4">search</span>
+        <input class="bg-transparent border-none focus:ring-0 text-xl w-full text-on-surface placeholder:text-slate-500 font-medium" name="q" placeholder="Ürün adı, marka veya kategori ara..." type="text" value="{{ request.args.get('q','') }}"/>
+        <button class="bg-gradient-to-r from-primary to-on-primary-container text-on-primary px-8 py-3 rounded-full font-bold tracking-tight hover:brightness-110 transition-all shadow-lg" type="submit">ARA</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Kategori Grid -->
+  <section class="mb-24">
+    <div class="flex justify-between items-end mb-10">
+      <h2 class="text-3xl font-bold tracking-tight">Kategoriler</h2>
+      <a href="{{ url_for('customer.products') }}" class="text-primary font-label text-sm uppercase tracking-widest hover:underline">Tüm Ürünler</a>
+    </div>
+    {% set kat_ikonlar = {'Giyim':'checkroom','Teknoloji':'devices','Kozmetik':'self_care','Yemek':'restaurant','Ayakkabı':'shoe','Aksesuar':'watch','Spor':'sports','Kitap':'menu_book','Ev':'home','Diğer':'category'} %}
+    {% set kat_renkler = ['primary','secondary','tertiary','on-tertiary-container','primary','secondary','tertiary','on-tertiary-container','primary','secondary'] %}
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+      {% if kategoriler %}
+        {% for kat in kategoriler[:8] %}
+        {% set idx = loop.index0 % (kat_renkler|length) %}
+        <a href="{{ url_for('customer.products') }}?kategori_id={{ kat.id }}" class="group cursor-pointer bg-surface-container-low rounded-xl p-8 flex flex-col items-center justify-center gap-4 transition-all hover:bg-surface-container-high hover:-translate-y-2 no-underline">
+          <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all duration-500">
+            <span class="material-symbols-outlined text-4xl">{{ kat_ikonlar.get(kat.kategori_adi, 'category') }}</span>
+          </div>
+          <span class="font-bold text-lg text-on-surface">{{ kat.kategori_adi }}</span>
+        </a>
+        {% endfor %}
+      {% else %}
+        {% for kat_adi, ikon in [('Moda','checkroom'),('Teknoloji','devices'),('Kozmetik','self_care'),('Yemek','restaurant')] %}
+        <a href="{{ url_for('customer.products') }}" class="group cursor-pointer bg-surface-container-low rounded-xl p-8 flex flex-col items-center justify-center gap-4 transition-all hover:bg-surface-container-high hover:-translate-y-2 no-underline">
+          <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all duration-500">
+            <span class="material-symbols-outlined text-4xl">{{ ikon }}</span>
+          </div>
+          <span class="font-bold text-lg text-on-surface">{{ kat_adi }}</span>
+        </a>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- Aktif Kampanyalar -->
+  {% if kampanyalar %}
+  <section class="mb-24">
+    <div class="flex justify-between items-end mb-10">
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight mb-2">Aktif Kampanyalar</h2>
+        <p class="text-on-surface-variant font-medium">Kaçırmayın — süreli indirimler</p>
+      </div>
+      <a href="{{ url_for('customer.campaigns') }}" class="text-primary font-label text-sm uppercase tracking-widest hover:underline">Tümünü Gör</a>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {% for k in kampanyalar[:4] %}
+      <a href="{{ url_for('customer.product_detail', urun_id=k.urun_id) }}" class="group relative bg-surface-container-low rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:shadow-2xl no-underline">
+        {% if k.urun.gorsel_url %}
+        <div class="aspect-[4/5] overflow-hidden">
+          <img src="{{ k.urun.gorsel_url }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="{{ k.urun.urun_adi }}"/>
+        </div>
+        {% else %}
+        <div class="aspect-[4/5] bg-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-6xl text-on-surface-variant">image</span>
+        </div>
+        {% endif %}
+        <div class="absolute top-4 left-4 bg-error-container text-on-error-container px-3 py-1 rounded-full text-xs font-bold">
+          %{{ k.indirim_orani | int }} İNDİRİM
+        </div>
+        <div class="p-4">
+          <p class="text-primary text-xs uppercase tracking-widest mb-1">{{ k.urun.marka.marka_adi if k.urun.marka else '' }}</p>
+          <h3 class="font-bold text-on-surface mb-1 line-clamp-1">{{ k.urun.urun_adi }}</h3>
+          <div class="flex items-baseline gap-2">
+            <span class="text-secondary font-bold">{{ "%.2f" | format(k.urun.baz_fiyat * (1 - k.indirim_orani / 100)) }} ₺</span>
+            <span class="text-on-surface-variant text-xs line-through">{{ "%.2f" | format(k.urun.baz_fiyat) }} ₺</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Popüler Mağazalar -->
+  <section>
+    <div class="flex justify-between items-end mb-10">
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight mb-2">Mağazalar</h2>
+        <p class="text-on-surface-variant font-medium">AVM'deki tüm mağazalar</p>
+      </div>
+    </div>
+    {% if magazalar %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {% for magaza in magazalar[:3] %}
+      <a href="{{ url_for('customer.products') }}?magaza_id={{ magaza.id }}" class="group relative aspect-[4/3] rounded-xl overflow-hidden bg-surface-container-low cursor-pointer no-underline">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 w-full p-8">
+          <div class="flex items-center gap-2 mb-3">
+            {% if magaza.aktif_mi %}
+            <span class="w-3 h-3 rounded-full bg-secondary"></span>
+            <span class="text-secondary font-bold text-sm tracking-widest uppercase">AÇIK</span>
+            {% else %}
+            <span class="w-3 h-3 rounded-full bg-tertiary"></span>
+            <span class="text-tertiary font-bold text-sm tracking-widest uppercase">KAPALI</span>
+            {% endif %}
+          </div>
+          <h3 class="text-2xl font-bold text-white mb-2">{{ magaza.magaza_adi }}</h3>
+          <p class="text-slate-300 text-sm mb-4">{{ magaza.aciklama or 'AVM\'deki seçkin mağazamız.' }}</p>
+          <div class="flex justify-between items-center">
+            <span class="glass-panel px-4 py-2 rounded-full text-xs font-bold text-blue-200">KAT {{ magaza.kat }} · {{ magaza.konum_kodu }}</span>
+            <span class="material-symbols-outlined text-white">arrow_forward</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16 text-on-surface-variant">
+      <span class="material-symbols-outlined text-6xl mb-4 block">storefront</span>
+      <p>Henüz mağaza eklenmemiş.</p>
+    </div>
+    {% endif %}
+  </section>
+</main>
+
+<footer class="w-full py-12 border-t border-slate-800/30 bg-slate-950 flex flex-col items-center gap-6 px-12">
+  <div class="flex gap-8">
+    <a class="text-slate-500 hover:text-white transition-colors font-label text-xs uppercase tracking-widest" href="{{ url_for('customer.index') }}">Ana Sayfa</a>
+    <a class="text-slate-500 hover:text-white transition-colors font-label text-xs uppercase tracking-widest" href="{{ url_for('customer.products') }}">Ürünler</a>
+    <a class="text-slate-500 hover:text-white transition-colors font-label text-xs uppercase tracking-widest" href="{{ url_for('customer.campaigns') }}">Kampanyalar</a>
+  </div>
+  <p class="text-slate-400 font-label text-xs uppercase tracking-widest">© 2025 AVM Rehber — AKİS Grubu</p>
+</footer>
+
+<div class="fixed bottom-10 right-10 z-50">
+  <a href="{{ url_for('customer.products') }}" class="flex items-center gap-3 bg-primary text-on-primary px-8 py-5 rounded-full shadow-[0px_24px_48px_rgba(0,0,0,0.4)] hover:scale-105 transition-transform no-underline">
+    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">search</span>
+    <span class="font-extrabold tracking-tight">ÜRÜN ARA</span>
+  </a>
+</div>
+{% endblock %}

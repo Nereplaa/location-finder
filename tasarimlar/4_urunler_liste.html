@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#d65569",
+                    "surface-tint": "#b4c5ff",
+                    "outline": "#909097",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-secondary-container": "#00311f",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#400010",
+                    "tertiary-container": "#38000d",
+                    "secondary-fixed": "#6ffbbe",
+                    "on-surface": "#dae2fd",
+                    "surface-variant": "#2d3449",
+                    "primary-container": "#001442",
+                    "secondary-container": "#00a572",
+                    "tertiary-fixed": "#ffdadc",
+                    "on-secondary-fixed": "#002113",
+                    "on-tertiary": "#67001f",
+                    "background": "#0b1326",
+                    "primary": "#b4c5ff",
+                    "on-background": "#dae2fd",
+                    "on-secondary": "#003824",
+                    "error-container": "#93000a",
+                    "secondary-fixed-dim": "#4edea3",
+                    "surface-container": "#171f33",
+                    "surface": "#0b1326",
+                    "on-primary-container": "#4278ff",
+                    "inverse-primary": "#0053db",
+                    "outline-variant": "#45464d",
+                    "surface-container-high": "#222a3d",
+                    "surface-container-low": "#131b2e",
+                    "surface-bright": "#31394d",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "secondary": "#4edea3",
+                    "on-primary": "#002a78",
+                    "tertiary": "#ffb2b9",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#891933",
+                    "surface-container-lowest": "#060e20",
+                    "on-surface-variant": "#c6c6cd",
+                    "on-secondary-fixed-variant": "#005236",
+                    "on-error": "#690005",
+                    "inverse-on-surface": "#283044",
+                    "inverse-surface": "#dae2fd",
+                    "primary-fixed": "#dbe1ff",
+                    "tertiary-fixed-dim": "#ffb2b9",
+                    "surface-dim": "#0b1326",
+                    "surface-container-highest": "#2d3449",
+                    "on-primary-fixed": "#00174b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0b1326;
+            color: #dae2fd;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-effect {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-950/60 backdrop-blur-xl flex justify-between items-center px-8 h-20 w-full shadow-[0px_24px_48px_rgba(0,0,0,0.4)]">
+<div class="flex items-center gap-8">
+<div class="text-2xl font-bold tracking-tighter text-blue-200 font-headline">Ethereal Wayfinder</div>
+<nav class="hidden md:flex gap-6 font-manrope tracking-tight">
+<a class="text-blue-400 border-b-2 border-blue-400 pb-1 transition-colors duration-300" href="#">Directory</a>
+<a class="text-slate-400 hover:text-blue-200 transition-colors duration-300" href="#">Deals</a>
+<a class="text-slate-400 hover:text-blue-200 transition-colors duration-300" href="#">Events</a>
+<a class="text-slate-400 hover:text-blue-200 transition-colors duration-300" href="#">Help</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-400 hover:text-blue-200 transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-blue-200 transition-colors">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+</button>
+</div>
+</header>
+<main class="pt-24 pb-12 px-8 min-h-screen">
+<!-- Breadcrumb & Title -->
+<div class="mb-10">
+<nav class="flex items-center gap-2 text-label-md text-on-surface-variant font-label uppercase tracking-widest mb-4">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Directory</a>
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-surface">Premium Collection</span>
+</nav>
+<h1 class="text-display-lg font-headline font-extrabold tracking-tighter text-on-surface text-5xl">Curated Essentials</h1>
+</div>
+<div class="flex flex-col md:flex-row gap-8">
+<!-- Left Sidebar Filters -->
+<aside class="w-full md:w-72 flex-shrink-0">
+<div class="sticky top-28 space-y-8 bg-surface-container-low p-8 rounded-xl">
+<div>
+<h3 class="text-label-md font-bold text-primary uppercase tracking-widest mb-6">Filter By</h3>
+<!-- Brand -->
+<div class="mb-8">
+<label class="block text-sm font-semibold text-on-surface-variant mb-4">Brand</label>
+<div class="space-y-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-on-surface group-hover:text-primary transition-colors">Lumina Luxe</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-on-surface group-hover:text-primary transition-colors">Aether Threads</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-on-surface group-hover:text-primary transition-colors">Obsidian Noir</span>
+</label>
+</div>
+</div>
+<!-- Price Range -->
+<div class="mb-8">
+<label class="block text-sm font-semibold text-on-surface-variant mb-4">Price Range</label>
+<input class="w-full h-1 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+<div class="flex justify-between mt-2 text-xs text-on-surface-variant">
+<span>$100</span>
+<span>$5000+</span>
+</div>
+</div>
+<!-- Fabric -->
+<div class="mb-8">
+<label class="block text-sm font-semibold text-on-surface-variant mb-4">Fabric</label>
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1 bg-surface-container-highest rounded-full text-xs hover:bg-primary hover:text-on-primary transition-all">Silk</button>
+<button class="px-3 py-1 bg-surface-container-highest rounded-full text-xs hover:bg-primary hover:text-on-primary transition-all">Cashmere</button>
+<button class="px-3 py-1 bg-surface-container-highest rounded-full text-xs hover:bg-primary hover:text-on-primary transition-all">Organic Cotton</button>
+</div>
+</div>
+<!-- Stock Status -->
+<div class="mb-8">
+<label class="block text-sm font-semibold text-on-surface-variant mb-4">Stock Status</label>
+<div class="space-y-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded-full border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20" name="stock" type="radio"/>
+<span class="text-on-surface group-hover:text-primary transition-colors">In Stock</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded-full border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20" name="stock" type="radio"/>
+<span class="text-on-surface group-hover:text-primary transition-colors">Include 'Stokta Yok'</span>
+</label>
+</div>
+</div>
+</div>
+<button class="w-full py-4 bg-gradient-to-br from-primary to-on-primary-container text-on-primary font-bold rounded-full shadow-lg transition-transform active:scale-95 duration-300">Apply Filters</button>
+</div>
+</aside>
+<!-- Product Grid -->
+<div class="flex-1">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Product Card 1 -->
+<div class="group relative bg-surface-container-low rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-[0px_24px_48px_rgba(0,0,0,0.4)]">
+<div class="aspect-[4/5] relative overflow-hidden rounded-lg m-4">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="high-end editorial fashion shot of a minimalist black silk dress on a model in a dimly lit studio with soft shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANf_BEUS-13qoMpaGiTLL8q2Y0gWSMlTjWM3ZgjcAPU4CjxxtIKQeJV0-wo95Q9HPSnZTOkVbu6dxJsM4FvdylccpP-tbxAfdZMi0grkxR4UvNj5z19GL9Z98lboM86Vbm-Ot4YhEnVfoELsiXjKApkRvNdbYm0bSW-kihLkkCM8EGGehzSlNO8noWSePdLN6obSooKRdgjSbMmCVYqKMAUKY4nZrT_b0b7shKBklUuLutDJ_wgPhQAqsOMt83FO1Zr_xgnhINCdg"/>
+<div class="absolute top-4 left-4 flex items-center gap-2 px-3 py-1 bg-surface-container-highest/60 backdrop-blur-md rounded-full">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest">In Stock</span>
+</div>
+</div>
+<div class="px-6 pb-8">
+<p class="text-label-sm text-primary uppercase tracking-widest mb-1">Lumina Luxe</p>
+<h3 class="text-headline-sm font-headline font-bold text-xl mb-2">Midnight Silk Gown</h3>
+<div class="flex justify-between items-center">
+<span class="text-2xl font-light text-on-surface">$1,240</span>
+<button class="p-3 bg-surface-container-highest rounded-full text-primary hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 (Stokta Yok) -->
+<div class="group relative bg-surface-container-low rounded-xl overflow-hidden transition-all duration-300 opacity-60 grayscale hover:grayscale-0 hover:opacity-100">
+<div class="aspect-[4/5] relative overflow-hidden rounded-lg m-4">
+<img class="w-full h-full object-cover" data-alt="luxury camel hair overcoat draped elegantly on a designer stand in a minimalist boutique setting with warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaUxjNThnoqsx4lVYqhyx00SmQbESImYB9TK7rqWRdKr4NSZB8u2XfjYraHdqbzp4jc5Ii6LfVV0N5St9k9eMRSUlkwy86TLFcj7UZT06nFxBY2wVIhLnVdn3upI-VnAzhc73iiigeSeCHsoRxc42oLSmGHr7fQeH6tW_kk9g2FRFz4hZ0FSbRWsszeF7XSqWp5Nk-AoUDYiSE6gxcFUb8SchvRDf53BlTI_xroP0i9EcTP73EUW1HrcKt8zudKSpjXq4-MGjSgXs"/>
+<div class="absolute top-4 left-4 flex items-center gap-2 px-3 py-1 bg-error-container/80 backdrop-blur-md rounded-full text-on-error-container">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest">Stokta Yok</span>
+</div>
+</div>
+<div class="px-6 pb-8">
+<p class="text-label-sm text-on-surface-variant uppercase tracking-widest mb-1">Aether Threads</p>
+<h3 class="text-headline-sm font-headline font-bold text-xl mb-2">Desert Nomad Coat</h3>
+<div class="flex justify-between items-center">
+<span class="text-2xl font-light text-on-surface-variant">$2,800</span>
+<button class="p-3 bg-surface-container-highest/20 rounded-full text-on-surface-variant cursor-not-allowed">
+<span class="material-symbols-outlined" data-icon="block">block</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="group relative bg-surface-container-low rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-[0px_24px_48px_rgba(0,0,0,0.4)]">
+<div class="aspect-[4/5] relative overflow-hidden rounded-lg m-4">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="pair of designer leather boots with intricate stitching detail on a dark reflective surface with blue neon highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsYgc2v1besO-D4ZkDArT2ssDuE_frHsBsD4uPuRS2_5feqXfkvaVleZG38DNIeL4zmNjahDfYW3GUiETBq6hhN5i-DrKcM25ZhbsXABV6n80qbGP5nsVIFC7M38pc8adi_TW9h3V__bbTJRSfNPWCSVqC6JDaHgEslYNJ6NgDrt_sn0TNXspAETyAaN63w28c_i6dri-ODvw6NyxSMhwLBzOBTNY44gzOXqjZ3HPwmhVV4OzDGX4vtQnq5xf_HG-_kg4fpvPDogA"/>
+<div class="absolute top-4 left-4 flex items-center gap-2 px-3 py-1 bg-surface-container-highest/60 backdrop-blur-md rounded-full">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest">In Stock</span>
+</div>
+</div>
+<div class="px-6 pb-8">
+<p class="text-label-sm text-primary uppercase tracking-widest mb-1">Obsidian Noir</p>
+<h3 class="text-headline-sm font-headline font-bold text-xl mb-2">Stealth Leather Boots</h3>
+<div class="flex justify-between items-center">
+<span class="text-2xl font-light text-on-surface">$890</span>
+<button class="p-3 bg-surface-container-highest rounded-full text-primary hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="group relative bg-surface-container-low rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-[0px_24px_48px_rgba(0,0,0,0.4)]">
+<div class="aspect-[4/5] relative overflow-hidden rounded-lg m-4">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="sleek modern white sneakers on a minimalist marble podium with soft top-down lighting and clean shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4H6_zCNR8G7KoIkuY-KiYgm0QysxhtDXClvwIumSweDto7Iws7RsPP65Yz4Jg7Kvv7OWkDLAKxaGrhbS6u9iMe_5ryTzrUhjOEzQ4UHqzLSjm9REIwGmIZNNCYSUshCeQl3wwWjWb87OUuP7H4pWuBVWGdbQ5ThWzXkwlr6JNDks3lfv7E4anvzdOwhet3U4qHmGsepEYBvx-s1pBG5B0VOiN6V-RqBnzY9XgvWk1bASs1A1E3VMv1tgl4MRjBA9vh3C_GqUqGAc"/>
+<div class="absolute top-4 left-4 flex items-center gap-2 px-3 py-1 bg-surface-container-highest/60 backdrop-blur-md rounded-full">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest">In Stock</span>
+</div>
+</div>
+<div class="px-6 pb-8">
+<p class="text-label-sm text-primary uppercase tracking-widest mb-1">Lumina Luxe</p>
+<h3 class="text-headline-sm font-headline font-bold text-xl mb-2">Aura Mesh Runners</h3>
+<div class="flex justify-between items-center">
+<span class="text-2xl font-light text-on-surface">$450</span>
+<button class="p-3 bg-surface-container-highest rounded-full text-primary hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 5 -->
+<div class="group relative bg-surface-container-low rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-[0px_24px_48px_rgba(0,0,0,0.4)]">
+<div class="aspect-[4/5] relative overflow-hidden rounded-lg m-4">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="two premium cotton black t-shirts folded neatly on a dark wooden table with cinematic side lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv49Njm9dXE83jF_Era6jTFeBu780th0noax_wltSu3lolosptsXlECFQJhULtFXHY6Ht1hQ_DhrWNUbPG9_1VWp98LaW2ZS5W4mrJubimjAJqYcbd37k4VzG9eG5VyBq-ktldpplaDt-3AbbO9dgWMnIhmsQk-p8zf4kMUjskqg0iXjzVFm4ZTAjKRBa7c0-1K6wpENZoq0oCfQVGoVwpMlDgY64h9jWBrs9PcJAe0aUkiBmMQN2MrBB1m_z2NWwTrEjVN49ZOVM"/>
+<div class="absolute top-4 left-4 flex items-center gap-2 px-3 py-1 bg-surface-container-highest/60 backdrop-blur-md rounded-full">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest">In Stock</span>
+</div>
+</div>
+<div class="px-6 pb-8">
+<p class="text-label-sm text-primary uppercase tracking-widest mb-1">Obsidian Noir</p>
+<h3 class="text-headline-sm font-headline font-bold text-xl mb-2">Essential Tee Pack</h3>
+<div class="flex justify-between items-center">
+<span class="text-2xl font-light text-on-surface">$180</span>
+<button class="p-3 bg-surface-container-highest rounded-full text-primary hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 6 (Stokta Yok) -->
+<div class="group relative bg-surface-container-low rounded-xl overflow-hidden transition-all duration-300 opacity-60 grayscale hover:grayscale-0 hover:opacity-100">
+<div class="aspect-[4/5] relative overflow-hidden rounded-lg m-4">
+<img class="w-full h-full object-cover" data-alt="folded premium charcoal cashmere sweater on a grey slate background with very soft atmospheric lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4QOmTa770kxgiiJT0QF2OCKI7pV9SyuIoTjY5M0L6MfyjlveF5sTnLr8TF0SANeazEA62H65K5IXnWzskCdGNWjeShoqrKoyVyb0G90QAReimPaoZMyV9LdMswJVa5kJVaA-XK9n5wDRNmPktEMVuzwmmzgQN_W33aV08RvUU_wZwKRpogkvlOZi1cBIHN3yqpaeZ1Rc1NwIMPSFErJkTDN0OoWPQXbpEEfavLDhr8REqirlfJ_iyzpaVshrp1Ynx-QOqucphvUw"/>
+<div class="absolute top-4 left-4 flex items-center gap-2 px-3 py-1 bg-error-container/80 backdrop-blur-md rounded-full text-on-error-container">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest">Stokta Yok</span>
+</div>
+</div>
+<div class="px-6 pb-8">
+<p class="text-label-sm text-on-surface-variant uppercase tracking-widest mb-1">Aether Threads</p>
+<h3 class="text-headline-sm font-headline font-bold text-xl mb-2">Infinity Cashmere</h3>
+<div class="flex justify-between items-center">
+<span class="text-2xl font-light text-on-surface-variant">$1,550</span>
+<button class="p-3 bg-surface-container-highest/20 rounded-full text-on-surface-variant cursor-not-allowed">
+<span class="material-symbols-outlined" data-icon="block">block</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 border-t border-slate-800/30 bg-slate-950 flex flex-col items-center gap-6 px-12">
+<div class="flex gap-8 text-slate-400 font-inter text-xs uppercase tracking-widest">
+<a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" href="#">Operating Hours</a>
+<a class="hover:text-white transition-colors" href="#">Contact Support</a>
+</div>
+<p class="text-slate-500 font-inter text-xs uppercase tracking-widest">© 2024 Ethereal Wayfinder. Luxury Concierge Systems.</p>
+</footer>
+</body></html>
