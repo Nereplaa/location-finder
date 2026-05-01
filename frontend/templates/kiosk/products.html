@@ -1,0 +1,247 @@
+{% extends "kiosk/base_kiosk.html" %}
+{% block title %}&#220;r&#252;nler — AVM Kiosk{% endblock %}
+
+{% block content %}
+<div class="px-6 py-8">
+
+  <!-- ── Arama + Filtre Formu ──────────────────────────────────── -->
+  <form id="kiosk-filter-form" method="GET" action="{{ url_for('kiosk.products') }}">
+
+    <!-- Arama çubuğu -->
+    <div class="flex gap-4 mb-6">
+      <input type="text" name="q" value="{{ request.args.get('q','') }}"
+             placeholder="&#220;r&#252;n veya marka aray&#305;n..."
+             class="flex-1 bg-surface-container-high border-2 border-outline-variant/40 focus:border-primary rounded-2xl px-8 text-xl text-on-surface placeholder:text-slate-500 focus:ring-0 focus:outline-none transition-colors"
+             style="height:68px;"
+             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <button type="submit"
+              class="k-touch px-8 bg-primary text-on-primary font-bold text-lg rounded-2xl flex items-center gap-2 hover:brightness-110 transition-all"
+              style="height:68px;">
+        <span class="material-symbols-outlined text-2xl">search</span>
+        Ara
+      </button>
+      <a href="{{ url_for('kiosk.products') }}"
+         class="k-touch px-5 bg-surface-container-high text-on-surface-variant rounded-2xl flex items-center hover:bg-surface-container-highest transition-colors no-underline"
+         style="height:68px;" title="Temizle">
+        <span class="material-symbols-outlined text-2xl">clear_all</span>
+      </a>
+    </div>
+
+    <!-- Kategori parametresi koru -->
+    {% if request.args.get('kategori_id') %}
+    <input type="hidden" name="kategori_id" value="{{ request.args.get('kategori_id') }}"/>
+    {% endif %}
+
+    <!-- Filtre paneli -->
+    <div class="bg-surface-container-low rounded-2xl p-6 mb-6 space-y-5">
+
+      <!-- Stok Durumu -->
+      <div class="flex items-center gap-5 flex-wrap">
+        <span class="text-sm font-bold uppercase tracking-widest text-on-surface-variant w-24 flex-shrink-0">Stok</span>
+        <label class="cursor-pointer">
+          <input type="radio" name="stok" value="" class="sr-only peer"
+                 {% if request.args.get('stok','') != 'var' %}checked{% endif %}/>
+          <span class="k-touch px-6 py-3 bg-surface-container-highest rounded-full text-base font-medium block
+                       peer-checked:bg-primary peer-checked:text-on-primary transition-all">T&#252;m&#252;</span>
+        </label>
+        <label class="cursor-pointer">
+          <input type="radio" name="stok" value="var" class="sr-only peer"
+                 {% if request.args.get('stok') == 'var' %}checked{% endif %}/>
+          <span class="k-touch px-6 py-3 bg-surface-container-highest rounded-full text-base font-medium block
+                       peer-checked:bg-secondary peer-checked:text-on-secondary transition-all">Stokta Var</span>
+        </label>
+      </div>
+
+      <!-- Renk Filtresi -->
+      {% if renkler %}
+      <div class="flex items-start gap-5">
+        <span class="text-sm font-bold uppercase tracking-widest text-on-surface-variant w-24 flex-shrink-0 pt-3">Renk</span>
+        <div class="flex gap-3 flex-wrap">
+          {% for renk in renkler %}
+          <label class="cursor-pointer">
+            <input type="checkbox" name="renk" value="{{ renk }}" class="sr-only peer"
+                   {% if renk in request.args.getlist('renk') %}checked{% endif %}/>
+            <span class="k-touch px-5 py-3 bg-surface-container-highest rounded-full text-base font-medium block
+                         peer-checked:bg-primary peer-checked:text-on-primary transition-all">{{ renk }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Beden Filtresi -->
+      {% if bedenler %}
+      <div class="flex items-start gap-5">
+        <span class="text-sm font-bold uppercase tracking-widest text-on-surface-variant w-24 flex-shrink-0 pt-3">Beden</span>
+        <div class="flex gap-3 flex-wrap">
+          {% for beden in bedenler %}
+          <label class="cursor-pointer">
+            <input type="checkbox" name="beden" value="{{ beden }}" class="sr-only peer"
+                   {% if beden in request.args.getlist('beden') %}checked{% endif %}/>
+            <span class="k-touch px-5 py-3 bg-surface-container-highest rounded-full text-base font-medium block
+                         peer-checked:bg-primary peer-checked:text-on-primary transition-all">{{ beden }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Marka Filtresi -->
+      {% if markalar %}
+      <div class="flex items-start gap-5">
+        <span class="text-sm font-bold uppercase tracking-widest text-on-surface-variant w-24 flex-shrink-0 pt-3">Marka</span>
+        <div class="flex gap-3 flex-wrap">
+          {% for marka in markalar %}
+          <label class="cursor-pointer">
+            <input type="checkbox" name="marka_id" value="{{ marka.id }}" class="sr-only peer"
+                   {% if marka.id | string in request.args.getlist('marka_id') %}checked{% endif %}/>
+            <span class="k-touch px-5 py-3 bg-surface-container-highest rounded-full text-base font-medium block
+                         peer-checked:bg-primary peer-checked:text-on-primary transition-all">{{ marka.marka_adi }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Uygula / Temizle -->
+      <div class="flex gap-4 pt-2 border-t border-outline-variant/20">
+        <button type="submit"
+                class="k-touch flex-1 py-4 bg-gradient-to-br from-primary to-on-primary-container text-on-primary font-bold text-lg rounded-2xl flex items-center justify-center gap-3">
+          <span class="material-symbols-outlined">filter_list</span>
+          Filtrele
+          {% if toplam is defined %}<span class="opacity-70 text-base">({{ toplam }})</span>{% endif %}
+        </button>
+        <a href="{{ url_for('kiosk.products') }}"
+           class="k-touch px-8 py-4 bg-surface-container-highest text-on-surface-variant rounded-2xl font-bold text-lg flex items-center gap-2 no-underline hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined">clear</span>
+          Temizle
+        </a>
+      </div>
+    </div>
+  </form>
+
+  <!-- ── Sonuç Özeti ───────────────────────────────────────────── -->
+  <div class="flex items-center justify-between mb-6">
+    <p class="text-lg text-on-surface-variant">
+      <span class="text-2xl font-bold text-on-surface">{{ toplam }}</span>
+      &#252;r&#252;n bulundu
+      {% if request.args.get('q') %} — "<span class="text-primary">{{ request.args.get('q') }}</span>"{% endif %}
+    </p>
+    {% if toplam_sayfa > 1 %}
+    <span class="text-on-surface-variant text-base">Sayfa <strong class="text-on-surface">{{ sayfa }}</strong> / {{ toplam_sayfa }}</span>
+    {% endif %}
+  </div>
+
+  <!-- ── Ürün Grid (2 sütun) ───────────────────────────────────── -->
+  {% if urunler %}
+  <div class="grid grid-cols-2 gap-6 mb-10">
+    {% for urun in urunler %}
+    {% set toplam_stok = urun.stoklar | sum(attribute='stok_adedi') if urun.stoklar else 0 %}
+    {% set aktif_kamp = urun.kampanyalar | selectattr('aktif_mi','equalto',True) | first | default(None) %}
+    <a href="{{ url_for('kiosk.product_detail', urun_id=urun.id) }}"
+       class="k-touch group block bg-surface-container-low rounded-2xl overflow-hidden hover:bg-surface-container-high transition-all no-underline
+              {% if toplam_stok == 0 %}opacity-60{% endif %}">
+
+      <!-- Görsel -->
+      <div class="relative overflow-hidden" style="aspect-ratio:4/3;">
+        {% if urun.gorsel_url %}
+        <img src="{{ urun.gorsel_url }}" alt="{{ urun.urun_adi }}"
+             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"/>
+        {% else %}
+        <div class="w-full h-full bg-surface-container-highest flex items-center justify-center">
+          <span class="material-symbols-outlined text-7xl text-on-surface-variant">image</span>
+        </div>
+        {% endif %}
+
+        <!-- Stok rozeti -->
+        <div class="absolute top-4 left-4 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold"
+             style="background:rgba(6,14,32,.75);backdrop-filter:blur(6px);">
+          {% if toplam_stok > 0 %}
+          <span class="w-2.5 h-2.5 rounded-full bg-secondary flex-shrink-0"></span>
+          <span class="text-on-surface">Stokta Var</span>
+          {% else %}
+          <span class="w-2.5 h-2.5 rounded-full bg-tertiary flex-shrink-0"></span>
+          <span class="text-on-error-container">T&#252;kendi</span>
+          {% endif %}
+        </div>
+
+        {% if aktif_kamp %}
+        <div class="absolute top-4 right-4 bg-error-container text-on-error-container px-3 py-2 rounded-full text-sm font-bold">
+          %{{ aktif_kamp.indirim_orani | int }}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Bilgi -->
+      <div class="p-6">
+        {% if urun.marka %}
+        <p class="text-primary text-sm uppercase tracking-widest mb-1">{{ urun.marka.marka_adi }}</p>
+        {% endif %}
+        <h3 class="font-headline font-bold text-xl text-on-surface mb-4 line-clamp-2 leading-snug">{{ urun.urun_adi }}</h3>
+        <div class="flex items-center justify-between">
+          {% if aktif_kamp %}
+          <div>
+            <span class="text-2xl font-bold text-secondary">
+              {{ "%.0f" | format(urun.baz_fiyat * (1 - aktif_kamp.indirim_orani / 100)) }} &#8378;
+            </span>
+            <span class="text-base text-on-surface-variant line-through ml-2">{{ "%.0f" | format(urun.baz_fiyat) }} &#8378;</span>
+          </div>
+          {% else %}
+          <span class="text-2xl font-bold text-on-surface">{{ "%.0f" | format(urun.baz_fiyat) }} &#8378;</span>
+          {% endif %}
+          <div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center text-primary
+                      group-hover:bg-primary group-hover:text-on-primary transition-all flex-shrink-0">
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </div>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- ── Sayfalama ─────────────────────────────────────────────── -->
+  {% if toplam_sayfa > 1 %}
+  <div class="flex items-stretch gap-6">
+    {% if prev_url %}
+    <a href="{{ prev_url }}"
+       class="k-touch flex-1 flex items-center justify-center gap-4 py-7 bg-surface-container-high rounded-2xl text-2xl font-bold text-on-surface hover:bg-surface-container-highest transition-colors no-underline">
+      <span class="material-symbols-outlined text-3xl">arrow_back</span>
+      &#214;nceki
+    </a>
+    {% else %}
+    <div class="flex-1"></div>
+    {% endif %}
+
+    <div class="flex flex-col items-center justify-center px-8 bg-surface-container-low rounded-2xl">
+      <span class="text-2xl font-bold text-on-surface tabular-nums">{{ sayfa }} / {{ toplam_sayfa }}</span>
+      <span class="text-sm text-on-surface-variant">Sayfa</span>
+    </div>
+
+    {% if next_url %}
+    <a href="{{ next_url }}"
+       class="k-touch flex-1 flex items-center justify-center gap-4 py-7 bg-surface-container-high rounded-2xl text-2xl font-bold text-on-surface hover:bg-surface-container-highest transition-colors no-underline">
+      Sonraki
+      <span class="material-symbols-outlined text-3xl">arrow_forward</span>
+    </a>
+    {% else %}
+    <div class="flex-1"></div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <!-- Boş durum -->
+  <div class="text-center py-24">
+    <span class="material-symbols-outlined text-on-surface-variant mb-6 block" style="font-size:6rem;">search_off</span>
+    <h2 class="text-4xl font-bold font-headline text-on-surface mb-4">&#220;r&#252;n bulunamad&#305;</h2>
+    <p class="text-xl text-on-surface-variant mb-10">Filtrelerinizi de&#287;i&#351;tirerek tekrar deneyin.</p>
+    <a href="{{ url_for('kiosk.products') }}"
+       class="k-touch inline-flex items-center gap-3 bg-primary text-on-primary px-12 py-5 rounded-2xl font-bold text-xl no-underline hover:brightness-110 transition-all">
+      <span class="material-symbols-outlined text-2xl">refresh</span>
+      T&#252;m &#220;r&#252;nler
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

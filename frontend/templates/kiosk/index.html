@@ -1,0 +1,170 @@
+{% extends "kiosk/base_kiosk.html" %}
+{% block title %}Ana Sayfa — AVM Kiosk{% endblock %}
+
+{# İndeks sayfasında "GERİ" butonu anlamsız — yerini boşluk tutar #}
+{% block back_btn %}<div class="w-36"></div>{% endblock %}
+
+{% block content %}
+<div class="min-h-screen px-8 py-10">
+
+  <!-- ── Hero: Arama ────────────────────────────────────────────── -->
+  <section class="max-w-4xl mx-auto mb-12">
+    <h1 class="text-6xl font-extrabold font-headline text-blue-200 text-center mb-3 text-glow leading-tight">
+      AVM Rehber
+    </h1>
+    <p class="text-2xl text-on-surface-variant text-center mb-10">
+      Arad&#305;&#287;&#305;n&#305;z&#305; bulun, ma&#287;azaya gidin
+    </p>
+
+    <form action="{{ url_for('kiosk.products') }}" method="GET" class="flex gap-4">
+      <input type="text" name="q"
+             placeholder="&#220;r&#252;n ad&#305; veya marka aray&#305;n..."
+             class="flex-1 bg-surface-container-high border-2 border-outline-variant/40 focus:border-primary rounded-2xl px-8 text-on-surface placeholder:text-slate-500 focus:ring-0 focus:outline-none transition-colors text-xl"
+             style="height:80px;"
+             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <button type="submit"
+              class="k-touch px-10 bg-gradient-to-br from-primary to-on-primary-container text-on-primary font-bold text-xl rounded-2xl flex items-center gap-3 hover:brightness-110 transition-all shadow-lg"
+              style="height:80px;">
+        <span class="material-symbols-outlined text-3xl">search</span>
+        Ara
+      </button>
+    </form>
+  </section>
+
+  <!-- ── Hızlı Erişim ──────────────────────────────────────────── -->
+  <section class="max-w-4xl mx-auto mb-14 grid grid-cols-2 gap-5">
+    <a href="{{ url_for('kiosk.products') }}"
+       class="k-touch flex items-center gap-5 bg-surface-container-low border border-outline-variant/25 rounded-2xl px-8 py-6 hover:bg-surface-container-high hover:border-primary/40 transition-all no-underline group">
+      <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+        <span class="material-symbols-outlined text-3xl text-primary">grid_view</span>
+      </div>
+      <div>
+        <p class="text-xl font-bold text-on-surface">T&#252;m &#220;r&#252;nler</p>
+        <p class="text-sm text-on-surface-variant">T&#252;m ma&#287;aza stoklar&#305;</p>
+      </div>
+      <span class="material-symbols-outlined text-on-surface-variant ml-auto text-2xl">chevron_right</span>
+    </a>
+
+    <a href="{{ url_for('kiosk.campaigns') }}"
+       class="k-touch flex items-center gap-5 bg-surface-container-low border border-outline-variant/25 rounded-2xl px-8 py-6 hover:bg-surface-container-high hover:border-secondary/40 transition-all no-underline group">
+      <div class="w-14 h-14 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-secondary/20 transition-colors">
+        <span class="material-symbols-outlined text-3xl text-secondary">local_offer</span>
+      </div>
+      <div>
+        <p class="text-xl font-bold text-on-surface">Kampanyalar</p>
+        <p class="text-sm text-on-surface-variant">G&#252;ncel indirimler</p>
+      </div>
+      <span class="material-symbols-outlined text-on-surface-variant ml-auto text-2xl">chevron_right</span>
+    </a>
+  </section>
+
+  <!-- ── Kategoriler ───────────────────────────────────────────── -->
+  {% if kategoriler %}
+  <section class="max-w-5xl mx-auto mb-14">
+    <h2 class="text-3xl font-bold font-headline text-on-surface mb-6">Kategoriler</h2>
+    <div class="grid grid-cols-3 gap-5">
+      {% for kat in kategoriler %}
+      <a href="{{ url_for('kiosk.products') }}?kategori_id={{ kat.id }}"
+         class="k-touch group flex items-center gap-5 bg-surface-container-low border border-outline-variant/20 rounded-2xl p-7 hover:bg-surface-container-high hover:border-primary/40 transition-all no-underline">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+          <span class="material-symbols-outlined text-2xl text-primary">category</span>
+        </div>
+        <p class="text-lg font-bold text-on-surface group-hover:text-primary transition-colors">{{ kat.kategori_adi }}</p>
+        <span class="material-symbols-outlined text-on-surface-variant ml-auto">chevron_right</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ── Aktif Kampanyalar Carousel ──────────────────────────────── -->
+  {% if kampanyalar %}
+  <section class="max-w-5xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-3xl font-bold font-headline text-on-surface">Aktif Kampanyalar</h2>
+      <div class="flex gap-3">
+        <button id="kc-prev" aria-label="&#214;nceki"
+                class="k-touch w-14 h-14 rounded-2xl bg-surface-container-high border border-outline-variant/30 flex items-center justify-center hover:bg-surface-container-highest transition-all">
+          <span class="material-symbols-outlined text-2xl text-on-surface">chevron_left</span>
+        </button>
+        <button id="kc-next" aria-label="Sonraki"
+                class="k-touch w-14 h-14 rounded-2xl bg-surface-container-high border border-outline-variant/30 flex items-center justify-center hover:bg-surface-container-highest transition-all">
+          <span class="material-symbols-outlined text-2xl text-on-surface">chevron_right</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="overflow-hidden" id="kc-window">
+      <div id="kc-track" class="flex gap-5" style="transition:transform .45s cubic-bezier(.4,0,.2,1);will-change:transform;">
+        {% for k in kampanyalar %}
+        <a href="{{ url_for('kiosk.product_detail', urun_id=k.urun_id) }}"
+           class="k-touch kc-slide flex-shrink-0 w-64 bg-surface-container-low border border-error-container/30 rounded-2xl overflow-hidden hover:border-error-container/60 transition-all no-underline group">
+          {% if k.urun and k.urun.gorsel_url %}
+          <div class="overflow-hidden" style="height:160px;">
+            <img src="{{ k.urun.gorsel_url }}" alt="{{ k.urun.urun_adi }}"
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+          </div>
+          {% else %}
+          <div class="flex items-center justify-center bg-surface-container-highest" style="height:160px;">
+            <span class="material-symbols-outlined text-5xl text-on-surface-variant">image</span>
+          </div>
+          {% endif %}
+          <div class="p-5">
+            <span class="inline-block bg-error-container text-on-error-container text-sm font-bold px-3 py-1 rounded-full mb-3">
+              %{{ k.indirim_orani | int }} &#304;ND&#304;R&#304;M
+            </span>
+            <p class="text-base font-bold text-on-surface line-clamp-2">{{ k.urun.urun_adi if k.urun else '' }}</p>
+            {% if k.magaza %}
+            <p class="text-sm text-on-surface-variant mt-1">{{ k.magaza.magaza_adi }}</p>
+            {% endif %}
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div id="kc-dots" class="flex justify-center gap-3 mt-5"></div>
+  </section>
+
+  <script>
+  (function () {
+    var GAP = 20, SLIDE_W = 256;
+    var total = {{ kampanyalar | length }};
+    var track = document.getElementById('kc-track');
+    var win   = document.getElementById('kc-window');
+    var dots  = document.getElementById('kc-dots');
+    var cur = 0, timer = null;
+
+    function pp() { return Math.max(1, Math.floor((win.offsetWidth + GAP) / (SLIDE_W + GAP))); }
+    function maxI() { return Math.max(0, total - pp()); }
+
+    function render() {
+      track.style.transform = 'translateX(-' + (cur * (SLIDE_W + GAP)) + 'px)';
+      var p = pp(), count = Math.ceil(total / p), active = Math.min(Math.floor(cur / p), count - 1);
+      dots.innerHTML = '';
+      for (var i = 0; i < count; i++) {
+        var d = document.createElement('button');
+        d.setAttribute('aria-label', 'Slayt ' + (i + 1));
+        d.style.cssText = 'border:none;cursor:pointer;border-radius:9999px;transition:all .3s;height:10px;';
+        d.style.width = i === active ? '32px' : '10px';
+        d.style.background = i === active ? 'var(--md-sys-color-primary,#6750A4)' : 'rgba(128,128,160,0.4)';
+        (function(idx){ d.onclick = function(){ cur = idx * pp(); render(); restart(); }; })(i);
+        dots.appendChild(d);
+      }
+    }
+
+    function move(delta) { cur = Math.max(0, Math.min(cur + delta, maxI())); render(); }
+    function start() { if (total > pp()) timer = setInterval(function(){ cur = cur >= maxI() ? 0 : cur + 1; render(); }, 5000); }
+    function restart() { clearInterval(timer); start(); }
+
+    document.getElementById('kc-prev').onclick = function(){ move(-1); restart(); };
+    document.getElementById('kc-next').onclick = function(){ move(1); restart(); };
+
+    render();
+    start();
+  })();
+  </script>
+  {% endif %}
+
+</div>
+{% endblock %}

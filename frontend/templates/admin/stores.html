@@ -1,60 +1,31 @@
 {% extends "base_admin.html" %}
-
 {% block title %}Mağaza Yönetimi — AVM Rehber{% endblock %}
 {% block body_class %}admin-magazalar{% endblock %}
 
 {% block sidebar %}
 <ul class="nav flex-column pt-2">
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
-            <i class="bi bi-bar-chart-line"></i>Dashboard
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link active" href="{{ url_for('admin.stores') }}">
-            <i class="bi bi-building"></i>Mağazalar
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.users') }}">
-            <i class="bi bi-people"></i>Kullanıcılar
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.categories') }}">
-            <i class="bi bi-diagram-3"></i>Kategoriler
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.brands') }}">
-            <i class="bi bi-tag"></i>Markalar
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.reports') }}">
-            <i class="bi bi-file-earmark-bar-graph"></i>Raporlar
-        </a>
-    </li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-bar-chart-line"></i>Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link active" href="{{ url_for('admin.stores') }}"><i class="bi bi-building"></i>Mağazalar</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.users') }}"><i class="bi bi-people"></i>Kullanıcılar</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.categories') }}"><i class="bi bi-diagram-3"></i>Kategoriler</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.brands') }}"><i class="bi bi-tag"></i>Markalar</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.reports') }}"><i class="bi bi-file-earmark-bar-graph"></i>Raporlar</a></li>
 </ul>
 {% endblock %}
 
 {% block content %}
 
-<!-- Başlık -->
 <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-    <h1 class="h4 fw-bold mb-0">
-        <i class="bi bi-building me-2 text-primary"></i>Mağaza Yönetimi
-    </h1>
+    <h1 class="h4 fw-bold mb-0"><i class="bi bi-building me-2 text-primary"></i>Mağaza Yönetimi</h1>
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#magazaEkleModal">
         <i class="bi bi-plus-circle me-1"></i>Yeni Mağaza Ekle
     </button>
 </div>
 
-<!-- Mağaza Listesi (FR-3.1) -->
 <div class="card mb-4">
     <div class="card-header d-flex align-items-center justify-content-between">
         <span><i class="bi bi-list me-2"></i>Mağaza Listesi</span>
-        <span class="badge bg-primary">{{ magazalar | length if magazalar else 0 }} mağaza</span>
+        <span class="badge bg-primary">{{ magazalar | length }} mağaza</span>
     </div>
     <div class="card-body p-0">
         <div class="tablo-avm-wrapper">
@@ -63,102 +34,65 @@
                     <tr>
                         <th>Mağaza Adı</th>
                         <th>Kat</th>
-                        <th>Konum Kodu</th>
+                        <th>Konum</th>
                         <th>Çalışma Saatleri</th>
                         <th>Durum</th>
                         <th>Sorumlu</th>
-                        <th style="width:140px;">İşlemler</th>
+                        <th style="width:180px;">İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% if magazalar %}
                     {% for magaza in magazalar %}
-                    <tr>
+                    <tr class="{% if not magaza.aktif_mi %}table-secondary{% endif %}">
                         <td class="fw-semibold">{{ magaza.magaza_adi }}</td>
+                        <td><span class="badge-kat">{{ magaza.kat }}. Kat</span></td>
+                        <td><span class="badge-konum font-monospace">{{ magaza.konum_kodu }}</span></td>
+                        <td class="text-muted small"><i class="bi bi-clock me-1"></i>{{ magaza.calisma_saati_baslangic }} – {{ magaza.calisma_saati_bitis }}</td>
                         <td>
-                            <span class="badge-kat">{{ magaza.kat }}. Kat</span>
-                        </td>
-                        <td>
-                            <span class="badge-konum font-monospace">{{ magaza.konum_kodu }}</span>
-                        </td>
-                        <td class="text-muted small">
-                            <i class="bi bi-clock me-1"></i>
-                            {{ magaza.calisma_saati_baslangic }} – {{ magaza.calisma_saati_bitis }}
-                        </td>
-                        <td>
-                            {% if magaza.aktif_mi %}
-                            <span class="badge bg-success">Aktif</span>
-                            {% else %}
-                            <span class="badge bg-secondary">Pasif</span>
-                            {% endif %}
+                            {% if magaza.aktif_mi %}<span class="badge bg-success">Aktif</span>
+                            {% else %}<span class="badge bg-secondary">Pasif</span>{% endif %}
                         </td>
                         <td class="small text-muted">
                             {% if magaza.sorumlular %}
-                                {% for s in magaza.sorumlular %}
-                                {{ s.kullanici.ad }} {{ s.kullanici.soyad }}{% if not loop.last %}, {% endif %}
-                                {% endfor %}
-                            {% else %}
-                            <span class="text-warning">
-                                <i class="bi bi-exclamation-circle me-1"></i>Atanmamış
-                            </span>
-                            {% endif %}
+                                {% for s in magaza.sorumlular %}{{ s.kullanici.ad }} {{ s.kullanici.soyad }}{% if not loop.last %}, {% endif %}{% endfor %}
+                            {% else %}<span class="text-warning"><i class="bi bi-exclamation-circle me-1"></i>Atanmamış</span>{% endif %}
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <!-- Düzenle -->
-                                <button type="button"
-                                        class="btn btn-outline-primary"
-                                        title="Mağazayı Düzenle"
-                                        onclick="magazaDuzenle({{ magaza.id }})">
+                                <button type="button" class="btn btn-outline-primary"
+                                        title="Düzenle"
+                                        onclick="magazaDuzenleAc({{ magaza.id }}, '{{ magaza.magaza_adi | e }}', '{{ magaza.kat }}', '{{ magaza.calisma_saati_baslangic or '' }}', '{{ magaza.calisma_saati_bitis or '' }}', '{{ (magaza.aciklama or '') | e }}')">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-
-                                <!-- Pasife Al (Soft Delete — NFR-3.2 onay) -->
+                                <button type="button" class="btn btn-outline-info"
+                                        title="Sorumlu Ata"
+                                        onclick="sorumluAtaAc({{ magaza.id }}, '{{ magaza.magaza_adi | e }}')">
+                                    <i class="bi bi-person-badge"></i>
+                                </button>
                                 {% if magaza.aktif_mi %}
-                                <button type="button"
-                                        class="btn btn-outline-warning"
-                                        title="Mağazayı Pasife Al"
+                                <button type="button" class="btn btn-outline-warning" title="Pasife Al"
                                         data-onay="true"
-                                        data-onay-mesaj="{{ magaza.magaza_adi }} mağazasını pasife almak istediğinizden emin misiniz? Mağazanın ürünleri arama sonuçlarından kaldırılacaktır."
+                                        data-onay-mesaj="{{ magaza.magaza_adi }} mağazasını pasife almak istediğinizden emin misiniz?"
                                         data-onay-hedef="{{ url_for('admin.deactivate_store', magaza_id=magaza.id) }}"
-                                        data-onay-method="POST"
-                                        data-onay-baslik="Mağazayı Pasife Al">
+                                        data-onay-method="POST">
                                     <i class="bi bi-pause-circle"></i>
                                 </button>
                                 {% else %}
-                                <button type="button"
-                                        class="btn btn-outline-success"
-                                        title="Mağazayı Aktife Al"
+                                <button type="button" class="btn btn-outline-success" title="Aktife Al"
                                         data-onay="true"
-                                        data-onay-mesaj="{{ magaza.magaza_adi }} mağazasını tekrar aktifleştirmek istiyor musunuz?"
+                                        data-onay-mesaj="{{ magaza.magaza_adi }} mağazasını aktifleştirmek istiyor musunuz?"
                                         data-onay-hedef="{{ url_for('admin.activate_store', magaza_id=magaza.id) }}"
                                         data-onay-method="POST">
                                     <i class="bi bi-play-circle"></i>
                                 </button>
                                 {% endif %}
-
-                                <!-- Sil (NFR-3.2 onay ZORUNLU) -->
-                                <button type="button"
-                                        class="btn btn-danger"
-                                        title="Mağazayı Sil"
-                                        data-onay="true"
-                                        data-onay-mesaj="{{ magaza.magaza_adi }} mağazasını kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz ve mağazaya ait tüm veriler silinecektir."
-                                        data-onay-hedef="{{ url_for('admin.deactivate_store', magaza_id=magaza.id) }}"
-                                        data-onay-method="POST"
-                                        data-onay-baslik="Mağazayı Sil">
-                                    <i class="bi bi-trash"></i>
-                                </button>
                             </div>
                         </td>
                     </tr>
                     {% endfor %}
                     {% else %}
-                    <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">
-                            <i class="bi bi-building d-block fs-2 mb-2"></i>
-                            Henüz mağaza eklenmemiş.
-                        </td>
-                    </tr>
+                    <tr><td colspan="7" class="text-center py-4 text-muted"><i class="bi bi-building d-block fs-2 mb-2"></i>Henüz mağaza eklenmemiş.</td></tr>
                     {% endif %}
                 </tbody>
             </table>
@@ -166,95 +100,141 @@
     </div>
 </div>
 
-<!-- ── Mağaza Ekle Modal (FR-3.1 + BR-4.1) ── -->
-<div class="modal fade" id="magazaEkleModal" tabindex="-1"
-     aria-labelledby="magazaEkleModalLabel" aria-hidden="true">
+<!-- ── Mağaza Ekle Modal ── -->
+<div class="modal fade" id="magazaEkleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="magazaEkleModalLabel">
-                    <i class="bi bi-building me-2 text-primary"></i>Yeni Mağaza Ekle
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                <h5 class="modal-title"><i class="bi bi-building me-2 text-primary"></i>Yeni Mağaza Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ url_for('admin.stores') }}" method="POST"
-                  class="needs-validation" novalidate>
+            <form action="{{ url_for('admin.stores') }}" method="POST" class="needs-validation" novalidate>
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-body">
-
                     <div class="row g-3">
                         <div class="col-md-8">
-                            <label for="magaza_adi" class="form-label">Mağaza Adı <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="magaza_adi"
-                                   name="magaza_adi" required maxlength="200"
-                                   placeholder="Mağaza adını girin">
-                            <div class="invalid-feedback">Mağaza adı zorunludur.</div>
+                            <label class="form-label">Mağaza Adı <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="magaza_adi" required maxlength="200" placeholder="Mağaza adını girin">
                         </div>
                         <div class="col-md-4">
-                            <label for="kat" class="form-label">Kat <span class="text-danger">*</span></label>
-                            <select class="form-select" id="kat" name="kat" required>
+                            <label class="form-label">Kat <span class="text-danger">*</span></label>
+                            <select class="form-select" name="kat" required>
                                 <option value="">Kat seçin...</option>
                                 {% for k in range(-1, 8) %}
-                                <option value="{{ k }}">
-                                    {% if k == -1 %}Bodrum Kat{% elif k == 0 %}Zemin Kat{% else %}{{ k }}. Kat{% endif %}
-                                </option>
+                                <option value="{{ k }}">{% if k == -1 %}Bodrum{% elif k == 0 %}Zemin{% else %}{{ k }}. Kat{% endif %}</option>
                                 {% endfor %}
                             </select>
-                            <div class="invalid-feedback">Lütfen kat seçin.</div>
                         </div>
                         <div class="col-md-6">
-                            <!-- BR-4.1: konum_kodu UNIQUE -->
-                            <label for="konum_kodu" class="form-label">
-                                Konum Kodu <span class="text-danger">*</span>
-                                <i class="bi bi-info-circle text-muted"
-                                   title="Benzersiz olmalı — örn: A-101, B-203"
-                                   data-bs-toggle="tooltip"></i>
-                            </label>
-                            <input type="text" class="form-control font-monospace" id="konum_kodu"
-                                   name="konum_kodu" required maxlength="20"
-                                   placeholder="Örn: A-101"
-                                   style="text-transform:uppercase;"
-                                   oninput="this.value = this.value.toUpperCase()">
-                            <div class="form-text">Her mağaza için benzersiz olmalıdır (BR-4.1).</div>
-                            <div class="invalid-feedback">Konum kodu zorunludur.</div>
+                            <label class="form-label">Konum Kodu <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control font-monospace" name="konum_kodu" required maxlength="20"
+                                   placeholder="Örn: A-101" oninput="this.value=this.value.toUpperCase()">
+                            <div class="form-text">Benzersiz olmalıdır (BR-4.1)</div>
                         </div>
                         <div class="col-md-3">
-                            <label for="calisma_baslangic" class="form-label">Açılış Saati</label>
-                            <input type="time" class="form-control" id="calisma_baslangic"
-                                   name="calisma_saati_baslangic" value="10:00">
+                            <label class="form-label">Açılış</label>
+                            <input type="time" class="form-control" name="calisma_saati_baslangic" value="10:00">
                         </div>
                         <div class="col-md-3">
-                            <label for="calisma_bitis" class="form-label">Kapanış Saati</label>
-                            <input type="time" class="form-control" id="calisma_bitis"
-                                   name="calisma_saati_bitis" value="22:00">
+                            <label class="form-label">Kapanış</label>
+                            <input type="time" class="form-control" name="calisma_saati_bitis" value="22:00">
                         </div>
                         <div class="col-12">
-                            <label for="magaza_aciklama" class="form-label">Açıklama</label>
-                            <textarea class="form-control" id="magaza_aciklama"
-                                      name="aciklama" rows="2"
-                                      placeholder="Mağaza hakkında kısa bilgi (isteğe bağlı)"></textarea>
+                            <label class="form-label">Açıklama</label>
+                            <textarea class="form-control" name="aciklama" rows="2" placeholder="Kısa bilgi (isteğe bağlı)"></textarea>
                         </div>
                         <div class="col-md-6">
-                            <label for="sorumlu_id" class="form-label">Mağaza Sorumlusu</label>
-                            <select class="form-select" id="sorumlu_id" name="sorumlu_id">
+                            <label class="form-label">Mağaza Sorumlusu</label>
+                            <select class="form-select" name="sorumlu_id">
                                 <option value="">Sonradan ata...</option>
-                                {% for kullanici in sorumlular | default([]) %}
-                                <option value="{{ kullanici.id }}">
-                                    {{ kullanici.ad }} {{ kullanici.soyad }} ({{ kullanici.eposta }})
-                                </option>
+                                {% for k in sorumlular %}
+                                <option value="{{ k.id }}">{{ k.ad }} {{ k.soyad }} ({{ k.eposta }})</option>
                                 {% endfor %}
                             </select>
                         </div>
                     </div>
-
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle me-1"></i>Vazgeç
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-circle me-1"></i>Mağazayı Kaydet
-                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-1"></i>Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ── Mağaza Düzenle Modal ── -->
+<div class="modal fade" id="magazaDuzenleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil me-2 text-primary"></i>Mağazayı Düzenle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="magazaDuzenleForm" method="POST" class="needs-validation" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label">Mağaza Adı <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="edit_magaza_adi" name="magaza_adi" required maxlength="200">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Kat <span class="text-danger">*</span></label>
+                            <select class="form-select" id="edit_kat" name="kat" required>
+                                {% for k in range(-1, 8) %}
+                                <option value="{{ k }}">{% if k == -1 %}Bodrum{% elif k == 0 %}Zemin{% else %}{{ k }}. Kat{% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Açılış</label>
+                            <input type="time" class="form-control" id="edit_baslangic" name="calisma_saati_baslangic">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Kapanış</label>
+                            <input type="time" class="form-control" id="edit_bitis" name="calisma_saati_bitis">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="edit_aciklama" name="aciklama" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-1"></i>Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ── Sorumlu Ata Modal ── -->
+<div class="modal fade" id="sorumluAtaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-person-badge me-2 text-info"></i>Sorumlu Ata</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="sorumluAtaForm" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <p class="text-muted mb-3"><strong id="sorumlu-magaza-adi"></strong> mağazasına sorumlu atayın.</p>
+                    <div class="mb-3">
+                        <label class="form-label">Sorumlu Kullanıcı <span class="text-danger">*</span></label>
+                        <select class="form-select" name="kullanici_id" required>
+                            <option value="">Kullanıcı seçin...</option>
+                            {% for k in sorumlular %}
+                            <option value="{{ k.id }}">{{ k.ad }} {{ k.soyad }} ({{ k.eposta }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-info text-white"><i class="bi bi-check-circle me-1"></i>Ata</button>
                 </div>
             </form>
         </div>
@@ -263,16 +243,22 @@
 
 {% endblock %}
 
-{% block extra_js %}
+{% block extra_scripts %}
 <script>
-// Bootstrap tooltip'leri aktif et
-document.addEventListener('DOMContentLoaded', function() {
-    var tooltipList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipList.map(function(el) { return new bootstrap.Tooltip(el); });
-});
+function magazaDuzenleAc(id, adi, kat, baslangic, bitis, aciklama) {
+    document.getElementById('edit_magaza_adi').value = adi;
+    document.getElementById('edit_kat').value = kat;
+    document.getElementById('edit_baslangic').value = baslangic;
+    document.getElementById('edit_bitis').value = bitis;
+    document.getElementById('edit_aciklama').value = aciklama;
+    document.getElementById('magazaDuzenleForm').action = '/admin/stores/' + id + '/update';
+    new bootstrap.Modal(document.getElementById('magazaDuzenleModal')).show();
+}
 
-function magazaDuzenle(magazaId) {
-    window.location.href = '/admin/stores/' + magazaId + '/edit';
+function sorumluAtaAc(magazaId, magazaAdi) {
+    document.getElementById('sorumlu-magaza-adi').textContent = magazaAdi;
+    document.getElementById('sorumluAtaForm').action = '/admin/stores/' + magazaId + '/assign';
+    new bootstrap.Modal(document.getElementById('sorumluAtaModal')).show();
 }
 </script>
 {% endblock %}

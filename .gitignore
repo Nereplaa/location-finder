@@ -31,9 +31,10 @@ __MACOSX/
 # Logs
 *.log
 
-# Diğer gizli/gereksiz dosyalar
-eski_CLAUDE.md
-yeni_CLAUDE.md
-
+# Dokümantasyon ve hassas dosyalar (bilinçli olarak izlenmiyor)
 CLAUDE.md
 *.pdf
+
+# Geçici dosyalar
+*.tmp
+*.bak

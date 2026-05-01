@@ -282,6 +282,41 @@
                         </div>
                     </div>
 
+                    <!-- GÖREV 6: Ürün Özellikleri (renk/beden/kumaş) -->
+                    <hr class="border-secondary my-3">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <label class="form-label mb-0 fw-semibold">Ürün Özellikleri <small class="text-muted fw-normal">(isteğe bağlı)</small></label>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="ozellikEkle('ekle')">
+                            <i class="bi bi-plus"></i> Satır Ekle
+                        </button>
+                    </div>
+                    <div id="ozellik-satirlari-ekle">
+                        <div class="ozellik-satir row g-2 mb-2 align-items-center">
+                            <div class="col-md-3">
+                                <input type="text" name="renk_0" class="form-control form-control-sm" placeholder="Renk (ör. Kırmızı)">
+                            </div>
+                            <div class="col-md-3">
+                                <select name="beden_0" class="form-select form-select-sm">
+                                    <option value="">Beden</option>
+                                    {% for b in ['XS','S','M','L','XL','XXL','Standart'] %}
+                                    <option>{{ b }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="kumas_0" class="form-control form-control-sm" placeholder="Kumaş türü">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" name="ekfiyat_0" class="form-control form-control-sm" placeholder="Ek ₺" min="0" step="0.01" value="0">
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.ozellik-satir').remove()">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -338,12 +373,130 @@
     </div>
 </div>
 
+<!-- ── Ürün Düzenle Modal (FR-2.1) ── -->
+<div class="modal fade" id="urunDuzenleModal" tabindex="-1"
+     aria-labelledby="urunDuzenleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="urunDuzenleModalLabel">
+                    <i class="bi bi-pencil me-2 text-primary"></i>Ürünü Düzenle
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <form id="urunDuzenleForm" method="POST" class="needs-validation" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label for="edit_urun_adi" class="form-label">Ürün Adı <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="edit_urun_adi"
+                                   name="urun_adi" required maxlength="200">
+                            <div class="invalid-feedback">Ürün adı zorunludur.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="edit_baz_fiyat" class="form-label">Fiyat (₺) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="edit_baz_fiyat"
+                                   name="baz_fiyat" required min="0" step="0.01">
+                            <div class="invalid-feedback">Geçerli bir fiyat girin.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_marka_id" class="form-label">Marka <span class="text-danger">*</span></label>
+                            <select class="form-select" id="edit_marka_id" name="marka_id" required>
+                                <option value="">Marka seçin...</option>
+                                {% for marka in markalar | default([]) %}
+                                <option value="{{ marka.id }}">{{ marka.marka_adi }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_kategori_id" class="form-label">Kategori <span class="text-danger">*</span></label>
+                            <select class="form-select" id="edit_kategori_id" name="kategori_id" required>
+                                <option value="">Kategori seçin...</option>
+                                {% for kategori in kategoriler | default([]) %}
+                                <option value="{{ kategori.id }}">{{ kategori.kategori_adi }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="edit_aciklama" class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="edit_aciklama"
+                                      name="aciklama" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-8">
+                            <label for="edit_gorsel_url" class="form-label">Görsel URL</label>
+                            <input type="url" class="form-control" id="edit_gorsel_url"
+                                   name="gorsel_url" placeholder="https://...">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="edit_min_stok" class="form-label">Min. Stok Seviyesi</label>
+                            <input type="number" class="form-control" id="edit_min_stok"
+                                   name="min_stok_seviyesi" min="0" value="5">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Vazgeç
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i>Değişiklikleri Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
+var _urunData = {
+  {% for urun in urunler %}
+  "{{ urun.id }}": {
+    urun_adi: {{ urun.urun_adi | tojson }},
+    baz_fiyat: {{ urun.baz_fiyat | float }},
+    marka_id: {{ urun.marka_id or 'null' }},
+    kategori_id: {{ urun.kategori_id or 'null' }},
+    aciklama: {{ (urun.aciklama or '') | tojson }},
+    gorsel_url: {{ (urun.gorsel_url or '') | tojson }},
+    min_stok: {{ urun.stok.min_stok_seviyesi if urun.stok else 5 }}
+  }{% if not loop.last %},{% endif %}
+  {% endfor %}
+};
+
 function urunDuzenle(urunId) {
-    window.location.href = '/manager/products/' + urunId + '/edit';
+    var d = _urunData[urunId.toString()];
+    if (!d) return;
+    document.getElementById('edit_urun_adi').value = d.urun_adi;
+    document.getElementById('edit_baz_fiyat').value = d.baz_fiyat;
+    document.getElementById('edit_aciklama').value = d.aciklama;
+    document.getElementById('edit_gorsel_url').value = d.gorsel_url;
+    document.getElementById('edit_min_stok').value = d.min_stok;
+    var markaEl = document.getElementById('edit_marka_id');
+    if (d.marka_id) markaEl.value = d.marka_id;
+    var katEl = document.getElementById('edit_kategori_id');
+    if (d.kategori_id) katEl.value = d.kategori_id;
+    document.getElementById('urunDuzenleForm').action = '/manager/products/' + urunId + '/update';
+    var modal = new bootstrap.Modal(document.getElementById('urunDuzenleModal'));
+    modal.show();
+}
+
+/* GÖREV 6: Özellik satırı ekle (renk/beden/kumaş) */
+function ozellikEkle(prefix) {
+    var container = document.getElementById('ozellik-satirlari-' + prefix);
+    var idx = container.querySelectorAll('.ozellik-satir').length;
+    var bedenler = ['XS','S','M','L','XL','XXL','Standart'];
+    var opts = bedenler.map(b => '<option>' + b + '</option>').join('');
+    var satir = document.createElement('div');
+    satir.className = 'ozellik-satir row g-2 mb-2 align-items-center';
+    satir.innerHTML = '<div class="col-md-3"><input type="text" name="renk_' + idx + '" class="form-control form-control-sm" placeholder="Renk"></div>' +
+      '<div class="col-md-3"><select name="beden_' + idx + '" class="form-select form-select-sm"><option value="">Beden</option>' + opts + '</select></div>' +
+      '<div class="col-md-3"><input type="text" name="kumas_' + idx + '" class="form-control form-control-sm" placeholder="Kumaş türü"></div>' +
+      '<div class="col-md-2"><input type="number" name="ekfiyat_' + idx + '" class="form-control form-control-sm" placeholder="Ek ₺" min="0" step="0.01" value="0"></div>' +
+      '<div class="col-md-1"><button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest(\'.ozellik-satir\').remove()"><i class="bi bi-x"></i></button></div>';
+    container.appendChild(satir);
 }
 
 /* NFR-3.2: Stok güncelleme formu gönderilmeden önce onay pop-up göster */
@@ -358,11 +511,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (parseInt(yeniStok) < 0) return;
 
-            /* Hızlı stok modalını gizle */
             var hizliModal = bootstrap.Modal.getInstance(document.getElementById('hizliStokModal'));
             if (hizliModal) hizliModal.hide();
 
-            /* Onay pop-up göster (main.js onayPopup fonksiyonu) */
             onayPopup(
                 urunAdi + ' ürününün stoğunu ' + mevcutStok + ' adetten ' + yeniStok + ' adede güncellemek istediğinizden emin misiniz?',
                 function() { stokForm.submit(); },

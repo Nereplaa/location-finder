@@ -1,0 +1,104 @@
+{% extends "kiosk/base_kiosk.html" %}
+{% block title %}Kampanyalar — AVM Kiosk{% endblock %}
+
+{% block content %}
+<div class="px-8 py-10">
+
+  <!-- Başlık -->
+  <div class="mb-10">
+    <h1 class="text-5xl font-extrabold font-headline text-blue-200 tracking-tight text-glow mb-2">
+      Aktif Kampanyalar
+    </h1>
+    <p class="text-xl text-on-surface-variant">AVM genelindeki g&#252;ncel indirimler</p>
+  </div>
+
+  {% if kampanyalar %}
+  <div class="grid grid-cols-2 gap-7">
+    {% for k in kampanyalar %}
+    <a href="{{ url_for('kiosk.product_detail', urun_id=k.urun_id) }}"
+       class="k-touch group flex bg-surface-container-low border border-outline-variant/20 rounded-2xl overflow-hidden hover:bg-surface-container-high hover:border-primary/30 transition-all no-underline">
+
+      <!-- Görsel -->
+      <div class="flex-shrink-0 relative overflow-hidden" style="width:220px;">
+        {% if k.urun and k.urun.gorsel_url %}
+        <img src="{{ k.urun.gorsel_url }}" alt="{{ k.urun.urun_adi }}"
+             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+        {% else %}
+        <div class="w-full h-full bg-surface-container-highest flex items-center justify-center">
+          <span class="material-symbols-outlined text-5xl text-on-surface-variant">image</span>
+        </div>
+        {% endif %}
+        <!-- İndirim rozeti üst-sol -->
+        <div class="absolute top-4 left-4 bg-error-container text-on-error-container px-4 py-2 rounded-full text-base font-bold">
+          %{{ k.indirim_orani | int }} &#304;ND&#304;R&#304;M
+        </div>
+      </div>
+
+      <!-- Bilgi -->
+      <div class="flex-1 p-7 flex flex-col justify-between">
+        <div>
+          {% if k.urun and k.urun.marka %}
+          <p class="text-primary text-sm uppercase tracking-widest mb-2">{{ k.urun.marka.marka_adi }}</p>
+          {% endif %}
+          <h3 class="font-headline font-bold text-2xl text-on-surface mb-4 leading-snug">
+            {{ k.urun.urun_adi if k.urun else 'Ürün' }}
+          </h3>
+
+          {% if k.urun %}
+          <div class="flex items-baseline gap-4 mb-4">
+            <span class="text-3xl font-bold text-secondary">
+              {{ "%.2f" | format(k.urun.baz_fiyat * (1 - k.indirim_orani / 100)) }} &#8378;
+            </span>
+            <span class="text-xl text-on-surface-variant line-through">
+              {{ "%.2f" | format(k.urun.baz_fiyat) }} &#8378;
+            </span>
+          </div>
+          {% endif %}
+
+          {% if k.magaza %}
+          <div class="flex items-center gap-2 text-on-surface-variant text-sm">
+            <span class="material-symbols-outlined text-base">storefront</span>
+            {{ k.magaza.magaza_adi }}
+            &nbsp;&middot;&nbsp; Kat {{ k.magaza.kat }}
+            &nbsp;&middot;&nbsp; {{ k.magaza.konum_kodu }}
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="flex items-center justify-between mt-4 pt-4 border-t border-outline-variant/20">
+          {% if k.bitis_tarihi %}
+          <div class="flex items-center gap-2 text-on-surface-variant text-sm">
+            <span class="material-symbols-outlined text-sm">schedule</span>
+            {{ k.bitis_tarihi.strftime('%d.%m.%Y') }} tarihine kadar
+          </div>
+          {% endif %}
+          <div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center text-primary
+                      group-hover:bg-primary group-hover:text-on-primary transition-all flex-shrink-0">
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </div>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <!-- Boş durum -->
+  <div class="flex flex-col items-center justify-center py-32 text-center">
+    <span class="material-symbols-outlined text-on-surface-variant mb-6" style="font-size:6rem;">sell</span>
+    <h2 class="text-4xl font-bold font-headline text-on-surface mb-4">
+      &#350;u an aktif kampanya bulunmuyor
+    </h2>
+    <p class="text-xl text-on-surface-variant mb-10">
+      Yeni kampanyalar i&#231;in bizi takip etmeye devam edin.
+    </p>
+    <a href="{{ url_for('kiosk.products') }}"
+       class="k-touch inline-flex items-center gap-3 bg-primary text-on-primary px-12 py-5 rounded-2xl font-bold text-xl no-underline hover:brightness-110 transition-all">
+      <span class="material-symbols-outlined text-2xl">grid_view</span>
+      T&#252;m &#220;r&#252;nler
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

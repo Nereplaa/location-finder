@@ -1,58 +1,29 @@
 {% extends "base_admin.html" %}
-
 {% block title %}Kategori Yönetimi — AVM Rehber{% endblock %}
 {% block body_class %}admin-kategoriler{% endblock %}
 
 {% block sidebar %}
 <ul class="nav flex-column pt-2">
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
-            <i class="bi bi-bar-chart-line"></i>Dashboard
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.stores') }}">
-            <i class="bi bi-building"></i>Mağazalar
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.users') }}">
-            <i class="bi bi-people"></i>Kullanıcılar
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link active" href="{{ url_for('admin.categories') }}">
-            <i class="bi bi-diagram-3"></i>Kategoriler
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.brands') }}">
-            <i class="bi bi-tag"></i>Markalar
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.reports') }}">
-            <i class="bi bi-file-earmark-bar-graph"></i>Raporlar
-        </a>
-    </li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-bar-chart-line"></i>Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.stores') }}"><i class="bi bi-building"></i>Mağazalar</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.users') }}"><i class="bi bi-people"></i>Kullanıcılar</a></li>
+    <li class="nav-item"><a class="nav-link active" href="{{ url_for('admin.categories') }}"><i class="bi bi-diagram-3"></i>Kategoriler</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.brands') }}"><i class="bi bi-tag"></i>Markalar</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.reports') }}"><i class="bi bi-file-earmark-bar-graph"></i>Raporlar</a></li>
 </ul>
 {% endblock %}
 
 {% block content %}
 
-<!-- Başlık -->
 <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-    <h1 class="h4 fw-bold mb-0">
-        <i class="bi bi-diagram-3 me-2 text-primary"></i>Kategori &amp; Parametre Yönetimi
-    </h1>
+    <h1 class="h4 fw-bold mb-0"><i class="bi bi-diagram-3 me-2 text-primary"></i>Kategori &amp; Parametre Yönetimi</h1>
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kategoriEkleModal">
         <i class="bi bi-plus-circle me-1"></i>Yeni Kategori Ekle
     </button>
 </div>
 
 <div class="row g-4">
-
-    <!-- ── Sol: Kategori Ağacı (FR-3.2) ── -->
+    <!-- ── Kategori Ağacı ── -->
     <div class="col-12 col-lg-6">
         <div class="card h-100">
             <div class="card-header">
@@ -64,71 +35,54 @@
                 <div class="kategori-agac">
                     {% for ust in kategoriler | selectattr('ust_kategori_id', 'none') %}
                     <div class="mb-3">
-                        <!-- Üst Kategori -->
                         <div class="kategori-ust d-flex justify-content-between align-items-center">
                             <span>
                                 <i class="bi bi-folder-fill me-2 text-warning"></i>
                                 {{ ust.kategori_adi }}
-                                {% if not ust.aktif_mi %}
-                                <span class="badge bg-secondary ms-1">Pasif</span>
-                                {% endif %}
+                                {% if not ust.aktif_mi %}<span class="badge bg-secondary ms-1">Pasif</span>{% endif %}
                             </span>
                             <div class="btn-group btn-group-sm">
-                                <button type="button"
-                                        class="btn btn-outline-primary btn-sm"
-                                        onclick="kategoriDuzenle({{ ust.id }}, '{{ ust.kategori_adi | e }}')"
+                                <button type="button" class="btn btn-outline-primary btn-sm"
+                                        onclick="kategoriDuzenleAc({{ ust.id }}, '{{ ust.kategori_adi | e }}')"
                                         title="Düzenle">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <!-- NFR-3.2: Silme onay ZORUNLU -->
-                                <button type="button"
-                                        class="btn btn-outline-danger btn-sm"
-                                        title="Sil"
+                                <button type="button" class="btn btn-outline-danger btn-sm" title="Sil"
                                         data-onay="true"
-                                        data-onay-mesaj="'{{ ust.kategori_adi }}' kategorisini silmek istediğinizden emin misiniz? Alt kategoriler ve bu kategoriye bağlı ürünler etkilenebilir."
+                                        data-onay-mesaj="'{{ ust.kategori_adi }}' kategorisini silmek istediğinizden emin misiniz? Alt kategoriler ve bağlı ürünler etkilenebilir."
                                         data-onay-hedef="{{ url_for('admin.delete_category', kategori_id=ust.id) }}"
-                                        data-onay-method="POST"
-                                        data-onay-baslik="Kategoriyi Sil">
+                                        data-onay-method="POST">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Alt Kategoriler -->
                         {% set alt_kategoriler = kategoriler | selectattr('ust_kategori_id', 'equalto', ust.id) | list %}
                         {% for alt in alt_kategoriler %}
                         <div class="kategori-alt">
                             <span>
                                 <i class="bi bi-tag me-2 text-muted"></i>
                                 {{ alt.kategori_adi }}
-                                {% if not alt.aktif_mi %}
-                                <span class="badge bg-secondary ms-1">Pasif</span>
-                                {% endif %}
+                                {% if not alt.aktif_mi %}<span class="badge bg-secondary ms-1">Pasif</span>{% endif %}
                             </span>
                             <div class="btn-group btn-group-sm">
-                                <button type="button"
-                                        class="btn btn-outline-primary btn-sm"
-                                        onclick="kategoriDuzenle({{ alt.id }}, '{{ alt.kategori_adi | e }}')"
+                                <button type="button" class="btn btn-outline-primary btn-sm"
+                                        onclick="kategoriDuzenleAc({{ alt.id }}, '{{ alt.kategori_adi | e }}')"
                                         title="Düzenle">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <button type="button"
-                                        class="btn btn-outline-danger btn-sm"
-                                        title="Sil"
+                                <button type="button" class="btn btn-outline-danger btn-sm" title="Sil"
                                         data-onay="true"
                                         data-onay-mesaj="'{{ alt.kategori_adi }}' alt kategorisini silmek istediğinizden emin misiniz?"
                                         data-onay-hedef="{{ url_for('admin.delete_category', kategori_id=alt.id) }}"
-                                        data-onay-method="POST"
-                                        data-onay-baslik="Kategoriyi Sil">
+                                        data-onay-method="POST">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
                         </div>
                         {% endfor %}
 
-                        <!-- Alt Kategori Ekle Butonu -->
-                        <button type="button"
-                                class="btn btn-outline-secondary btn-sm ms-4 mt-1"
+                        <button type="button" class="btn btn-outline-secondary btn-sm ms-4 mt-1"
                                 onclick="altKategoriEkle({{ ust.id }}, '{{ ust.kategori_adi | e }}')">
                             <i class="bi bi-plus-circle me-1"></i>Alt Kategori Ekle
                         </button>
@@ -136,106 +90,72 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="bos-durum py-3">
-                    <i class="bi bi-diagram-3"></i>
-                    <p>Henüz kategori eklenmemiş.</p>
-                </div>
+                <div class="bos-durum py-3"><i class="bi bi-diagram-3"></i><p>Henüz kategori eklenmemiş.</p></div>
                 {% endif %}
             </div>
         </div>
     </div>
 
-    <!-- ── Sağ: Parametre Yönetimi (Renk, Beden, Kumaş) (FR-3.2) ── -->
+    <!-- ── Parametre Yönetimi ── -->
     <div class="col-12 col-lg-6">
-
-        <!-- Renk Parametreleri -->
         <div class="card mb-3">
-            <div class="card-header">
-                <span><i class="bi bi-palette me-2 text-primary"></i>Renk Seçenekleri</span>
-            </div>
+            <div class="card-header"><i class="bi bi-palette me-2 text-primary"></i>Renk Seçenekleri</div>
             <div class="card-body py-2">
                 <div class="d-flex flex-wrap gap-2">
                     {% for renk in renkler | default([]) %}
                     <span class="badge bg-light text-dark border p-2">{{ renk }}</span>
-                    {% else %}
-                    <span class="text-muted small">Henüz renk eklenmemiş.</span>
-                    {% endfor %}
+                    {% else %}<span class="text-muted small">Henüz renk eklenmemiş.</span>{% endfor %}
                 </div>
-                <p class="text-muted small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>Renkler ürün özelliklerinden otomatik türetilir.</p>
+                <p class="text-muted small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>Ürün özelliklerinden otomatik türetilir.</p>
             </div>
         </div>
-
-        <!-- Beden Parametreleri -->
         <div class="card mb-3">
-            <div class="card-header">
-                <span><i class="bi bi-rulers me-2 text-primary"></i>Beden Seçenekleri</span>
-            </div>
+            <div class="card-header"><i class="bi bi-rulers me-2 text-primary"></i>Beden Seçenekleri</div>
             <div class="card-body py-2">
                 <div class="d-flex flex-wrap gap-2">
                     {% for beden in bedenler | default([]) %}
                     <span class="badge bg-light text-dark border p-2">{{ beden }}</span>
-                    {% else %}
-                    <span class="text-muted small">Henüz beden eklenmemiş.</span>
-                    {% endfor %}
+                    {% else %}<span class="text-muted small">Henüz beden eklenmemiş.</span>{% endfor %}
                 </div>
-                <p class="text-muted small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>Bedenler ürün özelliklerinden otomatik türetilir.</p>
+                <p class="text-muted small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>Ürün özelliklerinden otomatik türetilir.</p>
             </div>
         </div>
-
-        <!-- Kumaş Türü Parametreleri -->
         <div class="card">
-            <div class="card-header">
-                <span><i class="bi bi-layers me-2 text-primary"></i>Kumaş Türleri</span>
-            </div>
+            <div class="card-header"><i class="bi bi-layers me-2 text-primary"></i>Kumaş Türleri</div>
             <div class="card-body py-2">
                 <div class="d-flex flex-wrap gap-2">
                     {% for kumas in kumaslar | default([]) %}
                     <span class="badge bg-light text-dark border p-2">{{ kumas }}</span>
-                    {% else %}
-                    <span class="text-muted small">Henüz kumaş türü eklenmemiş.</span>
-                    {% endfor %}
+                    {% else %}<span class="text-muted small">Henüz kumaş türü eklenmemiş.</span>{% endfor %}
                 </div>
-                <p class="text-muted small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>Kumaş türleri ürün özelliklerinden otomatik türetilir.</p>
+                <p class="text-muted small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>Ürün özelliklerinden otomatik türetilir.</p>
             </div>
         </div>
-
     </div>
 </div>
 
 <!-- ── Kategori Ekle Modal ── -->
-<div class="modal fade" id="kategoriEkleModal" tabindex="-1"
-     aria-labelledby="kategoriEkleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="kategoriEkleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="kategoriEkleModalLabel">
-                    <i class="bi bi-plus-circle me-2 text-primary"></i>Yeni Kategori Ekle
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                <h5 class="modal-title"><i class="bi bi-plus-circle me-2 text-primary"></i>Yeni Kategori Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ url_for('admin.categories') }}" method="POST"
-                  class="needs-validation" novalidate>
+            <form action="{{ url_for('admin.categories') }}" method="POST" class="needs-validation" novalidate>
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="kategori_adi" class="form-label">
-                            Kategori Adı <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" class="form-control" id="kategori_adi"
-                               name="kategori_adi" required maxlength="100"
-                               placeholder="Örn: Kadın Giyim">
+                        <label class="form-label">Kategori Adı <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="kategori_adi" name="kategori_adi" required maxlength="100" placeholder="Örn: Kadın Giyim">
                         <div class="invalid-feedback">Kategori adı zorunludur.</div>
                     </div>
                     <div class="mb-3">
-                        <label for="ust_kategori_id" class="form-label">
-                            Üst Kategori <span class="text-muted small">(Hiyerarşi için)</span>
-                        </label>
+                        <label class="form-label">Üst Kategori <small class="text-muted">(Hiyerarşi için)</small></label>
                         <select class="form-select" id="ust_kategori_id" name="ust_kategori_id">
                             <option value="">— Ana Kategori (üst yok) —</option>
                             {% for ust in kategoriler | default([]) | selectattr('ust_kategori_id', 'none') %}
-                            <option value="{{ ust.id }}" id="ust-opt-{{ ust.id }}">
-                                {{ ust.kategori_adi }}
-                            </option>
+                            <option value="{{ ust.id }}" id="ust-opt-{{ ust.id }}">{{ ust.kategori_adi }}</option>
                             {% endfor %}
                         </select>
                         <div class="form-text">Boş bırakırsanız ana kategori olarak eklenir.</div>
@@ -243,44 +163,33 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-circle me-1"></i>Kaydet
-                    </button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-1"></i>Kaydet</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- ── Parametre Ekle Modal ── -->
-<div class="modal fade" id="paramEkleModal" tabindex="-1"
-     aria-labelledby="paramEkleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<!-- ── Kategori Düzenle Modal ── -->
+<div class="modal fade" id="kategoriDuzenleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="paramEkleModalLabel">
-                    <i class="bi bi-plus-circle me-2 text-primary"></i>Parametre Ekle
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                <h5 class="modal-title"><i class="bi bi-pencil me-2 text-primary"></i>Kategoriyi Düzenle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="param-ekle-form" method="POST" class="needs-validation" novalidate>
-                <input type="hidden" id="param-tip" name="tip">
+            <form id="kategoriDuzenleForm" method="POST" class="needs-validation" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="param-deger" class="form-label" id="param-deger-label">
-                            Değer <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" class="form-control" id="param-deger"
-                               name="deger" required maxlength="50"
-                               placeholder="Yeni değer girin...">
-                        <div class="invalid-feedback">Bu alan zorunludur.</div>
+                        <label class="form-label">Kategori Adı <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="edit_kategori_adi" name="kategori_adi" required maxlength="100">
+                        <div class="invalid-feedback">Kategori adı zorunludur.</div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-circle me-1"></i>Ekle
-                    </button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-1"></i>Güncelle</button>
                 </div>
             </form>
         </div>
@@ -289,27 +198,18 @@
 
 {% endblock %}
 
-{% block extra_js %}
+{% block extra_scripts %}
 <script>
-function kategoriDuzenle(id, ad) {
-    window.location.href = '/admin/categories/' + id + '/edit';
+function kategoriDuzenleAc(id, ad) {
+    document.getElementById('edit_kategori_adi').value = ad;
+    document.getElementById('kategoriDuzenleForm').action = '/admin/categories/' + id + '/update';
+    new bootstrap.Modal(document.getElementById('kategoriDuzenleModal')).show();
 }
 
 function altKategoriEkle(ustId, ustAd) {
     document.getElementById('ust_kategori_id').value = ustId;
-    var modal = new bootstrap.Modal(document.getElementById('kategoriEkleModal'));
-    modal.show();
-}
-
-function paramEkleAc(tip, baslik) {
-    var tipUrlMap = { 'renk': '/admin/params/renk', 'beden': '/admin/params/beden', 'kumas': '/admin/params/kumas' };
-    document.getElementById('paramEkleModalLabel').innerHTML =
-        '<i class="bi bi-plus-circle me-2 text-primary"></i>' + baslik;
-    document.getElementById('param-tip').value = tip;
-    document.getElementById('param-ekle-form').action = tipUrlMap[tip] || '/admin/params/' + tip;
-    document.getElementById('param-deger').value = '';
-    var modal = new bootstrap.Modal(document.getElementById('paramEkleModal'));
-    modal.show();
+    document.getElementById('kategori_adi').value = '';
+    new bootstrap.Modal(document.getElementById('kategoriEkleModal')).show();
 }
 </script>
 {% endblock %}

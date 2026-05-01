@@ -12,3 +12,7 @@ from .stoklar import Stok
 from .kampanyalar import Kampanya
 from .bildirim_talepleri import BildirimTalebi
 from .benzer_urunler import BenzerUrun
+from .arama_gecmisi import AramaGecmisi
+from .stok_log import StokLog
+from .urun_goruntuleme import UrunGoruntuleme
+from .sync_log import SyncLog

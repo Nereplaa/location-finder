@@ -1,62 +1,34 @@
 {% extends "base_admin.html" %}
-
 {% block title %}Kullanıcı Yönetimi — AVM Rehber{% endblock %}
 {% block body_class %}admin-kullanicilar{% endblock %}
 
 {% block sidebar %}
 <ul class="nav flex-column pt-2">
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
-            <i class="bi bi-bar-chart-line"></i>Dashboard
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.stores') }}">
-            <i class="bi bi-building"></i>Mağazalar
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link active" href="{{ url_for('admin.users') }}">
-            <i class="bi bi-people"></i>Kullanıcılar
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.categories') }}">
-            <i class="bi bi-diagram-3"></i>Kategoriler
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.brands') }}">
-            <i class="bi bi-tag"></i>Markalar
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('admin.reports') }}">
-            <i class="bi bi-file-earmark-bar-graph"></i>Raporlar
-        </a>
-    </li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-bar-chart-line"></i>Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.stores') }}"><i class="bi bi-building"></i>Mağazalar</a></li>
+    <li class="nav-item"><a class="nav-link active" href="{{ url_for('admin.users') }}"><i class="bi bi-people"></i>Kullanıcılar</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.categories') }}"><i class="bi bi-diagram-3"></i>Kategoriler</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.brands') }}"><i class="bi bi-tag"></i>Markalar</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.reports') }}"><i class="bi bi-file-earmark-bar-graph"></i>Raporlar</a></li>
 </ul>
 {% endblock %}
 
 {% block content %}
 
-<!-- Başlık -->
 <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-    <h1 class="h4 fw-bold mb-0">
-        <i class="bi bi-people me-2 text-primary"></i>Kullanıcı Yönetimi
-    </h1>
+    <h1 class="h4 fw-bold mb-0"><i class="bi bi-people me-2 text-primary"></i>Kullanıcı Yönetimi</h1>
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kullaniciEkleModal">
         <i class="bi bi-person-plus me-1"></i>Yeni Kullanıcı Ekle
     </button>
 </div>
 
-<!-- Filtre Satırı -->
+<!-- Filtre -->
 <div class="card mb-3">
     <div class="card-body py-2">
         <form method="GET" action="{{ url_for('admin.users') }}" class="row g-2 align-items-end">
             <div class="col-12 col-md-5">
-                <input type="text" class="form-control form-control-sm"
-                       name="q" placeholder="Ad, soyad veya e-posta ile ara..."
+                <input type="text" class="form-control form-control-sm" name="q"
+                       placeholder="Ad, soyad veya e-posta ile ara..."
                        value="{{ request.args.get('q', '') }}">
             </div>
             <div class="col-6 col-md-3">
@@ -68,20 +40,16 @@
                 </select>
             </div>
             <div class="col-6 col-md-2">
-                <button type="submit" class="btn btn-outline-primary btn-sm w-100">
-                    <i class="bi bi-search me-1"></i>Ara
-                </button>
+                <button type="submit" class="btn btn-outline-primary btn-sm w-100"><i class="bi bi-search me-1"></i>Ara</button>
             </div>
             <div class="col-12 col-md-2">
-                <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary btn-sm w-100">
-                    <i class="bi bi-x-circle me-1"></i>Temizle
-                </a>
+                <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary btn-sm w-100"><i class="bi bi-x-circle me-1"></i>Temizle</a>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Kullanıcı Tablosu (FR-3.1) -->
+<!-- Kullanıcı Tablosu -->
 <div class="card">
     <div class="card-body p-0">
         <div class="tablo-avm-wrapper">
@@ -92,105 +60,63 @@
                         <th>E-posta</th>
                         <th>Rol</th>
                         <th>Mağaza</th>
-                        <th>Kayıt Tarihi</th>
+                        <th>Kayıt</th>
                         <th>Son Giriş</th>
                         <th>Durum</th>
-                        <th style="width:160px;">İşlemler</th>
+                        <th style="width:180px;">İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% if kullanicilar %}
                     {% for kullanici in kullanicilar %}
-                    <tr>
+                    <tr class="{% if not kullanici.aktif_mi %}table-secondary{% endif %}">
                         <td class="fw-semibold">{{ kullanici.ad }} {{ kullanici.soyad }}</td>
                         <td class="text-muted small">{{ kullanici.eposta }}</td>
                         <td>
-                            {% if kullanici.rol_id == 3 %}
-                            <span class="badge bg-danger">Admin</span>
-                            {% elif kullanici.rol_id == 2 %}
-                            <span class="badge bg-warning text-dark">Sorumlu</span>
-                            {% else %}
-                            <span class="badge bg-secondary">Müşteri</span>
-                            {% endif %}
+                            {% if kullanici.rol_id == 3 %}<span class="badge bg-danger">Admin</span>
+                            {% elif kullanici.rol_id == 2 %}<span class="badge bg-warning text-dark">Sorumlu</span>
+                            {% elif kullanici.rol_id == 4 %}<span class="badge bg-dark">Kiosk</span>
+                            {% else %}<span class="badge bg-secondary">Müşteri</span>{% endif %}
                         </td>
                         <td class="small text-muted">
                             {% if kullanici.rol_id == 2 and kullanici.magaza_sorumlulari %}
-                                {% for ms in kullanici.magaza_sorumlulari %}
-                                {{ ms.magaza.magaza_adi }}{% if not loop.last %}, {% endif %}
-                                {% endfor %}
-                            {% else %}
-                            —
-                            {% endif %}
+                                {% for ms in kullanici.magaza_sorumlulari %}{{ ms.magaza.magaza_adi }}{% if not loop.last %}, {% endif %}{% endfor %}
+                            {% else %}—{% endif %}
                         </td>
-                        <td class="text-muted small">
-                            {{ kullanici.olusturma_tarihi.strftime('%d.%m.%Y') if kullanici.olusturma_tarihi else '—' }}
-                        </td>
-                        <td class="text-muted small">
-                            {{ kullanici.son_giris_tarihi.strftime('%d.%m.%Y %H:%M') if kullanici.son_giris_tarihi else 'Hiç giriş yapmadı' }}
-                        </td>
+                        <td class="text-muted small">{{ kullanici.olusturma_tarihi.strftime('%d.%m.%Y') if kullanici.olusturma_tarihi else '—' }}</td>
+                        <td class="text-muted small">{{ kullanici.son_giris_tarihi.strftime('%d.%m.%Y %H:%M') if kullanici.son_giris_tarihi else '—' }}</td>
                         <td>
-                            {% if kullanici.aktif_mi %}
-                            <span class="badge bg-success">Aktif</span>
-                            {% else %}
-                            <span class="badge bg-secondary">Pasif</span>
-                            {% endif %}
+                            {% if kullanici.aktif_mi %}<span class="badge bg-success">Aktif</span>
+                            {% else %}<span class="badge bg-secondary">Pasif</span>{% endif %}
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm">
                                 <!-- Rol Değiştir -->
-                                <button type="button"
-                                        class="btn btn-outline-primary"
-                                        title="Rol Düzenle"
+                                <button type="button" class="btn btn-outline-primary" title="Rol Düzenle"
                                         onclick="rolDuzenleAc({{ kullanici.id }}, {{ kullanici.rol_id }}, '{{ kullanici.ad | e }} {{ kullanici.soyad | e }}')">
                                     <i class="bi bi-shield"></i>
                                 </button>
-
-                                <!-- Şifre Sıfırla (BR-1.3: admin şifre göremez) -->
-                                <button type="button"
-                                        class="btn btn-outline-warning"
-                                        title="Şifre Sıfırla"
-                                        data-onay="true"
-                                        data-onay-mesaj="{{ kullanici.ad }} {{ kullanici.soyad }} kullanıcısının şifresini sıfırlamak istediğinizden emin misiniz? Kullanıcı yeni şifresi için e-posta alacak."
-                                        data-onay-hedef="{{ url_for('admin.reset_password', kullanici_id=kullanici.id) }}"
-                                        data-onay-method="POST"
-                                        data-onay-baslik="Şifre Sıfırla">
+                                <!-- Şifre Sıfırla Modal -->
+                                <button type="button" class="btn btn-outline-warning" title="Şifre Sıfırla"
+                                        onclick="sifreSifirlaAc({{ kullanici.id }}, '{{ kullanici.ad | e }} {{ kullanici.soyad | e }}')">
                                     <i class="bi bi-key"></i>
                                 </button>
-
-                                <!-- Pasife Al / Aktife Al -->
+                                <!-- Pasife / Aktife Al -->
                                 {% if kullanici.aktif_mi %}
-                                <button type="button"
-                                        class="btn btn-outline-secondary"
-                                        title="Pasife Al"
+                                <button type="button" class="btn btn-outline-secondary" title="Pasife Al"
                                         data-onay="true"
-                                        data-onay-mesaj="{{ kullanici.ad }} {{ kullanici.soyad }} kullanıcısını pasife almak istediğinizden emin misiniz? Kullanıcı sisteme giriş yapamayacak."
+                                        data-onay-mesaj="{{ kullanici.ad }} {{ kullanici.soyad }} kullanıcısını pasife almak istediğinizden emin misiniz?"
                                         data-onay-hedef="{{ url_for('admin.deactivate_user', kullanici_id=kullanici.id) }}"
                                         data-onay-method="POST">
                                     <i class="bi bi-person-dash"></i>
                                 </button>
                                 {% else %}
-                                <button type="button"
-                                        class="btn btn-outline-success"
-                                        title="Aktife Al"
+                                <button type="button" class="btn btn-outline-success" title="Aktife Al"
                                         data-onay="true"
-                                        data-onay-mesaj="{{ kullanici.ad }} {{ kullanici.soyad }} kullanıcısını tekrar aktifleştirmek istiyor musunuz?"
+                                        data-onay-mesaj="{{ kullanici.ad }} {{ kullanici.soyad }} kullanıcısını aktifleştirmek istiyor musunuz?"
                                         data-onay-hedef="{{ url_for('admin.activate_user', kullanici_id=kullanici.id) }}"
                                         data-onay-method="POST">
                                     <i class="bi bi-person-check"></i>
-                                </button>
-                                {% endif %}
-
-                                <!-- Sil (NFR-3.2 onay ZORUNLU) -->
-                                {% if kullanici.id != current_user.id %}
-                                <button type="button"
-                                        class="btn btn-danger"
-                                        title="Kullanıcıyı Sil"
-                                        data-onay="true"
-                                        data-onay-mesaj="{{ kullanici.ad }} {{ kullanici.soyad }} kullanıcısını kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
-                                        data-onay-hedef="{{ url_for('admin.deactivate_user', kullanici_id=kullanici.id) }}"
-                                        data-onay-method="POST"
-                                        data-onay-baslik="Kullanıcıyı Sil">
-                                    <i class="bi bi-trash"></i>
                                 </button>
                                 {% endif %}
                             </div>
@@ -198,12 +124,7 @@
                     </tr>
                     {% endfor %}
                     {% else %}
-                    <tr>
-                        <td colspan="8" class="text-center py-4 text-muted">
-                            <i class="bi bi-people d-block fs-2 mb-2"></i>
-                            Kullanıcı bulunamadı.
-                        </td>
-                    </tr>
+                    <tr><td colspan="8" class="text-center py-4 text-muted"><i class="bi bi-people d-block fs-2 mb-2"></i>Kullanıcı bulunamadı.</td></tr>
                     {% endif %}
                 </tbody>
             </table>
@@ -212,57 +133,45 @@
 </div>
 
 <!-- ── Kullanıcı Ekle Modal ── -->
-<div class="modal fade" id="kullaniciEkleModal" tabindex="-1"
-     aria-labelledby="kullaniciEkleModalLabel" aria-hidden="true">
+<div class="modal fade" id="kullaniciEkleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="kullaniciEkleModalLabel">
-                    <i class="bi bi-person-plus me-2 text-primary"></i>Yeni Kullanıcı Ekle
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                <h5 class="modal-title"><i class="bi bi-person-plus me-2 text-primary"></i>Yeni Kullanıcı Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ url_for('admin.users') }}" method="POST"
-                  class="needs-validation" novalidate>
+            <form action="{{ url_for('admin.users') }}" method="POST" class="needs-validation" novalidate>
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label for="yeni_ad" class="form-label">Ad <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="yeni_ad"
-                                   name="ad" required maxlength="100">
-                            <div class="invalid-feedback">Ad zorunludur.</div>
+                            <label class="form-label">Ad <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="ad" required maxlength="100">
                         </div>
                         <div class="col-md-6">
-                            <label for="yeni_soyad" class="form-label">Soyad <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="yeni_soyad"
-                                   name="soyad" required maxlength="100">
-                            <div class="invalid-feedback">Soyad zorunludur.</div>
+                            <label class="form-label">Soyad <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="soyad" required maxlength="100">
                         </div>
                         <div class="col-12">
-                            <label for="yeni_eposta" class="form-label">E-posta <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" id="yeni_eposta"
-                                   name="eposta" required>
-                            <div class="invalid-feedback">Geçerli bir e-posta adresi girin.</div>
+                            <label class="form-label">E-posta <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" name="eposta" required>
                         </div>
                         <div class="col-12">
-                            <label for="yeni_sifre" class="form-label">Şifre <span class="text-danger">*</span></label>
-                            <input type="password" class="form-control" id="yeni_sifre"
-                                   name="sifre" required minlength="8">
-                            <div class="form-text">En az 8 karakter olmalıdır.</div>
-                            <div class="invalid-feedback">Şifre en az 8 karakter olmalıdır.</div>
+                            <label class="form-label">Şifre <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" name="sifre" required minlength="8">
+                            <div class="form-text">En az 8 karakter.</div>
                         </div>
                         <div class="col-md-6">
-                            <label for="yeni_rol_id" class="form-label">Rol <span class="text-danger">*</span></label>
-                            <select class="form-select" id="yeni_rol_id" name="rol_id" required>
+                            <label class="form-label">Rol <span class="text-danger">*</span></label>
+                            <select class="form-select" name="rol_id" id="yeni-rol-select" required onchange="yeniKullaniciRolDegisti(this.value)">
                                 <option value="1">Müşteri</option>
                                 <option value="2">Mağaza Sorumlusu</option>
                                 <option value="3">Admin</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label for="yeni_magaza_id" class="form-label">Mağaza (Sorumlu ise)</label>
-                            <select class="form-select" id="yeni_magaza_id" name="magaza_id">
+                        <div class="col-md-6" id="yeni-magaza-bolum" style="display:none;">
+                            <label class="form-label">Mağaza (Sorumlu ise)</label>
+                            <select class="form-select" name="magaza_id">
                                 <option value="">—</option>
                                 {% for magaza in magazalar | default([]) %}
                                 <option value="{{ magaza.id }}">{{ magaza.magaza_adi }}</option>
@@ -273,9 +182,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-circle me-1"></i>Kullanıcı Oluştur
-                    </button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-1"></i>Oluştur</button>
                 </div>
             </form>
         </div>
@@ -283,32 +190,28 @@
 </div>
 
 <!-- ── Rol Düzenleme Modal ── -->
-<div class="modal fade" id="rolDuzenleModal" tabindex="-1"
-     aria-labelledby="rolDuzenleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="rolDuzenleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="rolDuzenleModalLabel">
-                    <i class="bi bi-shield me-2 text-primary"></i>Rol Ata
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                <h5 class="modal-title"><i class="bi bi-shield me-2 text-primary"></i>Rol Ata</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="rol-duzenle-form" method="POST" class="needs-validation" novalidate>
+            <form id="rolDuzenleForm" method="POST" class="needs-validation" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-body">
-                    <p class="text-muted mb-3">
-                        <strong id="rol-duzenle-isim"></strong> kullanıcısının rolünü değiştirin.
-                    </p>
+                    <p class="text-muted mb-3"><strong id="rol-duzenle-isim"></strong> kullanıcısının rolünü değiştirin.</p>
                     <div class="mb-3">
-                        <label for="yeni_rol" class="form-label">Yeni Rol <span class="text-danger">*</span></label>
-                        <select class="form-select" id="yeni_rol" name="rol_id" required>
+                        <label class="form-label">Yeni Rol <span class="text-danger">*</span></label>
+                        <select class="form-select" id="yeni_rol" name="rol_id" required onchange="rolSecimDegisti(this.value)">
                             <option value="1">Müşteri</option>
                             <option value="2">Mağaza Sorumlusu</option>
                             <option value="3">Admin</option>
                         </select>
                     </div>
                     <div id="magaza-atama-bolumu" class="mb-3 d-none">
-                        <label for="atama-magaza" class="form-label">Atanacak Mağaza</label>
-                        <select class="form-select" id="atama-magaza" name="magaza_id">
+                        <label class="form-label">Atanacak Mağaza</label>
+                        <select class="form-select" name="magaza_id">
                             <option value="">Mağaza seçin...</option>
                             {% for magaza in magazalar | default([]) %}
                             <option value="{{ magaza.id }}">{{ magaza.magaza_adi }}</option>
@@ -316,15 +219,40 @@
                         </select>
                     </div>
                     <div class="alert alert-warning py-2 small">
-                        <i class="bi bi-exclamation-triangle me-1"></i>
-                        Admin şifreleri görüntüleyemez; yalnızca şifre sıfırlama yapabilir (BR-1.3).
+                        <i class="bi bi-exclamation-triangle me-1"></i>Admin şifreleri görüntüleyemez (BR-1.3).
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-circle me-1"></i>Rolü Kaydet
-                    </button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-1"></i>Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ── Şifre Sıfırlama Modal ── -->
+<div class="modal fade" id="sifreSifirlaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-key me-2 text-warning"></i>Şifre Sıfırla</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="sifreSifirlaForm" method="POST" class="needs-validation" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-body">
+                    <p class="text-muted mb-3"><strong id="sifre-kullanici-adi"></strong> için yeni şifre belirleyin.</p>
+                    <div class="mb-3">
+                        <label class="form-label">Yeni Şifre <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" name="yeni_sifre" id="yeni-sifre-input" required minlength="8">
+                        <div class="form-text">En az 8 karakter (BR-1.3: admin şifreleri göremez).</div>
+                        <div class="invalid-feedback">En az 8 karakter giriniz.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-warning text-dark fw-bold"><i class="bi bi-key me-1"></i>Sıfırla</button>
                 </div>
             </form>
         </div>
@@ -333,36 +261,31 @@
 
 {% endblock %}
 
-{% block extra_js %}
+{% block extra_scripts %}
 <script>
 function rolDuzenleAc(kullaniciId, mevcutRolId, kullaniciIsim) {
     document.getElementById('rol-duzenle-isim').textContent = kullaniciIsim;
     document.getElementById('yeni_rol').value = mevcutRolId;
-    document.getElementById('rol-duzenle-form').action = '/admin/users/' + kullaniciId + '/role';
-
-    // Mağaza atama bölümünü rol seçimine göre göster
+    document.getElementById('rolDuzenleForm').action = '/admin/users/' + kullaniciId + '/role';
     rolSecimDegisti(mevcutRolId);
-
-    var modal = new bootstrap.Modal(document.getElementById('rolDuzenleModal'));
-    modal.show();
+    new bootstrap.Modal(document.getElementById('rolDuzenleModal')).show();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    var rolSelect = document.getElementById('yeni_rol');
-    if (rolSelect) {
-        rolSelect.addEventListener('change', function() {
-            rolSecimDegisti(this.value);
-        });
-    }
-});
-
 function rolSecimDegisti(rolId) {
-    var magazaBolum = document.getElementById('magaza-atama-bolumu');
-    if (parseInt(rolId) === 2) {
-        magazaBolum.classList.remove('d-none');
-    } else {
-        magazaBolum.classList.add('d-none');
-    }
+    var bolum = document.getElementById('magaza-atama-bolumu');
+    parseInt(rolId) === 2 ? bolum.classList.remove('d-none') : bolum.classList.add('d-none');
+}
+
+function sifreSifirlaAc(kullaniciId, kullaniciIsim) {
+    document.getElementById('sifre-kullanici-adi').textContent = kullaniciIsim;
+    document.getElementById('yeni-sifre-input').value = '';
+    document.getElementById('sifreSifirlaForm').action = '/admin/users/' + kullaniciId + '/reset-password';
+    new bootstrap.Modal(document.getElementById('sifreSifirlaModal')).show();
+}
+
+function yeniKullaniciRolDegisti(rolId) {
+    var bolum = document.getElementById('yeni-magaza-bolum');
+    bolum.style.display = parseInt(rolId) === 2 ? '' : 'none';
 }
 </script>
 {% endblock %}

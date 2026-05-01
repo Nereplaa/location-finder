@@ -10,6 +10,8 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
+        if current_user.rol_id == 4:
+            return redirect(url_for('kiosk.index'))
         return redirect(url_for('customer.index'))
     if request.method == 'POST':
         eposta = request.form.get('eposta', '').strip()
@@ -18,6 +20,12 @@ def login():
         if kullanici and check_password_hash(kullanici.sifre_hash, sifre):
             login_user(kullanici)
             session.permanent = True
+            if kullanici.rol_id == 4:
+                return redirect(url_for('kiosk.index'))
+            if kullanici.rol_id == 2:
+                return redirect(url_for('manager.dashboard'))
+            if kullanici.rol_id == 3:
+                return redirect(url_for('admin.dashboard'))
             return redirect(url_for('customer.index'))
         flash('E-posta veya şifre hatalı. Lütfen tekrar deneyin.', 'danger')
     return render_template('auth/login.html')

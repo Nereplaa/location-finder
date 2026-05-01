@@ -27,6 +27,9 @@
       <small class="text-muted d-block text-truncate mb-1">{{ current_user.ad }} {{ current_user.soyad }}</small>
       <small class="text-muted d-block text-truncate mb-2" style="font-size:0.7rem; opacity:0.6;">{{ current_user.eposta }}</small>
       {% endif %}
+      <a href="{{ url_for('customer.index') }}" class="btn btn-sm btn-outline-light w-100 mb-2">
+        <i class="bi bi-house-door me-1"></i>Ana Sayfaya Dön
+      </a>
       <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-outline-secondary w-100">
         <i class="bi bi-box-arrow-right me-1"></i>Çıkış Yap
       </a>

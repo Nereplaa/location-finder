@@ -3,6 +3,27 @@
   {% if request.args.get('q') %}"{{ request.args.get('q') }}" — Arama{% else %}Ürünler{% endif %} — AVM Rehber
 {% endblock %}
 
+{% block extra_head %}
+<style>
+/* Sidebar bağımsız scroll + ince özel scrollbar */
+.filter-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(180,197,255,.18) transparent;
+}
+.filter-scroll::-webkit-scrollbar { width: 3px; }
+.filter-scroll::-webkit-scrollbar-track { background: transparent; }
+.filter-scroll::-webkit-scrollbar-thumb {
+  background: rgba(180,197,255,.2);
+  border-radius: 99px;
+}
+.filter-scroll::-webkit-scrollbar-thumb:hover { background: rgba(180,197,255,.38); }
+
+/* Accordion chevron animasyonu */
+.filter-chevron { transition: transform .2s ease; display:inline-flex; }
+.filter-chevron.open { transform: rotate(180deg); }
+</style>
+{% endblock %}
+
 {% block content %}
 <header class="fixed top-0 w-full z-50 bg-slate-950/60 backdrop-blur-xl flex justify-between items-center px-8 h-20 shadow-[0px_24px_48px_rgba(0,0,0,0.4)]">
   <div class="flex items-center gap-8">
@@ -19,13 +40,12 @@
     {% else %}
     <a href="{{ url_for('auth.login') }}" class="text-slate-400 hover:text-blue-200 font-label text-sm transition-colors no-underline">Giriş Yap</a>
     {% endif %}
-    <!-- Mobil menü butonu -->
     <button class="md:hidden text-slate-400 hover:text-blue-200 transition-colors" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" aria-label="Menü">
       <span class="material-symbols-outlined">menu</span>
     </button>
   </div>
 </header>
-<!-- Mobil Menü -->
+
 <div id="mobile-menu" class="hidden fixed top-20 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/30 md:hidden">
   <nav class="flex flex-col px-8 py-4 gap-4 font-label text-sm">
     <a class="text-slate-400 hover:text-blue-200 transition-colors no-underline py-2" href="{{ url_for('customer.index') }}">Ana Sayfa</a>
@@ -35,7 +55,7 @@
 </div>
 
 <main class="pt-24 pb-12 px-8 min-h-screen">
-  <!-- Başlık -->
+  <!-- Breadcrumb + başlık -->
   <div class="mb-10">
     <nav class="flex items-center gap-2 text-on-surface-variant font-label uppercase tracking-widest mb-4 text-xs">
       <a class="hover:text-primary transition-colors no-underline" href="{{ url_for('customer.index') }}">Ana Sayfa</a>
@@ -55,127 +75,256 @@
   </div>
 
   <div class="flex flex-col md:flex-row gap-8">
-    <!-- Sol Filtre Paneli -->
+
+    <!-- ── Sol Filtre Paneli ─────────────────────────────────────── -->
+    <!-- sticky + max-h + overflow-y-auto → sidebar kendi içinde scroll eder, sayfa kayması yok -->
     <aside class="w-full md:w-72 flex-shrink-0">
-      <div class="sticky top-28">
+      <div class="sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto filter-scroll rounded-xl">
         <form id="filtre-form" method="GET" action="{{ url_for('customer.products') }}">
+
+          <!-- Gizli parametreler (arama/mağaza korunur) -->
           {% if request.args.get('q') %}
           <input type="hidden" name="q" value="{{ request.args.get('q') }}"/>
-          {% endif %}
-          {% if request.args.get('kategori_id') %}
-          <input type="hidden" name="kategori_id" value="{{ request.args.get('kategori_id') }}"/>
           {% endif %}
           {% if request.args.get('magaza_id') %}
           <input type="hidden" name="magaza_id" value="{{ request.args.get('magaza_id') }}"/>
           {% endif %}
 
-          <div class="space-y-8 bg-surface-container-low p-8 rounded-xl">
-            <h3 class="text-label-md font-bold text-primary uppercase tracking-widest">Filtrele</h3>
+          <div class="bg-surface-container-low rounded-xl overflow-hidden">
 
-            <!-- Marka -->
-            {% if markalar %}
-            <div>
-              <label class="block text-sm font-semibold text-on-surface-variant mb-4">Marka</label>
-              <div class="space-y-3 max-h-48 overflow-y-auto">
-                {% for marka in markalar %}
-                <label class="flex items-center gap-3 cursor-pointer group">
-                  <input class="w-5 h-5 rounded border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20"
-                         type="checkbox" name="marka_id" value="{{ marka.id }}"
-                         {% if marka.id | string in request.args.getlist('marka_id') %}checked{% endif %}/>
-                  <span class="text-on-surface group-hover:text-primary transition-colors text-sm">{{ marka.marka_adi }}</span>
+            <!-- Panel başlığı -->
+            <div class="px-5 py-4 flex items-center justify-between border-b border-outline-variant/20">
+              <span class="text-xs font-bold text-primary uppercase tracking-widest">Filtrele</span>
+              {% set herhangi_filtre = request.args.getlist('marka_id') or request.args.getlist('renk')
+                 or request.args.getlist('beden') or request.args.getlist('kumas_turu')
+                 or request.args.get('fiyat_min') or request.args.get('fiyat_max')
+                 or request.args.get('stok') == 'var' or request.args.get('kategori_id') %}
+              {% if herhangi_filtre %}
+              <a href="{{ url_for('customer.products') }}{% if request.args.get('q') %}?q={{ request.args.get('q') }}{% endif %}"
+                 class="text-xs text-on-surface-variant hover:text-tertiary transition-colors no-underline">
+                Temizle
+              </a>
+              {% endif %}
+            </div>
+
+            <!-- ── Kategori ──────────────────────────────────────── -->
+            {% if kategori_agaci %}
+            {% set kat_aktif = request.args.get('kategori_id') %}
+            <div class="filter-group border-b border-outline-variant/10">
+              <button type="button" onclick="toggleFilter(this)"
+                      class="w-full flex items-center justify-between px-5 py-3.5 text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors text-left">
+                Kategori
+                <span class="material-symbols-outlined text-base filter-chevron {% if kat_aktif %}open{% endif %}">expand_more</span>
+              </button>
+              <div class="{% if not kat_aktif %}hidden{% endif %} px-4 pb-4">
+                <!-- Tümü seçeneği -->
+                <label class="flex items-center gap-3 cursor-pointer group py-1">
+                  <input class="w-4 h-4 rounded-full border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20 flex-shrink-0"
+                         type="radio" name="kategori_id" value=""
+                         {% if not kat_aktif %}checked{% endif %}
+                         onchange="this.form.submit()"/>
+                  <span class="text-sm text-on-surface font-medium group-hover:text-primary transition-colors">Tüm Kategoriler</span>
                 </label>
+                {% for grup in kategori_agaci %}
+                <!-- Üst kategori -->
+                <label class="flex items-center gap-3 cursor-pointer group py-1 mt-1">
+                  <input class="w-4 h-4 rounded-full border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20 flex-shrink-0"
+                         type="radio" name="kategori_id" value="{{ grup.ust.id }}"
+                         {% if kat_aktif == grup.ust.id | string %}checked{% endif %}
+                         onchange="this.form.submit()"/>
+                  <span class="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">{{ grup.ust.kategori_adi }}</span>
+                </label>
+                <!-- Alt kategoriler — girintili -->
+                {% for alt in grup.altlar %}
+                <label class="flex items-center gap-3 cursor-pointer group py-1 pl-5">
+                  <input class="w-3.5 h-3.5 rounded-full border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20 flex-shrink-0"
+                         type="radio" name="kategori_id" value="{{ alt.id }}"
+                         {% if kat_aktif == alt.id | string %}checked{% endif %}
+                         onchange="this.form.submit()"/>
+                  <span class="text-xs text-on-surface-variant group-hover:text-primary transition-colors">{{ alt.kategori_adi }}</span>
+                </label>
+                {% endfor %}
                 {% endfor %}
               </div>
             </div>
             {% endif %}
 
-            <!-- Fiyat Aralığı -->
-            <div>
-              <label class="block text-sm font-semibold text-on-surface-variant mb-4">Fiyat Aralığı (₺)</label>
-              <div class="flex gap-2">
-                <input class="w-full bg-surface-container-highest border-none rounded-lg px-3 py-2 text-sm text-on-surface focus:ring-2 ring-primary/50 placeholder:text-slate-600"
-                       type="number" name="fiyat_min" placeholder="Min" min="0" step="1"
-                       value="{{ request.args.get('fiyat_min','') }}"/>
-                <input class="w-full bg-surface-container-highest border-none rounded-lg px-3 py-2 text-sm text-on-surface focus:ring-2 ring-primary/50 placeholder:text-slate-600"
-                       type="number" name="fiyat_max" placeholder="Max" min="0" step="1"
-                       value="{{ request.args.get('fiyat_max','') }}"/>
+            <!-- ── Marka ─────────────────────────────────────────── -->
+            {% set marka_aktif = request.args.getlist('marka_id') | length > 0 %}
+            <div class="filter-group border-b border-outline-variant/10">
+              <button type="button" onclick="toggleFilter(this)"
+                      class="w-full flex items-center justify-between px-5 py-3.5 text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors text-left">
+                Marka
+                <span class="material-symbols-outlined text-base filter-chevron {% if marka_aktif %}open{% endif %}">expand_more</span>
+              </button>
+              <div class="{% if not marka_aktif %}hidden{% endif %} px-5 pb-4">
+                <div class="space-y-2.5">
+                  {% for marka in markalar %}
+                  <label class="flex items-center gap-3 cursor-pointer group">
+                    <input class="w-4 h-4 rounded border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20 flex-shrink-0"
+                           type="checkbox" name="marka_id" value="{{ marka.id }}"
+                           {% if marka.id | string in request.args.getlist('marka_id') %}checked{% endif %}/>
+                    <span class="text-sm text-on-surface group-hover:text-primary transition-colors">{{ marka.marka_adi }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
               </div>
             </div>
 
-            <!-- Kumaş Türü -->
+            <!-- ── Fiyat Aralığı ──────────────────────────────────── -->
+            {% set fiyat_aktif = request.args.get('fiyat_min') or request.args.get('fiyat_max') %}
+            <div class="filter-group border-b border-outline-variant/10">
+              <button type="button" onclick="toggleFilter(this)"
+                      class="w-full flex items-center justify-between px-5 py-3.5 text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors text-left">
+                Fiyat Aralığı (₺)
+                <span class="material-symbols-outlined text-base filter-chevron {% if fiyat_aktif %}open{% endif %}">expand_more</span>
+              </button>
+              <div class="{% if not fiyat_aktif %}hidden{% endif %} px-5 pb-4">
+                <div class="flex gap-2">
+                  <input class="w-full bg-surface-container-highest border-none rounded-lg px-3 py-2 text-sm text-on-surface focus:ring-2 ring-primary/50 placeholder:text-slate-600"
+                         type="number" name="fiyat_min" placeholder="Min" min="0" step="1"
+                         value="{{ request.args.get('fiyat_min','') }}"/>
+                  <input class="w-full bg-surface-container-highest border-none rounded-lg px-3 py-2 text-sm text-on-surface focus:ring-2 ring-primary/50 placeholder:text-slate-600"
+                         type="number" name="fiyat_max" placeholder="Maks" min="0" step="1"
+                         value="{{ request.args.get('fiyat_max','') }}"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Renk ───────────────────────────────────────────── -->
             {% if renkler %}
-            <div>
-              <label class="block text-sm font-semibold text-on-surface-variant mb-4">Renk</label>
-              <div class="flex flex-wrap gap-2">
-                {% for renk in renkler %}
-                <label class="cursor-pointer">
-                  <input type="checkbox" name="renk" value="{{ renk }}" class="sr-only peer"
-                         {% if renk in request.args.getlist('renk') %}checked{% endif %}/>
-                  <span class="px-3 py-1 bg-surface-container-highest rounded-full text-xs peer-checked:bg-primary peer-checked:text-on-primary hover:bg-primary/20 transition-all cursor-pointer">{{ renk }}</span>
-                </label>
-                {% endfor %}
+            {% set renk_aktif = request.args.getlist('renk') | length > 0 %}
+            <div class="filter-group border-b border-outline-variant/10">
+              <button type="button" onclick="toggleFilter(this)"
+                      class="w-full flex items-center justify-between px-5 py-3.5 text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors text-left">
+                Renk
+                <span class="material-symbols-outlined text-base filter-chevron {% if renk_aktif %}open{% endif %}">expand_more</span>
+              </button>
+              <div class="{% if not renk_aktif %}hidden{% endif %} px-5 pb-4">
+                <div class="flex flex-wrap gap-2">
+                  {% for renk in renkler %}
+                  <label class="cursor-pointer">
+                    <input type="checkbox" name="renk" value="{{ renk }}" class="sr-only peer"
+                           {% if renk in request.args.getlist('renk') %}checked{% endif %}/>
+                    <span class="px-3 py-1 bg-surface-container-highest rounded-full text-xs
+                                 peer-checked:bg-primary peer-checked:text-on-primary
+                                 hover:bg-primary/20 transition-all block">{{ renk }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
               </div>
             </div>
             {% endif %}
 
+            <!-- ── Beden ───────────────────────────────────────────── -->
             {% if bedenler %}
-            <div>
-              <label class="block text-sm font-semibold text-on-surface-variant mb-4">Beden</label>
-              <div class="flex flex-wrap gap-2">
-                {% for beden in bedenler %}
-                <label class="cursor-pointer">
-                  <input type="checkbox" name="beden" value="{{ beden }}" class="sr-only peer"
-                         {% if beden in request.args.getlist('beden') %}checked{% endif %}/>
-                  <span class="px-3 py-1 bg-surface-container-highest rounded-full text-xs peer-checked:bg-primary peer-checked:text-on-primary hover:bg-primary/20 transition-all cursor-pointer">{{ beden }}</span>
-                </label>
-                {% endfor %}
+            {% set beden_aktif = request.args.getlist('beden') | length > 0 %}
+            <div class="filter-group border-b border-outline-variant/10">
+              <button type="button" onclick="toggleFilter(this)"
+                      class="w-full flex items-center justify-between px-5 py-3.5 text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors text-left">
+                Beden
+                <span class="material-symbols-outlined text-base filter-chevron {% if beden_aktif %}open{% endif %}">expand_more</span>
+              </button>
+              <div class="{% if not beden_aktif %}hidden{% endif %} px-5 pb-4">
+                <div class="flex flex-wrap gap-2">
+                  {% for beden in bedenler %}
+                  <label class="cursor-pointer">
+                    <input type="checkbox" name="beden" value="{{ beden }}" class="sr-only peer"
+                           {% if beden in request.args.getlist('beden') %}checked{% endif %}/>
+                    <span class="px-3 py-1 bg-surface-container-highest rounded-full text-xs
+                                 peer-checked:bg-primary peer-checked:text-on-primary
+                                 hover:bg-primary/20 transition-all block">{{ beden }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
               </div>
             </div>
             {% endif %}
 
-            <!-- Stok Durumu -->
-            <div>
-              <label class="block text-sm font-semibold text-on-surface-variant mb-4">Stok Durumu</label>
-              <div class="space-y-3">
-                <label class="flex items-center gap-3 cursor-pointer group">
-                  <input class="w-5 h-5 rounded-full border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20"
-                         type="radio" name="stok" value="var"
-                         {% if request.args.get('stok') == 'var' %}checked{% endif %}/>
-                  <span class="text-on-surface group-hover:text-primary transition-colors text-sm">Stokta Var</span>
-                </label>
-                <label class="flex items-center gap-3 cursor-pointer group">
-                  <input class="w-5 h-5 rounded-full border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20"
-                         type="radio" name="stok" value=""
-                         {% if request.args.get('stok', '') != 'var' %}checked{% endif %}/>
-                  <span class="text-on-surface group-hover:text-primary transition-colors text-sm">Tümünü Göster</span>
-                </label>
+            <!-- ── Kumaş Türü ─────────────────────────────────────── -->
+            {% if kumaslar %}
+            {% set kumas_aktif = request.args.getlist('kumas_turu') | length > 0 %}
+            <div class="filter-group border-b border-outline-variant/10">
+              <button type="button" onclick="toggleFilter(this)"
+                      class="w-full flex items-center justify-between px-5 py-3.5 text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors text-left">
+                Kumaş Türü
+                <span class="material-symbols-outlined text-base filter-chevron {% if kumas_aktif %}open{% endif %}">expand_more</span>
+              </button>
+              <div class="{% if not kumas_aktif %}hidden{% endif %} px-5 pb-4">
+                <div class="flex flex-wrap gap-2">
+                  {% for kumas in kumaslar %}
+                  <label class="cursor-pointer">
+                    <input type="checkbox" name="kumas_turu" value="{{ kumas }}" class="sr-only peer"
+                           {% if kumas in request.args.getlist('kumas_turu') %}checked{% endif %}/>
+                    <span class="px-3 py-1 bg-surface-container-highest rounded-full text-xs
+                                 peer-checked:bg-primary peer-checked:text-on-primary
+                                 hover:bg-primary/20 transition-all block">{{ kumas }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
               </div>
             </div>
-          </div>
+            {% endif %}
 
-          <div class="mt-4 space-y-2">
-            <button type="submit" class="w-full py-4 bg-gradient-to-br from-primary to-on-primary-container text-on-primary font-bold rounded-full shadow-lg transition-transform active:scale-95">
-              Filtrele
-            </button>
-            <a href="{{ url_for('customer.products') }}" class="block w-full py-3 bg-surface-container-low text-on-surface-variant text-center font-medium rounded-full hover:bg-surface-container-high transition-colors text-sm no-underline">
-              Temizle
-            </a>
+            <!-- ── Stok Durumu ────────────────────────────────────── -->
+            {% set stok_aktif = request.args.get('stok') == 'var' %}
+            <div class="filter-group">
+              <button type="button" onclick="toggleFilter(this)"
+                      class="w-full flex items-center justify-between px-5 py-3.5 text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors text-left">
+                Stok Durumu
+                <span class="material-symbols-outlined text-base filter-chevron {% if stok_aktif %}open{% endif %}">expand_more</span>
+              </button>
+              <div class="{% if not stok_aktif %}hidden{% endif %} px-5 pb-4">
+                <div class="space-y-3">
+                  <label class="flex items-center gap-3 cursor-pointer group">
+                    <input class="w-4 h-4 rounded-full border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20"
+                           type="radio" name="stok" value="var"
+                           {% if request.args.get('stok') == 'var' %}checked{% endif %}/>
+                    <span class="text-sm text-on-surface group-hover:text-primary transition-colors">Stokta Var</span>
+                  </label>
+                  <label class="flex items-center gap-3 cursor-pointer group">
+                    <input class="w-4 h-4 rounded-full border-outline-variant bg-surface-container-highest text-primary focus:ring-primary/20"
+                           type="radio" name="stok" value=""
+                           {% if request.args.get('stok', '') != 'var' %}checked{% endif %}/>
+                    <span class="text-sm text-on-surface group-hover:text-primary transition-colors">Tümünü Göster</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Filtrele butonu ────────────────────────────────── -->
+            <div class="px-5 py-4 border-t border-outline-variant/20 space-y-2">
+              <button type="submit"
+                      class="w-full py-3 bg-gradient-to-br from-primary to-on-primary-container text-on-primary font-bold rounded-full shadow-lg transition-transform active:scale-95 text-sm">
+                Filtrele
+              </button>
+              {% if herhangi_filtre %}
+              <a href="{{ url_for('customer.products') }}{% if request.args.get('q') %}?q={{ request.args.get('q') }}{% endif %}"
+                 class="block w-full py-2.5 bg-surface-container-high text-on-surface-variant text-center font-medium rounded-full hover:bg-surface-container-highest transition-colors text-sm no-underline">
+                Temizle
+              </a>
+              {% endif %}
+            </div>
+
           </div>
         </form>
       </div>
     </aside>
 
-    <!-- Ürün Grid -->
+    <!-- ── Ürün Grid ─────────────────────────────────────────────── -->
     <div class="flex-1">
       {% if urunler and urunler | length > 0 %}
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for urun in urunler %}
         {% set toplam_stok = urun.stoklar | sum(attribute='stok_adedi') if urun.stoklar else 0 %}
-        <div class="group relative bg-surface-container-low rounded-xl overflow-hidden transition-all duration-300 {% if toplam_stok == 0 %}opacity-60 grayscale hover:grayscale-0 hover:opacity-100{% else %}hover:scale-[1.02] hover:shadow-[0px_24px_48px_rgba(0,0,0,0.4)]{% endif %}">
+        <div class="group relative bg-surface-container-low rounded-xl overflow-hidden transition-all duration-300
+                    {% if toplam_stok == 0 %}opacity-60 grayscale hover:grayscale-0 hover:opacity-100
+                    {% else %}hover:scale-[1.02] hover:shadow-[0px_24px_48px_rgba(0,0,0,0.4)]{% endif %}">
           <a href="{{ url_for('customer.product_detail', urun_id=urun.id) }}" class="no-underline block">
             <div class="aspect-[4/5] relative overflow-hidden rounded-lg m-4">
               {% if urun.gorsel_url %}
-              <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ urun.gorsel_url }}" alt="{{ urun.urun_adi }}"/>
+              <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                   src="{{ urun.gorsel_url }}" alt="{{ urun.urun_adi }}"/>
               {% else %}
               <div class="w-full h-full bg-surface-container-high flex items-center justify-center">
                 <span class="material-symbols-outlined text-6xl text-on-surface-variant">image</span>
@@ -229,6 +378,7 @@
       </div>
       {% endif %}
     </div>
+
   </div>
 </main>
 
@@ -239,4 +389,18 @@
   </div>
   <p class="text-slate-500 font-label text-xs uppercase tracking-widest">© 2025 AVM Rehber — AKİS Grubu</p>
 </footer>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function toggleFilter(btn) {
+  const group = btn.closest('.filter-group');
+  const body = btn.nextElementSibling;
+  const chevron = btn.querySelector('.filter-chevron');
+  if (!body) return;
+  const isHidden = body.classList.contains('hidden');
+  body.classList.toggle('hidden', !isHidden);
+  if (chevron) chevron.classList.toggle('open', isHidden);
+}
+</script>
 {% endblock %}

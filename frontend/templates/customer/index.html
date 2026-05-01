@@ -87,9 +87,9 @@
     </div>
   </section>
 
-  <!-- Aktif Kampanyalar -->
+  <!-- Aktif Kampanyalar Carousel -->
   {% if kampanyalar %}
-  <section class="mb-24">
+  <section class="mb-24" id="campaign-section">
     <div class="flex justify-between items-end mb-10">
       <div>
         <h2 class="text-3xl font-bold tracking-tight mb-2">Aktif Kampanyalar</h2>
@@ -97,33 +97,136 @@
       </div>
       <a href="{{ url_for('customer.campaigns') }}" class="text-primary font-label text-sm uppercase tracking-widest hover:underline">Tümünü Gör</a>
     </div>
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {% for k in kampanyalar[:4] %}
-      <a href="{{ url_for('customer.product_detail', urun_id=k.urun_id) }}" class="group relative bg-surface-container-low rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:shadow-2xl no-underline">
-        {% if k.urun.gorsel_url %}
-        <div class="aspect-[4/5] overflow-hidden">
-          <img src="{{ k.urun.gorsel_url }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="{{ k.urun.urun_adi }}"/>
-        </div>
-        {% else %}
-        <div class="aspect-[4/5] bg-surface-container-high flex items-center justify-center">
-          <span class="material-symbols-outlined text-6xl text-on-surface-variant">image</span>
-        </div>
-        {% endif %}
-        <div class="absolute top-4 left-4 bg-error-container text-on-error-container px-3 py-1 rounded-full text-xs font-bold">
-          %{{ k.indirim_orani | int }} İNDİRİM
-        </div>
-        <div class="p-4">
-          <p class="text-primary text-xs uppercase tracking-widest mb-1">{{ k.urun.marka.marka_adi if k.urun.marka else '' }}</p>
-          <h3 class="font-bold text-on-surface mb-1 line-clamp-1">{{ k.urun.urun_adi }}</h3>
-          <div class="flex items-baseline gap-2">
-            <span class="text-secondary font-bold">{{ "%.2f" | format(k.urun.baz_fiyat * (1 - k.indirim_orani / 100)) }} ₺</span>
-            <span class="text-on-surface-variant text-xs line-through">{{ "%.2f" | format(k.urun.baz_fiyat) }} ₺</span>
+
+    <div class="relative" id="campaign-carousel-wrap">
+      <!-- Prev arrow -->
+      <button id="cp-prev" aria-label="Önceki"
+              class="absolute left-0 top-1/2 z-10 -translate-y-1/2 -translate-x-5 w-11 h-11 rounded-full bg-surface-container-high border border-outline-variant/30 flex items-center justify-center hover:bg-surface-container-highest shadow-lg transition-all">
+        <span class="material-symbols-outlined text-on-surface">chevron_left</span>
+      </button>
+
+      <!-- Slide window -->
+      <div class="overflow-hidden" id="cp-window">
+        <div id="cp-track" class="flex" style="gap:24px; transition:transform .5s cubic-bezier(.4,0,.2,1); will-change:transform;">
+          {% for k in kampanyalar %}
+          <div class="cp-slide flex-shrink-0">
+            <a href="{{ url_for('customer.product_detail', urun_id=k.urun_id) }}"
+               class="group relative bg-surface-container-low rounded-xl overflow-hidden transition-all hover:scale-[1.02] hover:shadow-2xl no-underline block h-full">
+              {% if k.urun.gorsel_url %}
+              <div class="aspect-[4/5] overflow-hidden">
+                <img src="{{ k.urun.gorsel_url }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="{{ k.urun.urun_adi }}"/>
+              </div>
+              {% else %}
+              <div class="aspect-[4/5] bg-surface-container-high flex items-center justify-center">
+                <span class="material-symbols-outlined text-6xl text-on-surface-variant">image</span>
+              </div>
+              {% endif %}
+              <div class="absolute top-4 left-4 bg-error-container text-on-error-container px-3 py-1 rounded-full text-xs font-bold">
+                %{{ k.indirim_orani | int }} İNDİRİM
+              </div>
+              <div class="p-4">
+                <p class="text-primary text-xs uppercase tracking-widest mb-1">{{ k.urun.marka.marka_adi if k.urun.marka else '' }}</p>
+                <h3 class="font-bold text-on-surface mb-1 line-clamp-1">{{ k.urun.urun_adi }}</h3>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-secondary font-bold">{{ "%.2f" | format(k.urun.baz_fiyat * (1 - k.indirim_orani / 100)) }} ₺</span>
+                  <span class="text-on-surface-variant text-xs line-through">{{ "%.2f" | format(k.urun.baz_fiyat) }} ₺</span>
+                </div>
+              </div>
+            </a>
           </div>
+          {% endfor %}
         </div>
-      </a>
-      {% endfor %}
+      </div>
+
+      <!-- Next arrow -->
+      <button id="cp-next" aria-label="Sonraki"
+              class="absolute right-0 top-1/2 z-10 -translate-y-1/2 translate-x-5 w-11 h-11 rounded-full bg-surface-container-high border border-outline-variant/30 flex items-center justify-center hover:bg-surface-container-highest shadow-lg transition-all">
+        <span class="material-symbols-outlined text-on-surface">chevron_right</span>
+      </button>
     </div>
+
+    <!-- Dot indicators -->
+    <div id="cp-dots" class="flex justify-center gap-2 mt-6"></div>
   </section>
+
+  <script>
+  (function () {
+    const GAP = 24;
+    const total = {{ kampanyalar | length }};
+    const track = document.getElementById('cp-track');
+    const window_ = document.getElementById('cp-window');
+    const dotsEl = document.getElementById('cp-dots');
+    const slides = track.querySelectorAll('.cp-slide');
+    let cur = 0, autoTimer = null;
+
+    function perPage() {
+      const w = window_.offsetWidth;
+      if (w >= 1024) return 4;
+      if (w >= 768)  return 3;
+      return 2;
+    }
+
+    function applyWidths() {
+      const pp = perPage();
+      const sw = (window_.offsetWidth - (pp - 1) * GAP) / pp;
+      slides.forEach(s => { s.style.width = sw + 'px'; });
+    }
+
+    function maxIdx() { return Math.max(0, total - perPage()); }
+
+    function move(delta) {
+      cur = Math.max(0, Math.min(cur + delta, maxIdx()));
+      render();
+    }
+
+    function goTo(idx) { cur = idx; render(); }
+
+    function render() {
+      const sw = slides[0] ? slides[0].offsetWidth + GAP : 0;
+      track.style.transform = 'translateX(-' + (cur * sw) + 'px)';
+      buildDots();
+    }
+
+    function buildDots() {
+      const pp = perPage();
+      const count = Math.ceil(total / pp);
+      const active = Math.min(Math.floor(cur / pp), count - 1);
+      dotsEl.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const d = document.createElement('button');
+        d.setAttribute('aria-label', 'Slayt ' + (i + 1));
+        d.style.cssText = 'border:none;cursor:pointer;border-radius:9999px;transition:all .3s;height:8px;';
+        d.style.width = i === active ? '24px' : '8px';
+        d.style.background = i === active ? 'var(--md-sys-color-primary, #6750A4)' : 'rgba(128,128,160,0.4)';
+        d.onclick = () => { goTo(i * pp); restartAuto(); };
+        dotsEl.appendChild(d);
+      }
+    }
+
+    function startAuto() {
+      if (total <= perPage()) return;
+      autoTimer = setInterval(() => {
+        cur = (cur >= maxIdx()) ? 0 : cur + 1;
+        render();
+      }, 4000);
+    }
+
+    function restartAuto() { clearInterval(autoTimer); startAuto(); }
+
+    document.getElementById('cp-prev').onclick = () => { move(-1); restartAuto(); };
+    document.getElementById('cp-next').onclick = () => { move(1); restartAuto(); };
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => { applyWidths(); render(); }, 150);
+    });
+
+    applyWidths();
+    buildDots();
+    startAuto();
+  })();
+  </script>
   {% endif %}
 
   <!-- Popüler Mağazalar -->

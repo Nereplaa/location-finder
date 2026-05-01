@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html class="dark" lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<meta name="csrf-token" content="{{ csrf_token() }}"/>
+<title>{% block title %}AVM Kiosk{% endblock %}</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "on-tertiary-container": "#d65569",
+        "surface-tint": "#b4c5ff",
+        "outline": "#909097",
+        "on-primary-fixed-variant": "#003ea8",
+        "on-secondary-container": "#00311f",
+        "on-error-container": "#ffdad6",
+        "on-tertiary-fixed": "#400010",
+        "tertiary-container": "#38000d",
+        "secondary-fixed": "#6ffbbe",
+        "on-surface": "#dae2fd",
+        "surface-variant": "#2d3449",
+        "primary-container": "#001442",
+        "secondary-container": "#00a572",
+        "tertiary-fixed": "#ffdadc",
+        "on-secondary-fixed": "#002113",
+        "on-tertiary": "#67001f",
+        "background": "#0b1326",
+        "primary": "#b4c5ff",
+        "on-background": "#dae2fd",
+        "on-secondary": "#003824",
+        "error-container": "#93000a",
+        "secondary-fixed-dim": "#4edea3",
+        "surface-container": "#171f33",
+        "surface": "#0b1326",
+        "on-primary-container": "#4278ff",
+        "inverse-primary": "#0053db",
+        "outline-variant": "#45464d",
+        "surface-container-high": "#222a3d",
+        "surface-container-low": "#131b2e",
+        "surface-bright": "#31394d",
+        "primary-fixed-dim": "#b4c5ff",
+        "secondary": "#4edea3",
+        "on-primary": "#002a78",
+        "tertiary": "#ffb2b9",
+        "error": "#ffb4ab",
+        "on-tertiary-fixed-variant": "#891933",
+        "surface-container-lowest": "#060e20",
+        "on-surface-variant": "#c6c6cd",
+        "on-secondary-fixed-variant": "#005236",
+        "on-error": "#690005",
+        "inverse-on-surface": "#283044",
+        "inverse-surface": "#dae2fd",
+        "primary-fixed": "#dbe1ff",
+        "tertiary-fixed-dim": "#ffb2b9",
+        "surface-dim": "#0b1326",
+        "surface-container-highest": "#2d3449",
+        "on-primary-fixed": "#00174b"
+      },
+      fontFamily: {
+        "headline": ["Manrope"],
+        "body": ["Inter"],
+        "label": ["Inter"]
+      }
+    }
+  }
+}
+</script>
+<style>
+/* Kiosk: fare imlecini gizle */
+* { cursor: none !important; }
+
+body { font-family: 'Inter', sans-serif; }
+h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.text-glow { text-shadow: 0 0 24px rgba(180,197,255,0.45); }
+
+/* Dokunmatik hedef garantisi */
+.k-touch { min-height: 56px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+
+/* İnaktivite overlay girişi */
+@keyframes kFadeIn { from { opacity:0; transform:scale(.97); } to { opacity:1; transform:scale(1); } }
+#kiosk-idle-overlay.visible { animation: kFadeIn .35s ease forwards; }
+
+/* Nefes alan pulsating ring */
+@keyframes kRing { 0%{transform:scale(1);opacity:.6} 100%{transform:scale(2.2);opacity:0} }
+.k-ring-pulse { animation: kRing 2s ease-out infinite; }
+.k-ring-pulse.delay { animation-delay:.8s; }
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+
+<body class="bg-background text-on-background min-h-screen overflow-x-hidden select-none">
+
+<!-- ── Üst Navigasyon Çubuğu ─────────────────────────────────────── -->
+<header class="fixed top-0 left-0 right-0 z-50 h-20 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/30 flex items-center justify-between px-6 gap-4">
+
+  {% block back_btn %}
+  <button onclick="window.history.length>1 ? history.back() : (window.location.href='{{ url_for('kiosk.index') }}')"
+          class="k-touch flex items-center gap-3 px-7 py-0 bg-surface-container-high rounded-full text-on-surface font-bold text-lg hover:bg-surface-container-highest transition-colors">
+    <span class="material-symbols-outlined text-2xl">arrow_back</span>
+    GER&#304;
+  </button>
+  {% endblock %}
+
+  <div class="flex flex-col items-center leading-tight">
+    <span class="text-xl font-extrabold font-headline text-blue-200 tracking-tight text-glow">AVM Rehber</span>
+    <span class="text-[10px] text-slate-500 tracking-[.2em] uppercase">Kiosk Terminali</span>
+  </div>
+
+  <a href="{{ url_for('kiosk.index') }}"
+     class="k-touch flex items-center gap-3 px-7 py-0 bg-primary/10 border border-primary/30 rounded-full text-primary font-bold text-lg hover:bg-primary/20 transition-colors no-underline">
+    <span class="material-symbols-outlined text-2xl">home</span>
+    ANA SAYFA
+  </a>
+</header>
+
+<!-- Flash Mesajları -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="fixed top-24 right-6 z-[200] space-y-3 w-96" id="kiosk-flash">
+  {% for category, message in messages %}
+  <div class="bg-surface-container-high border border-primary/30 px-6 py-4 rounded-2xl text-base text-on-surface flex items-center gap-3 shadow-2xl">
+    <span class="flex-1">{{ message }}</span>
+    <button onclick="this.parentElement.remove()" class="k-touch p-2 text-on-surface-variant">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+  {% endfor %}
+</div>
+<script>setTimeout(()=>{var c=document.getElementById('kiosk-flash');if(c)c.remove();},5000);</script>
+{% endif %}
+{% endwith %}
+
+<!-- ── Ana İçerik ────────────────────────────────────────────────── -->
+<main class="pt-20 pb-16 min-h-screen">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ── Alt Çubuk: Yönetici Girişi ───────────────────────────────── -->
+<footer class="fixed bottom-0 left-0 right-0 h-14 bg-slate-950/70 backdrop-blur-xl border-t border-slate-800/20 flex items-center justify-center">
+  <a href="{{ url_for('auth.logout') }}"
+     class="k-touch px-8 flex items-center text-slate-600 text-xs tracking-[.18em] uppercase hover:text-slate-400 transition-colors no-underline">
+    Y&#246;netici Giri&#351;i
+  </a>
+</footer>
+
+<!-- ── İnaktivite Overlay ────────────────────────────────────────── -->
+<div id="kiosk-idle-overlay"
+     class="hidden fixed inset-0 z-[300] flex flex-col items-center justify-center"
+     style="background:rgba(6,14,32,.96);backdrop-filter:blur(28px);">
+  <div class="text-center px-12 max-w-2xl">
+    <!-- Pulsating touch icon -->
+    <div class="relative inline-flex items-center justify-center w-44 h-44 mx-auto mb-10">
+      <div class="k-ring-pulse absolute inset-0 rounded-full border-2 border-primary/40"></div>
+      <div class="k-ring-pulse delay absolute inset-0 rounded-full border-2 border-primary/25"></div>
+      <div class="relative flex items-center justify-center w-36 h-36 rounded-full border-2 border-primary/35"
+           style="background:rgba(180,197,255,.08)">
+        <span class="material-symbols-outlined text-primary" style="font-size:3.5rem;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 48">touch_app</span>
+      </div>
+    </div>
+
+    <h2 class="text-5xl font-extrabold font-headline text-blue-200 mb-5 text-glow leading-tight">
+      Devam etmek i&#231;in dokunun
+    </h2>
+    <p class="text-2xl text-on-surface-variant">
+      <span id="kiosk-countdown" class="text-4xl font-bold text-primary tabular-nums">10</span>
+      saniye i&#231;inde ana sayfaya d&#246;n&#252;lecek
+    </p>
+  </div>
+</div>
+
+<!-- ── İnaktivite Zamanlayıcı ───────────────────────────────────── -->
+<script>
+(function () {
+  var IDLE_MS   = 120000;  // 2 dakika
+  var WARN_SECS = 10;
+  var overlay   = document.getElementById('kiosk-idle-overlay');
+  var cdEl      = document.getElementById('kiosk-countdown');
+  var idleTimer = null;
+  var cdInterval = null;
+
+  function resetIdle() {
+    /* Overlay açıksa kapat */
+    if (!overlay.classList.contains('hidden')) {
+      overlay.classList.add('hidden');
+      overlay.classList.remove('visible');
+      if (cdInterval) { clearInterval(cdInterval); cdInterval = null; }
+    }
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(showOverlay, IDLE_MS);
+  }
+
+  function showOverlay() {
+    overlay.classList.remove('hidden');
+    overlay.classList.add('visible');
+    var secs = WARN_SECS;
+    cdEl.textContent = secs;
+    cdInterval = setInterval(function () {
+      secs -= 1;
+      cdEl.textContent = secs;
+      if (secs <= 0) {
+        clearInterval(cdInterval);
+        window.location.href = '{{ url_for("kiosk.index") }}';
+      }
+    }, 1000);
+  }
+
+  ['touchstart', 'touchmove', 'mousedown', 'click', 'scroll', 'keydown', 'pointerdown']
+    .forEach(function (ev) {
+      document.addEventListener(ev, resetIdle, { passive: true, capture: true });
+    });
+
+  resetIdle();
+})();
+</script>
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>
