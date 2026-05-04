@@ -45,7 +45,7 @@ def index():
     kategoriler = Kategori.query.filter_by(aktif_mi=True, ust_kategori_id=None).all()
     kampanyalar = (Kampanya.query
                    .filter_by(aktif_mi=True)
-                   .filter(Kampanya.bitis_tarihi >= datetime.utcnow())
+                   .filter(Kampanya.bitis_tarihi >= datetime.now())
                    .limit(6).all())
     return render_template('kiosk/index.html', kategoriler=kategoriler, kampanyalar=kampanyalar)
 
@@ -122,7 +122,7 @@ def product_detail(urun_id):
     stoklar = Stok.query.filter_by(urun_id=urun_id).all()
     kampanyalar = (Kampanya.query
                    .filter_by(urun_id=urun_id, aktif_mi=True)
-                   .filter(Kampanya.bitis_tarihi >= datetime.utcnow())
+                   .filter(Kampanya.bitis_tarihi >= datetime.now())
                    .all())
     aktif_kampanya = kampanyalar[0] if kampanyalar else None
 
@@ -151,6 +151,6 @@ def product_detail(urun_id):
 def campaigns():
     kampanyalar = (Kampanya.query
                    .filter_by(aktif_mi=True)
-                   .filter(Kampanya.bitis_tarihi >= datetime.utcnow())
+                   .filter(Kampanya.bitis_tarihi >= datetime.now())
                    .all())
     return render_template('kiosk/campaigns.html', kampanyalar=kampanyalar)

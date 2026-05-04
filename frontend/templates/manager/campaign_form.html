@@ -111,25 +111,27 @@
                             <label for="baslangic_tarihi" class="form-label">
                                 Başlangıç Tarihi <span class="text-danger">*</span>
                             </label>
-                            <input type="datetime-local"
+                            <input type="date"
                                    class="form-control"
                                    id="baslangic_tarihi"
                                    name="baslangic_tarihi"
                                    required
-                                   min="{{ now.strftime('%Y-%m-%dT%H:%M') if now else '' }}"
+                                   min="{{ now.strftime('%Y-%m-%d') if now else '' }}"
                                    onchange="tarihDogrula()">
+                            <div class="form-text">Kampanya o gün 00:01'de başlar.</div>
                             <div class="invalid-feedback">Başlangıç tarihi zorunludur.</div>
                         </div>
                         <div class="col-12 col-md-6">
                             <label for="bitis_tarihi" class="form-label">
                                 Bitiş Tarihi <span class="text-danger">*</span>
                             </label>
-                            <input type="datetime-local"
+                            <input type="date"
                                    class="form-control"
                                    id="bitis_tarihi"
                                    name="bitis_tarihi"
                                    required
                                    onchange="tarihDogrula()">
+                            <div class="form-text">Kampanya o gün 23:59'da sona erer.</div>
                             <div class="invalid-feedback" id="bitis-tarihi-feedback">
                                 Bitiş tarihi zorunludur.
                             </div>
@@ -139,7 +141,7 @@
                     <!-- BR-3.1 Uyarı -->
                     <div id="tarih-uyari" class="alert alert-danger py-2 small d-none" role="alert">
                         <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        Bitiş tarihi, başlangıç tarihinden sonra olmalıdır.
+                        Bitiş tarihi, başlangıç tarihinden önce olamaz.
                     </div>
 
                     <!-- Mevcut Kampanyalar -->
@@ -262,7 +264,7 @@ function tarihDogrula() {
     var btn       = document.getElementById('kampanya-kaydet-btn');
 
     if (baslangic && bitis) {
-        if (new Date(bitis) <= new Date(baslangic)) {
+        if (bitis < baslangic) {
             uyari.classList.remove('d-none');
             btn.disabled = true;
         } else {

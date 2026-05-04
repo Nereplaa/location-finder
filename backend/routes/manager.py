@@ -62,9 +62,10 @@ def dashboard():
     ).all()
     tum_stoklar = Stok.query.filter_by(magaza_id=magaza_id).all()
     toplam_urun = len(tum_stoklar)
+    _kampanyalari_sona_erdir()
     aktif_kampanya_sayisi = Kampanya.query.filter_by(
         magaza_id=magaza_id, aktif_mi=True
-    ).filter(Kampanya.bitis_tarihi >= datetime.utcnow()).count()
+    ).filter(Kampanya.bitis_tarihi >= datetime.now()).count()
     markalar = Marka.query.filter_by(aktif_mi=True).all()
     kategoriler = Kategori.query.filter_by(aktif_mi=True).all()
 
@@ -76,7 +77,7 @@ def dashboard():
                    .limit(10).all())
 
     # GÖREV 3: Görüntülenme istatistikleri
-    son_30 = datetime.utcnow() - timedelta(days=30)
+    son_30 = datetime.now() - timedelta(days=30)
     # Top 5 ürün — bu mağazadaki ürünler için görüntülenme sayısı
     goruntuleme_ozet = (db.session.query(UrunGoruntuleme.urun_id, func.count(UrunGoruntuleme.id).label('sayi'))
                         .filter(UrunGoruntuleme.urun_id.in_(urun_idleri))
@@ -91,14 +92,14 @@ def dashboard():
             populer_urunler.append({'urun': urun, 'sayi': row.sayi})
 
     # Bugün görüntülenme
-    bugun_baslangic = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    bugun_baslangic = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     bugun_goruntuleme = (UrunGoruntuleme.query
                          .filter(UrunGoruntuleme.urun_id.in_(urun_idleri))
                          .filter(UrunGoruntuleme.tarih >= bugun_baslangic)
                          .count())
 
     # Son 7 gün günlük görüntülenme (Chart.js line chart için)
-    today = datetime.utcnow().date()
+    today = datetime.now().date()
     goruntuleme_istatistikleri = []
     for i in range(6, -1, -1):
         gun = today - timedelta(days=i)
@@ -260,6 +261,18 @@ def reset_stock(urun_id):
     return redirect(url_for('manager.products'))
 
 
+def _kampanyalari_sona_erdir():
+    """Bitiş tarihi geçmiş kampanyaları otomatik olarak pasife alır."""
+    sona_erenler = Kampanya.query.filter(
+        Kampanya.aktif_mi == True,
+        Kampanya.bitis_tarihi < datetime.now()
+    ).all()
+    if sona_erenler:
+        for k in sona_erenler:
+            k.aktif_mi = False
+        db.session.commit()
+
+
 @manager_bp.route('/campaigns', methods=['GET', 'POST'])
 @login_required
 @role_required(2)
@@ -268,25 +281,27 @@ def campaigns():
     if request.method == 'POST':
         urun_id = request.form.get('urun_id', type=int)
         indirim = request.form.get('indirim_orani', type=float)
-        baslangic_str = request.form.get('baslangic_tarihi', '')
-        bitis_str = request.form.get('bitis_tarihi', '')
+        baslangic_str = request.form.get('baslangic_tarihi', '').strip()
+        bitis_str = request.form.get('bitis_tarihi', '').strip()
         try:
-            fmt = '%Y-%m-%dT%H:%M' if 'T' in baslangic_str else '%Y-%m-%d'
-            baslangic = datetime.strptime(baslangic_str, fmt)
-            bitis = datetime.strptime(bitis_str, '%Y-%m-%dT%H:%M' if 'T' in bitis_str else '%Y-%m-%d')
+            baslangic = datetime.strptime(baslangic_str, '%Y-%m-%d').replace(hour=0, minute=1, second=0)
+            bitis = datetime.strptime(bitis_str, '%Y-%m-%d').replace(hour=23, minute=59, second=59)
         except (ValueError, TypeError):
             flash('Geçersiz tarih formatı.', 'danger')
             baslangic = bitis = None
         if baslangic and bitis:
-            if bitis <= baslangic:
-                flash('Bitiş tarihi başlangıç tarihinden sonra olmalıdır.', 'danger')
+            if bitis_str < baslangic_str:
+                flash('Bitiş tarihi başlangıç tarihinden önce olamaz.', 'danger')
             else:
                 kampanya = Kampanya(urun_id=urun_id, magaza_id=magaza_id, indirim_orani=indirim,
                                     baslangic_tarihi=baslangic, bitis_tarihi=bitis)
                 db.session.add(kampanya)
                 db.session.commit()
                 flash('Kampanya başarıyla oluşturuldu.', 'success')
-    kampanyalar = Kampanya.query.filter_by(magaza_id=magaza_id, aktif_mi=True).all()
+    _kampanyalari_sona_erdir()
+    kampanyalar = Kampanya.query.filter_by(magaza_id=magaza_id, aktif_mi=True).filter(
+        Kampanya.bitis_tarihi >= datetime.now()
+    ).all()
     stoklar = Stok.query.filter_by(magaza_id=magaza_id).join(Urun).filter(Urun.aktif_mi == True).all()
     urunler = []
     seen = set()
@@ -299,7 +314,7 @@ def campaigns():
     return render_template('manager/campaign_form.html',
                            kampanyalar=kampanyalar,
                            urunler=urunler,
-                           now=datetime.utcnow())
+                           now=datetime.now())
 
 
 @manager_bp.route('/campaigns/<int:kampanya_id>/delete', methods=['POST'])

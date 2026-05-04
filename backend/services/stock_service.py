@@ -23,7 +23,7 @@ def stok_guncelle(urun_id, magaza_id, yeni_adet, guncelleme_turu, guncelleyen_id
 
     stok.stok_adedi = yeni_adet
     stok.guncelleme_turu = guncelleme_turu  # BR-4.2
-    stok.son_guncelleme_tarihi = datetime.utcnow()
+    stok.son_guncelleme_tarihi = datetime.now()
     stok.son_guncelleyen_id = guncelleyen_id
 
     # StokLog kaydı — her değişimi izle (BR-4.2 + denetim izi)

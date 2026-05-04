@@ -30,7 +30,7 @@ def dashboard():
     aktif_magaza_sayisi = Magaza.query.filter_by(aktif_mi=True).count()
     toplam_kullanici = Kullanici.query.filter_by(aktif_mi=True).count()
 
-    bugun_baslangic = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    bugun_baslangic = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     bugun_arama = AramaGecmisi.query.filter(AramaGecmisi.tarih >= bugun_baslangic).count()
 
     sync_loglar = SyncLog.query.order_by(SyncLog.tarih.desc()).limit(20).all()
@@ -38,7 +38,7 @@ def dashboard():
 
     gun_adlari_kisa = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
     gun_adlari_tam = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar']
-    today = datetime.utcnow().date()
+    today = datetime.now().date()
     isi_haritasi_verisi = []
     isi_maks = 1
     for i in range(6, -1, -1):
@@ -367,7 +367,7 @@ def reports():
     kullanici_sayisi = Kullanici.query.filter_by(aktif_mi=True).count()
     toplam_urun_sayisi = Urun.query.filter_by(aktif_mi=True).count()
     toplam_kampanya_sayisi = Kampanya.query.filter_by(aktif_mi=True).filter(
-        Kampanya.bitis_tarihi >= datetime.utcnow()
+        Kampanya.bitis_tarihi >= datetime.now()
     ).count()
     dusuk_stoklar = Stok.query.filter(Stok.stok_adedi <= Stok.min_stok_seviyesi).all()
 
@@ -377,7 +377,7 @@ def reports():
         urun_sayisi = Stok.query.filter_by(magaza_id=m.id).count()
         kampanya_sayisi = Kampanya.query.filter_by(
             magaza_id=m.id, aktif_mi=True
-        ).filter(Kampanya.bitis_tarihi >= datetime.utcnow()).count()
+        ).filter(Kampanya.bitis_tarihi >= datetime.now()).count()
         magaza_ozet.append({
             'magaza_adi': m.magaza_adi,
             'kat': m.kat,
@@ -401,7 +401,7 @@ def reports():
                     .limit(10).all())
     en_cok_aranan = [{'kelime': r[0], 'sayi': r[1]} for r in en_cok_arama]
 
-    today = datetime.utcnow().date()
+    today = datetime.now().date()
     son_7_gun_arama = []
     for i in range(6, -1, -1):
         gun = today - timedelta(days=i)

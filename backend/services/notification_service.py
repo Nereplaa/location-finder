@@ -36,7 +36,7 @@ def bildirim_tetikle(urun_id):
     bekleyenler = BildirimTalebi.query.filter_by(urun_id=urun_id, bildirildi_mi=False).all()
     for talep in bekleyenler:
         talep.bildirildi_mi = True
-        talep.bildirim_tarihi = datetime.utcnow()
+        talep.bildirim_tarihi = datetime.now()
         _eposta_gonder(talep)
         logger.info(f'Bildirim tetiklendi: urun_id={urun_id}, eposta={talep.eposta}')
     db.session.commit()

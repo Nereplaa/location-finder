@@ -42,7 +42,7 @@ def _kaydet_goruntuleme(urun_id, kaynak='web'):
 @customer_bp.route('/')
 def index():
     kategoriler = Kategori.query.filter_by(aktif_mi=True, ust_kategori_id=None).all()
-    kampanyalar = Kampanya.query.filter_by(aktif_mi=True).filter(Kampanya.bitis_tarihi >= datetime.utcnow()).all()
+    kampanyalar = Kampanya.query.filter_by(aktif_mi=True).filter(Kampanya.bitis_tarihi >= datetime.now()).all()
     magazalar = Magaza.query.filter_by(aktif_mi=True).all()
     return render_template('customer/index.html', kategoriler=kategoriler, kampanyalar=kampanyalar, magazalar=magazalar)
 
@@ -139,7 +139,7 @@ def product_detail(urun_id):
 
     stoklar = Stok.query.filter_by(urun_id=urun_id).all()
     kampanyalar = Kampanya.query.filter_by(urun_id=urun_id, aktif_mi=True).filter(
-        Kampanya.bitis_tarihi >= datetime.utcnow()
+        Kampanya.bitis_tarihi >= datetime.now()
     ).all()
     aktif_kampanya = kampanyalar[0] if kampanyalar else None
 
@@ -165,7 +165,7 @@ def product_detail(urun_id):
 @customer_bp.route('/api/campaigns')
 def campaigns():
     kampanyalar = Kampanya.query.filter_by(aktif_mi=True).filter(
-        Kampanya.bitis_tarihi >= datetime.utcnow()
+        Kampanya.bitis_tarihi >= datetime.now()
     ).all()
     return render_template('customer/campaigns.html', kampanyalar=kampanyalar)
 
@@ -178,7 +178,7 @@ def create_notification():
     telefon = request.form.get('telefon', '').strip()
 
     # BR-3.3: 24 saat spam engeli
-    son_24_saat = datetime.utcnow() - timedelta(hours=24)
+    son_24_saat = datetime.now() - timedelta(hours=24)
     mevcut = BildirimTalebi.query.filter_by(
         urun_id=urun_id, kullanici_id=current_user.id
     ).filter(BildirimTalebi.talep_tarihi >= son_24_saat).first()
