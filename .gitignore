@@ -31,9 +31,12 @@ __MACOSX/
 # Logs
 *.log
 
-# Dokümantasyon ve hassas dosyalar (bilinçli olarak izlenmiyor)
+# Geliştirme aracı dosyaları (bilinçli olarak izlenmiyor)
 CLAUDE.md
+
+# PDF'ler kök dizinde yok sayılır, docs/ klasöründekiler hariç
 *.pdf
+!docs/*.pdf
 
 # Geçici dosyalar
 *.tmp
