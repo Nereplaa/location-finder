@@ -259,7 +259,7 @@ akis/
 ├── docs/
 │   ├── API.md                      # Tam REST API referansı
 │   ├── ARCHITECTURE.md             # Sistem mimarisi ve veritabanı şeması
-│   └── IMPROVEMENTS.md             # Değişiklik logu — Proje 2'den bu yana yapılan iyileştirmeler
+│   └── IMPROVEMENTS.md             # Değişiklik logu — yapılan iyileştirmeler ve geliştirmeler
 ├── screenshots/                    # Uygulama ekran görüntüleri
 ├── seed.py                         # Demo veri yükleyici (5 mağaza · 60 ürün · kampanyalar)
 ├── run.bat                         # Windows tek tıkla başlatma scripti
@@ -315,10 +315,10 @@ Tüm korumalı rotalar `@role_required(*rol_idler)` dekoratörüyle güvenli hal
 
 | İsim | GitHub |
 |---|---|
-| Alperen Yağmur | [@aalperenyagmur](https://github.com/aalperenyagmur) |
-| Simanur Gürsoy | — |
-| Ebrar İkbal Karakuzu | — |
-| Yiğit Duman | — |
+| Alperen Yağmur | [@Nereplaa](https://github.com/Nereplaa) |
+| Simanur Gürsoy | []() |
+| Ebrar İkbal Karakuzu | [@ebrar-krkz](https://github.com/ebrar-krkz) |
+| Yiğit Duman | []() |
 
 ---
 
@@ -330,6 +330,6 @@ Bu proje [MIT Lisansı](LICENSE) kapsamında yayınlanmaktadır.
 
 <div align="center">
 
-**Kocaeli Sağlık ve Teknoloji Üniversitesi** · Yazılım Lab II · 2025–2026
+AKİS — Akıllı AVM Yönetim Platformu
 
 </div>

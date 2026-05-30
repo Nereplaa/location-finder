@@ -1,6 +1,6 @@
 # AKİS — İyileştirmeler ve Değişiklik Logu
 
-Bu belge, Yazılım Lab II Proje 3 kapsamında yapılan tüm zorunlu ve opsiyonel iyileştirmeleri açıklar.
+Bu belge, AKİS platformuna yapılan tüm zorunlu ve opsiyonel iyileştirmeleri açıklar.
 
 ---
 
