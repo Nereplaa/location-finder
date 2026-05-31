@@ -316,9 +316,9 @@ Tüm korumalı rotalar `@role_required(*rol_idler)` dekoratörüyle güvenli hal
 | İsim | GitHub |
 |---|---|
 | Alperen Yağmur | [@Nereplaa](https://github.com/Nereplaa) |
-| Simanur Gürsoy | []() |
+| Simanur Gürsoy | [@simawao](https://github.com/simawao) |
 | Ebrar İkbal Karakuzu | [@ebrar-krkz](https://github.com/ebrar-krkz) |
-| Yiğit Duman | []() |
+| Yiğit Duman | [@YigitDuman147](https://github.com/YigitDuman147) |
 
 ---
 
